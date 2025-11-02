@@ -1,0 +1,50 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment
+env/
+venv/
+.env
+config.yaml
+credentials.json
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Streamlit temp folder
+temp/
+.streamlit/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# JSON outputs
+outputs/
+
+# Logs
+logs/
+*.log
+
+# --- Data Folders ---
+# Ignore all files inside the raw and processed data folders
+data/raw/*
+data/processed/*
+
+# But DO NOT ignore the .gitkeep files inside them
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+!requirements.txt
+!README.md
