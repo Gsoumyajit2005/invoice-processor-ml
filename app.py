@@ -114,6 +114,13 @@ with st.sidebar:
         st.session_state.processed_count = 0
     st.metric("Invoices Processed Today", st.session_state.processed_count)
 
+    st.header("⚙️ Configuration")
+    extraction_method = st.selectbox(
+        "Choose Extraction Method:",
+        ('ML-Based (LayoutLMv3)', 'Rule-Based (Regex)'),
+        help="ML-Based is more robust but may miss fields not in its training data. Rule-Based is faster but more fragile."
+    )
+
 # Main content
 tab1, tab2, tab3 = st.tabs(["📤 Upload & Process", "📚 Sample Invoices", "ℹ️ How It Works"])
 
@@ -150,7 +157,12 @@ with tab1:
 
                         # Step 1: Call YOUR full pipeline function
                         st.write("✅ Calling `process_invoice`...")
-                        extracted_data = process_invoice(temp_path)
+                        # Map the user-friendly name from the dropdown to the actual method parameter
+                        method = 'ml' if extraction_method == 'ML-Based (LayoutLMv3)' else 'rules'
+                        st.write(f"⚙️ Using **{method.upper()}** extraction method...")
+
+                        # Call the pipeline with the selected method
+                        extracted_data = process_invoice(temp_path, method=method)
                         
                         # Step 2: Simulate format detection using the extracted data
                         st.write("✅ Simulating format detection...")
@@ -206,12 +218,18 @@ with tab1:
                 st.warning("⚠️ Validation Failed: Total amount could not be verified against other numbers.")
 
             # Key metrics display
+            # Key metrics display
+            st.metric("🏢 Vendor", data.get('vendor') or "N/A") # <-- ADD THIS
+
             res_col1, res_col2, res_col3 = st.columns(3)
-            res_col1.metric("Receipt Number", data.get('receipt_number') or "N/A")
-            res_col2.metric("Date", data.get('date') or "N/A")
-            res_col3.metric("Total Amount", f"${data.get('total_amount'):.2f}" if data.get('total_amount') is not None else "N/A")
-            
-            st.metric("Customer Name", data.get('bill_to', {}).get('name') if data.get('bill_to') else "N/A")
+            res_col1.metric("📄 Receipt Number", data.get('receipt_number') or "N/A")
+            res_col2.metric("📅 Date", data.get('date') or "N/A")
+            res_col3.metric("💵 Total Amount", f"${data.get('total_amount'):.2f}" if data.get('total_amount') is not None else "N/A")
+
+            # Use an expander for longer text fields like address
+            with st.expander("Show More Details"):
+                st.markdown(f"**👤 Bill To:** {data.get('bill_to', {}).get('name') if data.get('bill_to') else 'N/A'}")
+                st.markdown(f"**📍 Vendor Address:** {data.get('address') or 'N/A'}")
 
             # Line items table
             if data.get('items'):
