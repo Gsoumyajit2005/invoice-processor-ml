@@ -11,37 +11,61 @@ import json
 from preprocessing import load_image, convert_to_grayscale, remove_noise
 from ocr import extract_text
 from extraction import structure_output
+from ml_extraction import extract_ml_based
 
-
-def process_invoice(image_path: str, save_results: bool = False, output_dir: str = 'outputs') -> Dict[str, Any]:
+def process_invoice(image_path: str, 
+                   method: str = 'ml', # <-- New parameter: 'ml' or 'rules'
+                   save_results: bool = False, 
+                   output_dir: str = 'outputs') -> Dict[str, Any]:
     """
-    Process an invoice image and extract structured information
+    Process an invoice image using either rule-based or ML-based extraction.
+    
+    Args:
+        image_path: Path to the invoice image.
+        method: The extraction method to use ('ml' or 'rules'). Default is 'ml'.
+        save_results: Whether to save JSON results to a file.
+        output_dir: Directory to save results.
+    
+    Returns:
+        A dictionary with the extracted invoice data.
     """
     if not Path(image_path).exists():
         raise FileNotFoundError(f"Image not found at path: {image_path}")
     
-    image = load_image(image_path)
+    print(f"Processing with '{method}' method...")
 
-    try:
-        gray_image = convert_to_grayscale(image)
-        preprocessed_image = remove_noise(gray_image, kernel_size=3)
-    except Exception as e:
-        raise ValueError(f"Error during preprocessing: {e}")
-    
-    text = extract_text(preprocessed_image, config='--psm 6')
-    structured_data = structure_output(text)
+    if method == 'ml':
+        # --- ML-Based Extraction ---
+        try:
+            # The ml_extraction function handles everything internally
+            structured_data = extract_ml_based(image_path)
+        except Exception as e:
+            raise ValueError(f"Error during ML-based extraction: {e}")
+            
+    elif method == 'rules':
+        # --- Rule-Based Extraction (Your original logic) ---
+        try:
+            image = load_image(image_path)
+            gray_image = convert_to_grayscale(image)
+            preprocessed_image = remove_noise(gray_image, kernel_size=3)
+            text = extract_text(preprocessed_image, config='--psm 6')
+            structured_data = structure_output(text) # Calls your old extraction.py
+        except Exception as e:
+            raise ValueError(f"Error during rule-based extraction: {e}")
+            
+    else:
+        raise ValueError(f"Unknown extraction method: '{method}'. Choose 'ml' or 'rules'.")
 
+    # --- Saving Logic (remains the same) ---
     if save_results:
         output_path = Path(output_dir)
         output_path.mkdir(parents=True, exist_ok=True)
-        json_path = output_path / (Path(image_path).stem + '.json')
+        json_path = output_path / (Path(image_path).stem + f"_{method}.json") # Add method to filename
         try:
-            with open(json_path, 'w', encoding='utf-8') as file:
-                json.dump(structured_data, file, indent=2, ensure_ascii=False)
-        except TypeError as e:
-            raise ValueError(f"Data not JSON-serializable: {e}")
-        except OSError as e:
-            raise IOError(f"Error saving results to {json_path}:\n {e}")
+            with open(json_path, 'w', encoding='utf-8') as f:
+                json.dump(structured_data, f, indent=2, ensure_ascii=False)
+        except Exception as e:
+            raise IOError(f"Error saving results to {json_path}: {e}")
 
     return structured_data
 
@@ -89,6 +113,7 @@ Examples:
     parser.add_argument('path', help='Path to an invoice image or a folder of images')
     parser.add_argument('--save', action='store_true', help='Save results to JSON files')
     parser.add_argument('--output', default='outputs', help='Output directory for JSON files')
+    parser.add_argument('--method', default='ml', choices=['ml', 'rules'], help="Extraction method: 'ml' or 'rules'")
     
     args = parser.parse_args()
     
@@ -99,7 +124,7 @@ Examples:
         elif Path(args.path).is_file():
             # Corrected: Use args.path
             print(f"🔄 Processing: {args.path}")
-            result = process_invoice(args.path, save_results=args.save, output_dir=args.output)
+            result = process_invoice(args.path, method=args.method, save_results=args.save, output_dir=args.output)
             
             print("\n📊 Extracted Data:")
             print("=" * 60)

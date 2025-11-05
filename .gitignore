@@ -17,10 +17,18 @@ credentials.json
 *.swp
 *.swo
 
+# Notebooks / caches / logs
+.ipynb_checkpoints/
+.pytest_cache/
+*.log
+logs/
+.cache/
+
 # OS
 .DS_Store
 Thumbs.db
 ehthumbs.db
+*.code-workspace
 Desktop.ini
 
 # Streamlit temp folder
@@ -48,3 +56,15 @@ data/processed/*
 
 !requirements.txt
 !README.md
+
+datasets/
+checkpoints/
+lightning_logs/
+wandb/
+mlruns/
+
+
+# Ignore all files in the models directory
+models/*
+!models/.gitkeep
+!models/README.md
