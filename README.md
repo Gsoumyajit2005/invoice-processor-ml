@@ -123,8 +123,8 @@ streamlit run app.py
 ```
 - Upload an invoice image (PNG/JPG).
 - Choose extraction method in sidebar:
- - ML-Based (LayoutLMv3)
- - Rule-Based (Regex)
+    - ML-Based (LayoutLMv3)
+    - Rule-Based (Regex)
 - View JSON, download results.
 
 ### Command-Line Interface (CLI)
@@ -259,8 +259,8 @@ invoice-processor-ml/
 - **OCR accuracy (clear images)**: High with Tesseract
 - **Rule-based extraction**: Strong on simple retail receipts
 - **ML-based extraction (SROIE-style)**:
-  - COMPANY / ADDRESS / DATE / TOTAL: High F1 on simple receipts
-  - Complex business invoices: Partial extraction unless further fine-tuned
+    - COMPANY / ADDRESS / DATE / TOTAL: High F1 on simple receipts
+    - Complex business invoices: Partial extraction unless further fine-tuned
 
 ## ⚠️ Known Limitations
 
