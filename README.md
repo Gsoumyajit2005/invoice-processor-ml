@@ -22,7 +22,7 @@ End-to-end invoice/receipt processing with OCR + Rule-based extraction and a fin
 - ✅ Tests for preprocessing/OCR/pipeline
 
 > Note: SROIE does not include invoice/receipt number labels; the ML model won’t output it unless you add labeled data. The rule-based extractor can still provide it when formats allow.
-
+u
 ---
 
 ## 📊 Demo
@@ -250,7 +250,7 @@ invoice-processor-ml/
 - **Training**: RTX 3050 6GB, PyTorch 2.x, Transformers 4.x
 - **Result**: Best F1 ≈ 0.922 on validation (epoch 5 saved)
 
-- Training scripts(local):
+- Training scripts (local):
 - `train_layoutlm.py` (data prep, training loop with validation + model save) 
 - Model saved to: `models/layoutlmv3-sroie-best/`
 

@@ -68,3 +68,6 @@ mlruns/
 models/*
 !models/.gitkeep
 !models/README.md
+
+# Ignore sroie files in the data directory
+data/sroie/

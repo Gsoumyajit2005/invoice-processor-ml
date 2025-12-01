@@ -2,7 +2,7 @@ import pytesseract
 import numpy as np
 from typing import Optional
 
-pytesseract.pytesseract.tesseract_cmd = r'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'
+#pytesseract.pytesseract.tesseract_cmd = r'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'
 
 def extract_text(image: np.ndarray, lang: str='eng', config: str='--psm 11') -> str:
     if image is None:

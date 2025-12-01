@@ -131,7 +131,7 @@ Examples:
             print(f"Vendor:         {result.get('vendor', 'N/A')}")
             print(f"Invoice Number: {result.get('invoice_number', 'N/A')}")
             print(f"Date:           {result.get('date', 'N/A')}")
-            print(f"Total:          ${result.get('total', 0.0)}")
+            print(f"Total:          ${result.get('total_amount', 0.0)}")
             print("=" * 60)
             
             if args.save:
