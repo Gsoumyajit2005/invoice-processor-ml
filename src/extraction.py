@@ -2,18 +2,33 @@
 
 import re
 from typing import List, Dict, Optional, Any
+from datetime import datetime
 
 def extract_dates(text: str) -> List[str]:
+    """
+    Robust date extraction that handles noisy OCR separators (spaces, pipes, dots)
+    and validates using datetime to ensure semantic correctness.
+    """
     if not text: return []
-    dates = []
-    # DD/MM/YYYY or DD-MM-YYYY
-    pattern1 = r'\b\d{1,2}[/-]\d{1,2}[/-]\d{2,4}\b'
-    # YYYY-MM-DD
-    pattern2 = r'\b\d{4}[/-]\d{1,2}[/-]\d{1,2}\b'
     
-    dates.extend(re.findall(pattern1, text))
-    dates.extend(re.findall(pattern2, text))
-    return list(dict.fromkeys(dates))
+    # Matches DD/MM/YYYY, DD-MM-YYYY, DD.MM.YYYY, DD MM YYYY
+    # Also handles OCR noise like pipes (|) instead of slashes
+    pattern = r'\b(\d{1,2})[\s/|.-](\d{1,2})[\s/|.-](\d{2,4})\b'
+    matches = re.findall(pattern, text)
+    
+    valid_dates = []
+    for d, m, y in matches:
+        try:
+            # Try to parse it to check if it's a real date
+            # This filters out "99/99/2000" or random phone numbers like 12 34 5678
+            # Assuming Day-Month-Year format which is common in SROIE/International
+            # For US format, you might swap d and m
+            dt = datetime(int(y), int(m), int(d))
+            valid_dates.append(dt.strftime("%d/%m/%Y"))
+        except ValueError:
+            continue # Invalid date logic (e.g. Month 13 or Day 32)
+            
+    return list(dict.fromkeys(valid_dates)) # Deduplicate
 
 def extract_amounts(text:  str) -> List[float]:
     if not text: return []
@@ -32,11 +47,11 @@ def extract_amounts(text:  str) -> List[float]:
 
 def extract_total(text: str) -> Optional[float]:
     """
-    Robust total extraction looking for keywords + largest number context.
+    Robust total extraction using keyword confidence + Footer Search.
     """
     if not text: return None
     
-    # 1. Try specific "Total" keywords first
+    # 1. Try specific "Total" keywords first (Highest Confidence)
     # Looks for "Total: 123.45" or "Total Amount $123.45"
     pattern = r'(?:TOTAL|AMOUNT DUE|GRAND TOTAL|BALANCE|PAYABLE)[\w\s]*[:$]?\s*([\d,]+\.\d{2})'
     matches = re.findall(pattern, text, re.IGNORECASE)
@@ -48,11 +63,25 @@ def extract_total(text: str) -> Optional[float]:
         except ValueError:
             pass
             
-    # 2. Fallback: Find the largest monetary value in the bottom half of text
-    # (Risky, but better than None)
-    amounts = extract_amounts(text)
-    if amounts:
-        return max(amounts)
+    # 2. Fallback: Context-Aware Footer Search (Medium Confidence)
+    # Instead of taking max() of the whole doc (risky), we only look at the bottom 30%
+    lines = text.split('\n')
+    if not lines: return None
+
+    # Focus on the footer where totals usually live
+    footer_lines = lines[-int(len(lines)*0.3):] 
+    
+    candidates = []
+    for line in footer_lines:
+        line_amounts = extract_amounts(line)
+        for amt in line_amounts:
+            # Simple heuristic: Totals are rarely 'years' like 2024 or 2025
+            if 2000 <= amt <= 2030 and float(amt).is_integer():
+                continue
+            candidates.append(amt)
+            
+    if candidates:
+        return max(candidates)
 
     return None
 
@@ -74,13 +103,13 @@ def extract_vendor(text: str) -> Optional[str]:
 
 def extract_invoice_number(text: str) -> Optional[str]:
     """
-    Improved regex that handles alphanumeric AND numeric IDs.
+    Improved regex that handles alphanumeric AND numeric IDs, plus variations like "Tax Inv".
     """
     if not text: return None
     
     # Strategy 1: Look for "Invoice No: XXXXX" pattern
-    # Matches: "Invoice No: 12345", "Inv #: AB-123", "Bill No. 999"
-    keyword_pattern = r'(?:INVOICE|BILL|RECEIPT)\s*(?:NO|NUMBER|#|NUM)?[\s\.:-]*([A-Z0-9\-/]{3,})'
+    # UPDATED: Handles "Tax Invoice", "Inv No", and standard variations
+    keyword_pattern = r'(?:TAX\s*)?(?:INVOICE|INV|BILL|RECEIPT)\s*(?:NO|NUMBER|#|NUM)?[\s\.:-]*([A-Z0-9\-/]{3,})'
     match = re.search(keyword_pattern, text, re.IGNORECASE)
     if match:
         return match.group(1)
