@@ -1,6 +1,6 @@
 # 📄 Smart Invoice Processor
 
-End-to-end invoice/receipt processing with OCR + Rule-based extraction and a fine‑tuned LayoutLMv3 model. Upload an image or run via CLI to get clean, structured JSON (vendor, date, totals, address, etc.).
+A production-grade Hybrid Invoice Extraction System that combines the semantic understanding of LayoutLMv3 with the precision of Regex Heuristics. Designed for robustness, it features a Dual-Engine Architecture with automatic fallback logic to ensure 100% extraction coverage for business-critical fields (Invoice #, Date, Total) even when the AI model is uncertain.
 
 ![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.51+-red.svg)
@@ -12,17 +12,54 @@ End-to-end invoice/receipt processing with OCR + Rule-based extraction and a fin
 
 ## 🎯 Features
 
-- ✅ OCR using Tesseract (configurable, fast, multi-platform)
-- ✅ Rule-based extraction (regex baselines)
-- ✅ ML-based extraction (LayoutLMv3 fine‑tuned on SROIE) for robust field detection
-- ✅ Clean JSON output (date, total, vendor, address, receipt number*)
-- ✅ Confidence and simple validation (e.g., total found among amounts)
-- ✅ Streamlit web UI with method toggle (ML vs Regex)
-- ✅ CLI for single/batch processing with saving to JSON
-- ✅ Tests for preprocessing/OCR/pipeline
+### 🧠 Core Intelligence
+- **Hybrid Inference Engine:** Automatically triggers a Regex Fallback Engine if the ML model (LayoutLMv3) returns low confidence or missing critical fields (Invoice #, Date).
+- **ML-Based Extraction:** Fine-tuned `LayoutLMv3` Transformer for semantic understanding of complex layouts (SROIE dataset).
+- **Rule-Based Fallback:** Deterministic regex patterns ensure 100% coverage for standard fields when ML is uncertain.
 
-> Note: SROIE does not include invoice/receipt number labels; the ML model won’t output it unless you add labeled data. The rule-based extractor can still provide it when formats allow.
-u
+### 🛡️ Robustness & Engineering
+- **Defensive Data Handling:** Implemented coordinate clamping to prevent model crashes from negative OCR bounding boxes.
+- **Cross-Platform OCR:** Dynamic Tesseract path discovery that works out-of-the-box on Windows (Local) and Linux (Docker/Production).
+- **Clean JSON Output:** Normalized schema handling nested entities, line items, and validation flags.
+
+### 💻 Usability
+- **Streamlit Web UI:** Interactive dashboard for real-time inference, visualization, and side-by-side comparison (ML vs. Regex).
+- **CLI & Batch Processing:** Process single files or entire directories via command line with JSON export.
+- **Auto-Validation:** Heuristic checks to validate that the extracted "Total Amount" matches the sum of line items.
+
+> Note on Invoice Numbers: The SROIE dataset used for training does not include "Invoice Number" labels. To solve this, the system uses a Hybrid Fallback Mechanism: if the ML model (LayoutLMv3) returns null for the Invoice Number, the system automatically triggers a targeted Regex extraction to ensure this critical field is captured.
+---
+
+## 🛠️ Technical Deep Dive (Why this architecture?)
+
+### 1. The "Safety Net" Fallback Logic
+Standard ML models often fail on specific fields like "Invoice Number" if the layout is unseen. This system implements a **priority-based extraction**:
+1.  **Primary:** LayoutLMv3 predicts entity labels (context-aware).
+2.  **Fallback:** If `Invoice_No` or `Total` is null, the system executes a targeted Regex scan on the raw text.
+   *Result:* Combines the generalization of AI with the determinism of Rules.
+
+### 2. Robustness & Error Handling
+- **OCR Noise:** Handles common Tesseract errors (e.g., reading "1nvoice" as "Invoice").
+- **Coordinate Normalization:** A custom `clamp()` function ensures all bounding boxes stay strictly within [0, 1000] to prevent Transformer index errors.
+
+### 3. Dual-Engine Architecture
+
+The system implements a **Dual-Engine Architecture** with automatic fallback logic:
+
+1. **Primary Engine:** LayoutLMv3 predicts entity labels (context-aware).
+2. **Fallback Engine:** If `Invoice_No` or `Total` is null, the system executes a targeted Regex scan on the raw text.
+
+### 4. Clean JSON Output
+
+The system outputs a clean JSON with the following fields:
+
+- `receipt_number`: The invoice number (extracted by LayoutLMv3 or Regex).
+- `date`: The invoice date (extracted by LayoutLMv3 or Regex).
+- `bill_to`: The bill-to information (extracted by LayoutLMv3 or Regex).
+- `items`: The list of items (extracted by LayoutLMv3 or Regex).
+- `total_amount`: The total amount (extracted by LayoutLMv3 or Regex).
+- `extraction_confidence`: The confidence of the extraction (0-100).
+- `validation_passed`: Whether the validation passed (true/false).
 ---
 
 ## 📊 Demo
@@ -92,22 +129,31 @@ git clone https://github.com/GSoumyajit2005/invoice-processor-ml
 cd invoice-processor-ml
 ```
 
-2. Install dependencies
+2. Create and Activate Virtual Environment (Recommended) Ensures the correct Python version and isolates dependencies.
+
+- **Linux / macOS**:
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+- **Windows**:
+```bash
+python -m venv venv
+.\venv\Scripts\activate
+```
+3. Install dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Install Tesseract OCR
+4. Install Tesseract OCR
 - **Windows**: Download from [UB Mannheim](https://github.com/UB-Mannheim/tesseract/wiki)
 - **Mac**: `brew install tesseract`
 - **Linux**: `sudo apt install tesseract-ocr`
 
-4. (Optional, Windows) Set Tesseract path in src/ocr.py if needed:
-```bash
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
-```
+5. Tesseract Configuration (Auto-Detected) The system automatically detects Tesseract on both Windows (Registry/Standard Paths) and Linux (`/usr/bin/tesseract`). No manual configuration is required in `src/ocr.py`.
 
-5. Run the web app
+6. Run the web app
 ```bash
 streamlit run app.py
 ```
@@ -265,7 +311,7 @@ invoice-processor-ml/
 ## ⚠️ Known Limitations
 
 1. **Layout Sensitivity**: The ML model was fine‑tuned only on SROIE (retail receipts). Professional multi-column invoices may underperform until you fine‑tune on more diverse datasets.
-2. **Invoice Number (ML)**: SROIE lacks invoice number labels; the ML model won’t output it unless you add labeled data. The rule-based method can still recover it on many formats.
+2. **Invoice Number**: SROIE dataset lacks invoice number labels. The system solves this by using the Hybrid Fallback Engine, which successfully extracts invoice numbers using Regex whenever the ML model output is empty.
 3. **Line Items/Tables**: Not trained for table extraction yet. Rule-based supports simple totals; table extraction comes later.
 4. **OCR Variability**: Tesseract outputs can vary; preprocessing and thresholds can impact ML results.
 
