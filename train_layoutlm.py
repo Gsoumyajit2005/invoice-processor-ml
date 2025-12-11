@@ -6,6 +6,7 @@ from PIL import Image
 from tqdm import tqdm
 from seqeval.metrics import f1_score, precision_score, recall_score
 from pathlib import Path
+import os
 
 # --- 1. Global Configuration & Label Mapping ---
 print("Setting up configuration...")
@@ -15,7 +16,7 @@ label2id = {label: idx for idx, label in enumerate(label_list)}
 id2label = {idx: label for idx, label in enumerate(label_list)}
 
 MODEL_CHECKPOINT = "microsoft/layoutlmv3-base"
-SROIE_DATA_PATH = "C:\\Users\\Soumyajit Ghosh\\Downloads\\sroie\\sroie" # Make sure this path is correct
+SROIE_DATA_PATH = os.getenv("SROIE_DATA_PATH", os.path.join("data", "sroie"))
 
 # --- 2. PyTorch Dataset Class ---
 class SROIEDataset(Dataset):
