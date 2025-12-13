@@ -1,7 +1,12 @@
+import sys
+import os
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import torch
 from torch.utils.data import Dataset, DataLoader
 from transformers import LayoutLMv3ForTokenClassification, LayoutLMv3Processor, DataCollatorForTokenClassification
-from load_sroie_dataset import load_sroie # Assumes your helper script is in the root
+from src.sroie_loader import load_sroie
 from PIL import Image
 from tqdm import tqdm
 from seqeval.metrics import f1_score, precision_score, recall_score

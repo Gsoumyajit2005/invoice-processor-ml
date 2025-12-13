@@ -1,3 +1,8 @@
+import sys
+import os
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from datasets import load_dataset
 import json
 import ast  # <--- Added for robust parsing

@@ -29,6 +29,7 @@ env
 data/
 outputs/
 temp/
+models/
 
 # Tests (not needed in production)
 tests/

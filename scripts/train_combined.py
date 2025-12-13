@@ -1,3 +1,8 @@
+import sys
+import os
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import torch
 from torch.utils.data import Dataset, DataLoader
 from transformers import LayoutLMv3ForTokenClassification, LayoutLMv3Processor, DataCollatorForTokenClassification
@@ -10,7 +15,7 @@ import random
 import os
 
 # --- IMPORTS ---
-from load_sroie_dataset import load_sroie
+from src.sroie_loader import load_sroie
 from src.data_loader import load_unified_dataset
 
 # --- CONFIGURATION ---
