@@ -278,7 +278,7 @@ invoice-processor-ml/
 │   └── pipeline.py             # Main orchestrator for the pipeline and CLI
 │
 │
-├── tests/ # <-- ADD THIS FOLDER
+├── tests/ 
 │ ├── test_preprocessing.py       # Tests for the preprocessing module
 │ ├── test_ocr.py                 # Tests for the OCR module
 │ └── test_pipeline.py            # End-to-end pipeline tests
@@ -292,7 +292,7 @@ invoice-processor-ml/
 
 - **Model**: `microsoft/layoutlmv3-base` (125M params)
 - **Task**:  Token Classification (NER) with 9 labels: `O, B/I-COMPANY, B/I-ADDRESS, B/I-DATE, B/I-TOTAL`
-- **Dataset**: SROIE (ICDAR 2019, English retail receipts)
+- **Dataset**: SROIE (ICDAR 2019, English retail receipts), mychen76/invoices-and-receipts_ocr_v1 (English)
 - **Training**: RTX 3050 6GB, PyTorch 2.x, Transformers 4.x
 - **Result**: Best F1 ≈ 0.922 on validation (epoch 5 saved)
 

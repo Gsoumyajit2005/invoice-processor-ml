@@ -228,7 +228,19 @@ with tab1:
 
             # Use an expander for longer text fields like address
             with st.expander("Show More Details"):
-                st.markdown(f"**👤 Bill To:** {data.get('bill_to', {}).get('name') if data.get('bill_to') else 'N/A'}")
+                # Handle receipt_number
+                st.markdown(f"**🧾 Receipt Number:** {data.get('receipt_number') or 'N/A'}")
+                
+                # Handle bill_to (can be string from ML or dict from rules)
+                bill_to = data.get('bill_to')
+                if isinstance(bill_to, dict):
+                    bill_to_display = bill_to.get('name') or 'N/A'
+                elif isinstance(bill_to, str):
+                    bill_to_display = bill_to
+                else:
+                    bill_to_display = 'N/A'
+                st.markdown(f"**👤 Bill To:** {bill_to_display}")
+                
                 st.markdown(f"**📍 Vendor Address:** {data.get('address') or 'N/A'}")
 
             # Line items table

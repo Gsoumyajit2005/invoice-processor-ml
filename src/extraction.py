@@ -138,7 +138,6 @@ def extract_bill_to(text: str) -> Optional[Dict[str, str]]:
     return None
 
 def extract_line_items(text: str) -> List[Dict[str, Any]]:
-    # (Keeping your existing logic simple for now)
     return []
 
 def structure_output(text: str) -> Dict[str, Any]:
