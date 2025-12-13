@@ -28,6 +28,7 @@ A production-grade Hybrid Invoice Extraction System that combines the semantic u
 - **Auto-Validation:** Heuristic checks to validate that the extracted "Total Amount" matches the sum of line items.
 
 > Note on Invoice Numbers: The SROIE dataset used for training does not include "Invoice Number" labels. To solve this, the system uses a Hybrid Fallback Mechanism: if the ML model (LayoutLMv3) returns null for the Invoice Number, the system automatically triggers a targeted Regex extraction to ensure this critical field is captured.
+
 ---
 
 ## 🛠️ Technical Deep Dive (Why this architecture?)
@@ -60,6 +61,7 @@ The system outputs a clean JSON with the following fields:
 - `total_amount`: The total amount (extracted by LayoutLMv3 or Regex).
 - `extraction_confidence`: The confidence of the extraction (0-100).
 - `validation_passed`: Whether the validation passed (true/false).
+
 ---
 
 ## 📊 Demo
@@ -93,6 +95,7 @@ The system outputs a clean JSON with the following fields:
   "address": "NO JALAN BAYU 4, BANDAR SERI ALAM, 81750 MASAI, JOHOR"
 }
 ```
+
 ### Example JSON (ML-based)
 ```json
 {
@@ -141,6 +144,7 @@ source venv/bin/activate
 python -m venv venv
 .\venv\Scripts\activate
 ```
+
 3. Install dependencies
 ```bash
 pip install -r requirements.txt
@@ -157,6 +161,14 @@ pip install -r requirements.txt
 ```bash
 streamlit run app.py
 ```
+
+### Training the Model (Optional)
+To retrain the model from scratch using the provided scripts:
+
+```bash
+python scripts/train_combined.py
+```
+(Note: Requires SROIE dataset in data/sroie)
 
 ## 💻 Usage
 
@@ -257,31 +269,35 @@ invoice-processor-ml/
 │   ├── raw/                    # Input invoice images for processing
 │   └── processed/              # (Reserved for future use)
 │
-│
 ├── data/samples/
 │   └── sample_invoice.jpg      # Public sample for quick testing
 │
 ├── docs/
-│ └── screenshots/              # UI Screenshots for the README demo
-│
+│   └── screenshots/            # UI Screenshots for the README demo
 │
 ├── models/
-│   └── layoutlmv3-sroie-best/  # Fine-tuned model (created after training)
+│   └── layoutlmv3-sroie-generalized/  # Fine-tuned model (created after training)
 │
 ├── outputs/                    # Default folder for saved JSON results
 │
+├── scripts/                    # Training and analysis scripts
+│   ├── train_combined.py       # Main training loop (SROIE + Custom Data)
+│   ├── eval_new_dataset.py     # Evaluation scripts
+│   └── explore_new_dataset.py  # Dataset exploration tools
+│
 ├── src/
+│   ├── sroie_loader.py         # SROIE dataset loading logic
+│   ├── data_loader.py          # Unified data loader for training
 │   ├── preprocessing.py        # Image preprocessing functions (grayscale, denoise)
 │   ├── ocr.py                  # Tesseract OCR integration
 │   ├── extraction.py           # Regex-based information extraction logic
 │   ├── ml_extraction.py        # ML-based extraction (LayoutLMv3)
 │   └── pipeline.py             # Main orchestrator for the pipeline and CLI
 │
-│
-├── tests/ 
-│ ├── test_preprocessing.py       # Tests for the preprocessing module
-│ ├── test_ocr.py                 # Tests for the OCR module
-│ └── test_pipeline.py            # End-to-end pipeline tests
+├── tests/
+│   ├── test_preprocessing.py   # Tests for the preprocessing module
+│   ├── test_ocr.py             # Tests for the OCR module
+│   └── test_pipeline.py        # End-to-end pipeline tests
 │
 ├── app.py                      # Streamlit web interface
 ├── requirements.txt            # Python dependencies
@@ -297,8 +313,8 @@ invoice-processor-ml/
 - **Result**: Best F1 ≈ 0.922 on validation (epoch 5 saved)
 
 - Training scripts (local):
-- `train_layoutlm.py` (data prep, training loop with validation + model save) 
-- Model saved to: `models/layoutlmv3-sroie-best/`
+- `scripts/train_combined.py` (data prep, training loop with validation + model save)
+- Model saved to: `models/layoutlmv3-sroie-generalized/`
 
 ## 📈 Performance
 
@@ -317,12 +333,12 @@ invoice-processor-ml/
 
 ## 🔮 Future Enhancements
 
-- [ ] Add and fine‑tune on mychen76/invoices-and-receipts_ocr_v1 (English) for broader invoice formats
+- [x] Add and fine‑tune on mychen76/invoices-and-receipts_ocr_v1 (English) for broader invoice formats
 - [ ] (Optional) Add FATURA (table-focused) for line-item extraction
 - [ ] Sliding-window chunking for >512 token documents (to avoid truncation)
 - [ ] Table detection (Camelot/Tabula/DeepDeSRT) for line items
 - [ ] PDF support (pdf2image) for multipage invoices
-- [ ] FastAPI backend + Docker
+- [x] FastAPI backend + Docker
 - [ ] Multilingual OCR (PaddleOCR) and multilingual fine‑tuning
 - [ ] Confidence calibration and better validation rules
 
@@ -362,7 +378,7 @@ MIT License - See LICENSE file for details
 
 **Soumyajit Ghosh** - 3rd Year BTech Student
 - Exploring AI/ML and practical applications
-- [LinkedIn](https://www.linkedin.com/in/soumyajit-ghosh-49a5b02b2?utm_source=share&utm_campaign) | [GitHub](https://github.com/GSoumyajit2005) | [Portfolio](#)(Coming Soon)
+- [LinkedIn](https://www.linkedin.com/in/soumyajit-ghosh-tech) | [GitHub](https://github.com/GSoumyajit2005) | [Portfolio](#) (Coming Soon)
 
 ---
 
