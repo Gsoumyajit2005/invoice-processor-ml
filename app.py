@@ -12,16 +12,12 @@ import sys
 sys.path.append('src')
 from pipeline import process_invoice
 
-# --- Mock Functions to support the UI without errors ---
-# These functions simulate the ones from your example README.
-# They allow the UI to render without needing to build a complex format detector today.
-
+# --- Mock Functions (KEPT AS IS) ---
 def detect_invoice_format(ocr_text: str):
     """
     A mock function to simulate format detection.
     In a real system, this would analyze the text layout.
     """
-    # Simple heuristic: if it contains "SDN BHD", it's our known format.
     if "SDN BHD" in ocr_text:
         return {
             'name': 'Template A (Retail)',
@@ -44,9 +40,8 @@ def get_format_recommendations(format_info):
     else:
         return ["• Results may be incomplete.", "• Consider adding patterns for this format."]
 
-# --- Streamlit App ---
+# --- Streamlit App (KEPT AS IS) ---
 
-# Page configuration
 st.set_page_config(
     page_title="Invoice Processor",
     page_icon="📄",
@@ -54,7 +49,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for styling
+# Custom CSS (KEPT AS IS)
 st.markdown("""
 <style>
     .main-header {
@@ -87,11 +82,10 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Title
+# Title & Sidebar (KEPT AS IS)
 st.markdown('<h1 class="main-header">📄 Smart Invoice Processor</h1>', unsafe_allow_html=True)
 st.markdown("### Extract structured data from invoices using your custom-built OCR pipeline")
 
-# Sidebar
 with st.sidebar:
     st.header("ℹ️ About")
     st.info("""
@@ -118,7 +112,7 @@ with st.sidebar:
     extraction_method = st.selectbox(
         "Choose Extraction Method:",
         ('ML-Based (LayoutLMv3)', 'Rule-Based (Regex)'),
-        help="ML-Based is more robust but may miss fields not in its training data. Rule-Based is faster but more fragile."
+        help="ML-Based is more robust. Rule-Based is faster."
     )
 
 # Main content
@@ -128,18 +122,22 @@ with tab1:
     st.header("Upload an Invoice")
     
     uploaded_file = st.file_uploader(
-        "Choose an invoice image (JPG, PNG)", 
-        type=['jpg', 'jpeg', 'png'],
-        help="Upload a clear image of an invoice or receipt"
+        "Choose an invoice image (JPG, PNG) or PDF", 
+        type=['jpg', 'jpeg', 'png', 'pdf'], # Added PDF support
+        help="Upload a clear image or PDF of an invoice"
     )
     
     if uploaded_file is not None:
         col1, col2 = st.columns([1, 1])
         
         with col1:
-            st.subheader("📸 Original Image")
-            image = Image.open(uploaded_file)
-            st.image(image, use_container_width=True)
+            st.subheader("📸 Original Document")
+            # Preview Logic updated for PDF support
+            if uploaded_file.type == "application/pdf":
+                st.info("📄 PDF Uploaded (Preview not supported directly)")
+            else:
+                image = Image.open(uploaded_file)
+                st.image(image, use_container_width=True)
             st.caption(f"Filename: {uploaded_file.name}")
         
         with col2:
@@ -148,27 +146,24 @@ with tab1:
             if st.button("🚀 Extract Data", type="primary"):
                 with st.spinner("Executing your custom pipeline..."):
                     try:
-                        # Save the uploaded file to a temporary path to be used by our pipeline
+                        # Save temp file
                         temp_dir = "temp"
                         os.makedirs(temp_dir, exist_ok=True)
                         temp_path = os.path.join(temp_dir, uploaded_file.name)
                         with open(temp_path, "wb") as f:
                             f.write(uploaded_file.getbuffer())
 
-                        # Step 1: Call YOUR full pipeline function
+                        # Call Pipeline
                         st.write("✅ Calling `process_invoice`...")
-                        # Map the user-friendly name from the dropdown to the actual method parameter
                         method = 'ml' if extraction_method == 'ML-Based (LayoutLMv3)' else 'rules'
                         st.write(f"⚙️ Using **{method.upper()}** extraction method...")
 
-                        # Call the pipeline with the selected method
-                        extracted_data = process_invoice(temp_path, method=method)
+                        # ⚠️ UPDATE: Pass string path
+                        extracted_data = process_invoice(str(temp_path), method=method)
                         
-                        # Step 2: Simulate format detection using the extracted data
                         st.write("✅ Simulating format detection...")
                         format_info = detect_invoice_format(extracted_data.get("raw_text", ""))
                         
-                        # Store results in session state to display them
                         st.session_state.extracted_data = extracted_data
                         st.session_state.format_info = format_info
                         st.session_state.processed_count += 1
@@ -178,12 +173,12 @@ with tab1:
                     except Exception as e:
                         st.error(f"❌ An error occurred in the pipeline: {str(e)}")
         
-        # Display results if they exist in the session state
+        # Display results
         if 'extracted_data' in st.session_state:
             st.markdown("---")
             st.header("📊 Extraction Results")
 
-            # --- Format Detection Section ---
+            # --- Format Detection Section (KEPT AS IS) ---
             format_info = st.session_state.format_info
             st.subheader("📋 Detected Format (Simulated)")
             col1_fmt, col2_fmt = st.columns([2, 3])
@@ -199,39 +194,34 @@ with tab1:
                 for rec in get_format_recommendations(format_info): st.write(rec)
             st.markdown("---")
             
-            # --- Main Results Section ---
+            # --- Main Results Section (UPDATED) ---
             data = st.session_state.extracted_data
             
-            # Confidence display
-            confidence = data.get('extraction_confidence', 0)
-            if confidence >= 80:
-                st.markdown(f'<div class="success-box">✅ <strong>High Confidence: {confidence}%</strong> - Most key fields were found.</div>', unsafe_allow_html=True)
-            elif confidence >= 50:
-                st.markdown(f'<div class="warning-box">⚠️ <strong>Medium Confidence: {confidence}%</strong> - Some fields may be missing.</div>', unsafe_allow_html=True)
+            # 1. New Validation Display (Replaces old Confidence box)
+            status = data.get('validation_status', 'unknown')
+            if status == 'passed':
+                st.markdown(f'<div class="success-box">✅ <strong>Validation Passed</strong>: Data meets strict quality rules (Pydantic).</div>', unsafe_allow_html=True)
+            elif status == 'failed':
+                err_count = len(data.get('validation_errors', []))
+                st.markdown(f'<div class="error-box">❌ <strong>Validation Failed</strong>: Found {err_count} issues. Check JSON for details.</div>', unsafe_allow_html=True)
             else:
-                st.markdown(f'<div class="error-box">❌ <strong>Low Confidence: {confidence}%</strong> - Format likely unsupported.</div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="warning-box">⚠️ <strong>Status Unknown</strong>: Validation logic was skipped.</div>', unsafe_allow_html=True)
 
-            # Validation display
-            if data.get('validation_passed', False):
-                st.success("✔️ Validation Passed: Total amount appears consistent with other extracted amounts.")
-            else:
-                st.warning("⚠️ Validation Failed: Total amount could not be verified against other numbers.")
-
-            # Key metrics display
-            # Key metrics display
-            st.metric("🏢 Vendor", data.get('vendor') or "N/A") # <-- ADD THIS
+            # 2. Key Metrics (Mapped to NEW keys)
+            st.metric("🏢 Vendor", data.get('vendor') or "N/A")
 
             res_col1, res_col2, res_col3 = st.columns(3)
             res_col1.metric("📄 Receipt Number", data.get('receipt_number') or "N/A")
             res_col2.metric("📅 Date", data.get('date') or "N/A")
-            res_col3.metric("💵 Total Amount", f"${data.get('total_amount'):.2f}" if data.get('total_amount') is not None else "N/A")
+            # Handle total (it's now a string from the pipeline, but metric handles strings fine)
+            total = data.get('total_amount')
+            res_col3.metric("💵 Total Amount", f"${total}" if total else "N/A")
 
-            # Use an expander for longer text fields like address
+            # 3. Expanded Details
             with st.expander("Show More Details"):
-                # Handle receipt_number
                 st.markdown(f"**🧾 Receipt Number:** {data.get('receipt_number') or 'N/A'}")
                 
-                # Handle bill_to (can be string from ML or dict from rules)
+                # Handle bill_to
                 bill_to = data.get('bill_to')
                 if isinstance(bill_to, dict):
                     bill_to_display = bill_to.get('name') or 'N/A'
@@ -242,16 +232,18 @@ with tab1:
                 st.markdown(f"**👤 Bill To:** {bill_to_display}")
                 
                 st.markdown(f"**📍 Vendor Address:** {data.get('address') or 'N/A'}")
+                
+                # New: Show Duplicate Hash
+                st.markdown(f"**🔑 Semantic Hash (Duplicate ID):** `{data.get('semantic_hash') or 'N/A'}`")
 
-            # Line items table
+            # 4. Line items table
             if data.get('items'):
                 st.subheader("🛒 Line Items")
-                # Ensure data is in the right format for DataFrame
                 items_df_data = [{
                     "Description": item.get("description", "N/A"),
                     "Qty": item.get("quantity", "N/A"),
-                    "Unit Price": f"${item.get('unit_price', 0.0):.2f}",
-                    "Total": f"${item.get('total', 0.0):.2f}"
+                    "Unit Price": f"${item.get('unit_price', 0.0) if item.get('unit_price') is not None else 0}",
+                    "Total": f"${item.get('total', 0.0) if item.get('total') is not None else 0}"
                 } for item in data['items']]
                 df = pd.DataFrame(items_df_data)
                 st.dataframe(df, use_container_width=True)
@@ -281,15 +273,17 @@ with tab2:
     st.header("📚 Sample Invoices")
     st.write("Try the sample invoice below to see how the system performs:")
     
-    sample_dir = "data/samples" # ✅ Points to the correct folder
+    sample_dir = "data/samples"
     if os.path.exists(sample_dir):
-        sample_files = [f for f in os.listdir(sample_dir) if f.endswith(('.jpg', '.png', '.jpeg'))]
+        sample_files = [f for f in os.listdir(sample_dir) if f.endswith(('.jpg', '.png', '.jpeg', '.pdf'))]
         
         if sample_files:
-            # Display the first sample found
-            img_path = os.path.join(sample_dir, sample_files[0])
-            st.image(Image.open(img_path), caption=sample_files[0], use_container_width=True)
-            st.info("You can download this image and upload it in the 'Upload & Process' tab to test the pipeline.")
+            file_path = os.path.join(sample_dir, sample_files[0])
+            st.write(f"**Sample File:** {sample_files[0]}")
+            if file_path.endswith('.pdf'):
+                 st.info("📄 PDF Sample available. Download and upload it to test.")
+            else:
+                st.image(Image.open(file_path), caption=sample_files[0], use_container_width=True)
         else:
             st.warning("No sample invoices found in `data/samples/`.")
     else:
@@ -300,26 +294,20 @@ with tab3:
     st.markdown("""
     This app follows the exact pipeline you built:
     ```
-    1. 📸 Image Upload
+    1. 📸 Input Handling
+       Detects JPG vs PDF. Smart Loader extracts text from PDFs instantly.
        ↓
-    2. 🔄 Preprocessing (OpenCV)
-       Grayscale conversion and noise removal.
+    2. 🧠 Hybrid Engine
+       - Digital PDFs: Direct Text Extraction (Fast)
+       - Images/Scans: LayoutLMv3 (ML) + Tesseract (OCR)
        ↓
-    3. 🔍 OCR (Tesseract)
-       Optimized with PSM 6 for receipt layouts.
+    3. 🛡️ Validation Gate
+       Pydantic Schema ensures data integrity (Decimal precision, Date formats).
        ↓
-    4. 🎯 Rule-Based Extraction (Regex)
-       Your custom patterns find specific fields.
+    4. 🔑 Duplicate Detection
+       Generates a unique semantic hash based on content.
        ↓
-    5. ✅ Confidence & Validation
-       Heuristics to check the quality of the extraction.
-       ↓
-    6. 📊 Output JSON
-       Presents all extracted data in a structured format.
+    5. 📊 Output JSON
+       Standardized, validated output ready for API response.
     ```
     """)
-    st.info("This rule-based system is a great foundation. The next step is to replace the extraction logic with an ML model like LayoutLM to handle more diverse formats!")
-
-# Footer
-st.markdown("---")
-st.markdown("<div style='text-align: center; color: #666;'>Built with your custom Python pipeline | UI by Streamlit</div>", unsafe_allow_html=True)

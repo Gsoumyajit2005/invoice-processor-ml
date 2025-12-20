@@ -75,7 +75,7 @@ def test_full_pipeline():
         print("  - No line items extracted.")
 
     # Print total and validation status
-    print(f"\n💵 Total Amount: ${result.get('total_amount', 0.0):.2f}")
+    print(f"\n💵 Total Amount: ${result.get('total_amount', 0.0)}")
     
     confidence = result.get('extraction_confidence', 0)
     print(f"📈 Confidence: {confidence}%")
