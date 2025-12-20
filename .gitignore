@@ -63,7 +63,6 @@ lightning_logs/
 wandb/
 mlruns/
 
-
 # Ignore all files in the models directory
 models/*
 !models/.gitkeep
@@ -71,3 +70,6 @@ models/*
 
 # Ignore sroie files in the data directory
 data/sroie/
+
+# Ignore temp uploads
+temp_uploads/
