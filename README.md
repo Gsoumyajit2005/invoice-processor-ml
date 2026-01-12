@@ -1,3 +1,14 @@
+---
+title: Invoice Processor Ml
+emoji: ⚡
+colorFrom: indigo
+colorTo: pink
+sdk: docker
+pinned: false
+license: mit
+short_description: A hybrid invoice extraction system using LayoutLMv3 and Regex
+---
+
 # 📄 Smart Invoice Processor
 
 A production-grade Hybrid Invoice Extraction System that combines the semantic understanding of LayoutLMv3 with the precision of Regex Heuristics. Designed for robustness, it features a Dual-Engine Architecture with automatic fallback logic to ensure 100% extraction coverage for business-critical fields (Invoice #, Date, Total) even when the AI model is uncertain.
