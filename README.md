@@ -19,21 +19,36 @@ A production-grade Hybrid Invoice Extraction System that combines the semantic u
 ![Transformers](https://img.shields.io/badge/Transformers-4.x-purple.svg)
 ![PyTorch](https://img.shields.io/badge/PyTorch-2.x-orange.svg)
 
+[![🤗 Live Demo](https://img.shields.io/badge/🤗%20Live%20Demo-Hugging%20Face%20Spaces-yellow.svg)](https://huggingface.co/spaces/GSoumyajit2005/invoice-processor-ml)
+
+---
+
+## 🚀 Try it Live!
+
+> **No installation required!** Try the full application instantly on Hugging Face Spaces:
+>
+> ### 👉 [**Launch Live Demo**](https://huggingface.co/spaces/GSoumyajit2005/invoice-processor-ml) 👈
+>
+> Upload any invoice image and watch the hybrid ML+Regex engine extract structured data in real-time.
+
 ---
 
 ## 🎯 Features
 
 ### 🧠 Core Intelligence
+
 - **Hybrid Inference Engine:** Automatically triggers a Regex Fallback Engine if the ML model (LayoutLMv3) returns low confidence or missing critical fields (Invoice #, Date).
 - **ML-Based Extraction:** Fine-tuned `LayoutLMv3` Transformer for semantic understanding of complex layouts (SROIE dataset).
 - **Rule-Based Fallback:** Deterministic regex patterns ensure 100% coverage for standard fields when ML is uncertain.
 
 ### 🛡️ Robustness & Engineering
+
 - **Defensive Data Handling:** Implemented coordinate clamping to prevent model crashes from negative OCR bounding boxes.
 - **Cross-Platform OCR:** Dynamic Tesseract path discovery that works out-of-the-box on Windows (Local) and Linux (Docker/Production).
 - **Clean JSON Output:** Normalized schema handling nested entities, line items, and validation flags.
 
 ### 💻 Usability
+
 - **Streamlit Web UI:** Interactive dashboard for real-time inference, visualization, and side-by-side comparison (ML vs. Regex).
 - **CLI & Batch Processing:** Process single files or entire directories via command line with JSON export.
 - **Auto-Validation:** Heuristic checks to validate that the extracted "Total Amount" matches the sum of line items.
@@ -45,12 +60,15 @@ A production-grade Hybrid Invoice Extraction System that combines the semantic u
 ## 🛠️ Technical Deep Dive (Why this architecture?)
 
 ### 1. The "Safety Net" Fallback Logic
+
 Standard ML models often fail on specific fields like "Invoice Number" if the layout is unseen. This system implements a **priority-based extraction**:
+
 1.  **Primary:** LayoutLMv3 predicts entity labels (context-aware).
 2.  **Fallback:** If `Invoice_No` or `Total` is null, the system executes a targeted Regex scan on the raw text.
-   *Result:* Combines the generalization of AI with the determinism of Rules.
+    _Result:_ Combines the generalization of AI with the determinism of Rules.
 
 ### 2. Robustness & Error Handling
+
 - **OCR Noise:** Handles common Tesseract errors (e.g., reading "1nvoice" as "Invoice").
 - **Coordinate Normalization:** A custom `clamp()` function ensures all bounding boxes stay strictly within [0, 1000] to prevent Transformer index errors.
 
@@ -78,18 +96,22 @@ The system outputs a clean JSON with the following fields:
 ## 📊 Demo
 
 ### Web Interface
+
 ![Homepage](docs/screenshots/homepage.png)
-*Clean upload → extract flow with method selector (ML vs Regex).*
+_Clean upload → extract flow with method selector (ML vs Regex)._
 
 ### Successful Extraction (ML-based)
+
 ![Success Result](docs/screenshots/success_result.png)
-*Fields extracted with LayoutLMv3.*
+_Fields extracted with LayoutLMv3._
 
 ### Format Detection (simulated)
+
 ![Format Detection](docs/screenshots/format_detection.png)
-*UI shows simple format hints and confidence.*
+_UI shows simple format hints and confidence._
 
 ### Example JSON (Rule-based)
+
 ```json
 {
   "receipt_number": "PEGIV-1030765",
@@ -108,6 +130,7 @@ The system outputs a clean JSON with the following fields:
 ```
 
 ### Example JSON (ML-based)
+
 ```json
 {
   "receipt_number": null,
@@ -131,6 +154,7 @@ The system outputs a clean JSON with the following fields:
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - Python 3.10+
 - Tesseract OCR
 - (Optional) CUDA-capable GPU for training/inference speed
@@ -138,6 +162,7 @@ The system outputs a clean JSON with the following fields:
 ### Installation
 
 1. Clone the repository
+
 ```bash
 git clone https://github.com/GSoumyajit2005/invoice-processor-ml
 cd invoice-processor-ml
@@ -146,22 +171,27 @@ cd invoice-processor-ml
 2. Create and Activate Virtual Environment (Recommended) Ensures the correct Python version and isolates dependencies.
 
 - **Linux / macOS**:
+
 ```bash
 python3 -m venv venv
 source venv/bin/activate
 ```
+
 - **Windows**:
+
 ```bash
 python -m venv venv
 .\venv\Scripts\activate
 ```
 
 3. Install dependencies
+
 ```bash
 pip install -r requirements.txt
 ```
 
 4. Install Tesseract OCR
+
 - **Windows**: Download from [UB Mannheim](https://github.com/UB-Mannheim/tesseract/wiki)
 - **Mac**: `brew install tesseract`
 - **Linux**: `sudo apt install tesseract-ocr`
@@ -169,16 +199,19 @@ pip install -r requirements.txt
 5. Tesseract Configuration (Auto-Detected) The system automatically detects Tesseract on both Windows (Registry/Standard Paths) and Linux (`/usr/bin/tesseract`). No manual configuration is required in `src/ocr.py`.
 
 6. Run the web app
+
 ```bash
 streamlit run app.py
 ```
 
 ### Training the Model (Optional)
+
 To retrain the model from scratch using the provided scripts:
 
 ```bash
 python scripts/train_combined.py
 ```
+
 (Note: Requires SROIE dataset in data/sroie)
 
 ## 💻 Usage
@@ -190,10 +223,11 @@ The easiest way to use the processor is via the web interface.
 ```bash
 streamlit run app.py
 ```
+
 - Upload an invoice image (PNG/JPG).
 - Choose extraction method in sidebar:
-    - ML-Based (LayoutLMv3)
-    - Rule-Based (Regex)
+  - ML-Based (LayoutLMv3)
+  - Rule-Based (Regex)
 - View JSON, download results.
 
 ### Command-Line Interface (CLI)
@@ -303,7 +337,10 @@ invoice-processor-ml/
 │   ├── ocr.py                  # Tesseract OCR integration
 │   ├── extraction.py           # Regex-based information extraction logic
 │   ├── ml_extraction.py        # ML-based extraction (LayoutLMv3)
-│   └── pipeline.py             # Main orchestrator for the pipeline and CLI
+│   ├── pipeline.py             # Main orchestrator for the pipeline and CLI
+│   ├── database.py             # PostgreSQL connection (scaffolded)
+│   ├── models.py               # SQLModel tables for persistence (scaffolded)
+│   └── repository.py           # CRUD operations for invoices (scaffolded)
 │
 ├── tests/
 │   ├── test_preprocessing.py   # Tests for the preprocessing module
@@ -318,7 +355,7 @@ invoice-processor-ml/
 ## 🧠 Model & Training
 
 - **Model**: `microsoft/layoutlmv3-base` (125M params)
-- **Task**:  Token Classification (NER) with 9 labels: `O, B/I-COMPANY, B/I-ADDRESS, B/I-DATE, B/I-TOTAL`
+- **Task**: Token Classification (NER) with 9 labels: `O, B/I-COMPANY, B/I-ADDRESS, B/I-DATE, B/I-TOTAL`
 - **Dataset**: SROIE (ICDAR 2019, English retail receipts), mychen76/invoices-and-receipts_ocr_v1 (English)
 - **Training**: RTX 3050 6GB, PyTorch 2.x, Transformers 4.x
 - **Result**: Best F1 ≈ 0.922 on validation (epoch 5 saved)
@@ -332,8 +369,8 @@ invoice-processor-ml/
 - **OCR accuracy (clear images)**: High with Tesseract
 - **Rule-based extraction**: Strong on simple retail receipts
 - **ML-based extraction (SROIE-style)**:
-    - COMPANY / ADDRESS / DATE / TOTAL: High F1 on simple receipts
-    - Complex business invoices: Partial extraction unless further fine-tuned
+  - COMPANY / ADDRESS / DATE / TOTAL: High F1 on simple receipts
+  - Complex business invoices: Partial extraction unless further fine-tuned
 
 ## ⚠️ Known Limitations
 
@@ -350,19 +387,23 @@ invoice-processor-ml/
 - [ ] Table detection (Camelot/Tabula/DeepDeSRT) for line items
 - [ ] PDF support (pdf2image) for multipage invoices
 - [x] FastAPI backend + Docker
+- [x] CI/CD pipeline (GitHub Actions → HuggingFace Spaces auto-deploy)
 - [ ] Multilingual OCR (PaddleOCR) and multilingual fine‑tuning
 - [ ] Confidence calibration and better validation rules
+- [ ] Database persistence layer (PostgreSQL - scaffolded, ready for implementation)
 
 ## 🛠️ Tech Stack
 
-| Component | Technology |
-|-----------|------------|
-| OCR | Tesseract 5.0+ |
-| Image Processing | OpenCV, Pillow |
-| ML/NLP | PyTorch 2.x, Transformers |
-| Model | LayoutLMv3 (token class.) |
-| Web Interface | Streamlit |
-| Data Format | JSON |
+| Component        | Technology                          |
+| ---------------- | ----------------------------------- |
+| OCR              | Tesseract 5.0+                      |
+| Image Processing | OpenCV, Pillow                      |
+| ML/NLP           | PyTorch 2.x, Transformers           |
+| Model            | LayoutLMv3 (token class.)           |
+| Web Interface    | Streamlit                           |
+| Data Format      | JSON                                |
+| CI/CD            | GitHub Actions → HuggingFace Spaces |
+| Containerization | Docker                              |
 
 ## 📚 What I Learned
 
@@ -376,6 +417,7 @@ invoice-processor-ml/
 ## 🤝 Contributing
 
 Contributions welcome! Areas needing improvement:
+
 - New patterns for regex extractor
 - Better preprocessing for OCR
 - New datasets and training configs
@@ -388,6 +430,7 @@ MIT License - See LICENSE file for details
 ## 👨‍💻 Author
 
 **Soumyajit Ghosh** - 3rd Year BTech Student
+
 - Exploring AI/ML and practical applications
 - [LinkedIn](https://www.linkedin.com/in/soumyajit-ghosh-tech) | [GitHub](https://github.com/GSoumyajit2005) | [Portfolio](#) (Coming Soon)
 
