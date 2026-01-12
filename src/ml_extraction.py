@@ -1,7 +1,9 @@
 # src/ml_extraction.py
 
+import os
 import torch
 from transformers import LayoutLMv3Processor, LayoutLMv3ForTokenClassification
+from huggingface_hub import snapshot_download
 from PIL import Image
 import pytesseract
 from typing import List, Dict, Any
@@ -15,18 +17,19 @@ HUB_MODEL_ID = "GSoumyajit2005/layoutlmv3-sroie-invoice-extraction"
 
 # --- Load Model ---
 def load_model_and_processor(model_path, hub_id):
-    try:
-        print(f"Attempting to load model from local path: {model_path}...")
-        processor = LayoutLMv3Processor.from_pretrained(model_path)
-        model = LayoutLMv3ForTokenClassification.from_pretrained(model_path)
-        print("✅ Model loaded successfully from local path.")
-    except OSError:
-        print(f"Model not found locally. Downloading from Hub: {hub_id}...")
-        from huggingface_hub import snapshot_download
+    print("Loading processor from microsoft/layoutlmv3-base...")
+    processor = LayoutLMv3Processor.from_pretrained("microsoft/layoutlmv3-base", apply_ocr=False)
+
+    if not os.path.exists(model_path) or not os.listdir(model_path):
+        print(f"Downloading model from Hub: {hub_id}...")
         snapshot_download(repo_id=hub_id, local_dir=model_path, local_dir_use_symlinks=False)
-        processor = LayoutLMv3Processor.from_pretrained(model_path)
+
+    try:
         model = LayoutLMv3ForTokenClassification.from_pretrained(model_path)
-        print("✅ Model downloaded and loaded successfully.")
+    except Exception:
+        print(f"Fallback: Loading directly from Hub {hub_id}...")
+        model = LayoutLMv3ForTokenClassification.from_pretrained(hub_id)
+
     return model, processor
 
 MODEL, PROCESSOR = load_model_and_processor(LOCAL_MODEL_PATH, HUB_MODEL_ID)

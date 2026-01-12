@@ -1,9 +1,7 @@
 name: Sync to Hugging Face Spaces
-
 on:
   push:
-    branches: [main]  # Trigger this whenever you push to the main branch
-
+    branches: [main]
 jobs:
   sync-to-hub:
     runs-on: ubuntu-latest
@@ -11,27 +9,16 @@ jobs:
       - name: Checkout GitHub Code
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # Fetch full history to allow merging
-
+          fetch-depth: 0
       - name: Push to Hugging Face
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
           HF_USERNAME: GSoumyajit2005
           SPACE_NAME: invoice-processor-ml
         run: |
-          # 1. Configure Git
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
-          
-          # 2. Add Hugging Face as a remote
           git remote add space https://$HF_USERNAME:$HF_TOKEN@huggingface.co/spaces/$HF_USERNAME/$SPACE_NAME
-          
-          # 3. Fetch the latest history from HF (to keep your heavy models safe)
           git fetch space main
-          
-          # 4. Merge HF history (models) with GitHub history (code)
-          # We use strategy 'ours' to say "If code conflicts, GitHub wins"
           git merge space/main --allow-unrelated-histories -X ours -m "Sync GitHub code with HF models"
-          
-          # 5. Push the combined result back to Hugging Face
           git push space main

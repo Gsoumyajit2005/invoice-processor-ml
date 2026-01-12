@@ -6,7 +6,7 @@ colorTo: pink
 sdk: docker
 pinned: false
 license: mit
-short_description: A hybrid invoice extraction system using LayoutLMv3 and Regex
+short_description: Hybrid invoice extraction using LayoutLMv3 and Regex
 ---
 
 # 📄 Smart Invoice Processor
