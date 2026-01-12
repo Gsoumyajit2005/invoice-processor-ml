@@ -1,6 +1,3 @@
-
-
-
 # src/api.py
 
 from fastapi import FastAPI, UploadFile, File, HTTPException, BackgroundTasks

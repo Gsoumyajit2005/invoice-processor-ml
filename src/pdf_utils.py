@@ -1,3 +1,5 @@
+# src/pdf_utils.py
+
 import pdfplumber
 from pdf2image import convert_from_path
 from pathlib import Path

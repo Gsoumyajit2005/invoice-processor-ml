@@ -1,3 +1,5 @@
+# src/utils.py
+
 import hashlib
 from typing import Dict, Any
 from decimal import Decimal

@@ -1,3 +1,5 @@
+# src/pipeline.py
+
 """
 Main invoice processing pipeline
 Orchestrates preprocessing, OCR, and extraction
