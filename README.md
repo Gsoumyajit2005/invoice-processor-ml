@@ -432,7 +432,7 @@ MIT License - See LICENSE file for details
 **Soumyajit Ghosh** - 3rd Year BTech Student
 
 - Exploring AI/ML and practical applications
-- [LinkedIn](https://www.linkedin.com/in/soumyajit-ghosh-tech) | [GitHub](https://github.com/GSoumyajit2005) | [Portfolio](#) (Coming Soon)
+- [LinkedIn](https://www.linkedin.com/in/soumyajit-ghosh-tech) | [GitHub](https://github.com/GSoumyajit2005) | [Portfolio](https://soumyajitghosh.vercel.app)
 
 ---
 

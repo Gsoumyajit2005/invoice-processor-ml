@@ -3,7 +3,7 @@ import os
 import json
 from datetime import datetime
 from pathlib import Path
-from PIL import Image
+from PIL import Image, ImageDraw
 import pandas as pd
 import sys
 
@@ -146,6 +146,28 @@ with tab1:
                     st.session_state.processed_count += 1
 
                     st.success("Extraction Complete")
+
+                    # --- AI Detection Overlay Visualization ---
+                    raw_predictions = result.get("raw_predictions")
+                    if raw_predictions and uploaded_file.type != "application/pdf":
+                        # Reload the original image for annotation
+                        uploaded_file.seek(0)
+                        overlay_image = Image.open(uploaded_file).convert("RGB")
+                        draw = ImageDraw.Draw(overlay_image)
+
+                        # Draw red rectangles around each detected entity's bounding boxes
+                        for entity_name, entity_data in raw_predictions.items():
+                            bboxes = entity_data.get("bbox", [])
+                            for box in bboxes:
+                                # bbox format: [x, y, width, height]
+                                x, y, w, h = box
+                                draw.rectangle(
+                                    [x, y, x + w, y + h],
+                                    outline="red",
+                                    width=2
+                                )
+
+                        st.image(overlay_image, caption="AI Detection Overlay", use_container_width=True)
 
                 except Exception as e:
                     st.error(f"Pipeline error: {e}")

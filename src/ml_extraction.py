@@ -126,7 +126,8 @@ def extract_ml_based(image_path: str) -> Dict[str, Any]:
         "bill_to": extracted_entities.get("BILL_TO", {}).get("text"),
         "total_amount": None, 
         "items": [],
-        "raw_text": raw_text
+        "raw_text": raw_text,
+        "raw_predictions": extracted_entities  # Contains text and bbox data for each entity
     }
 
     # Fallbacks

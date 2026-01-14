@@ -129,6 +129,12 @@ def process_invoice(image_path: str,
                 error_list.append(f"{field}: {msg}")
 
             final_data['validation_errors'] = error_list
+        
+        # Preserve raw_predictions and raw_text for UI visualization (not in schema)
+        if 'raw_predictions' in raw_result:
+            final_data['raw_predictions'] = raw_result['raw_predictions']
+        if 'raw_text' in raw_result:
+            final_data['raw_text'] = raw_result['raw_text']
 
     # --- DUPLICATE DETECTION ---
     # We calculate the hash based on the final (or raw) data.
