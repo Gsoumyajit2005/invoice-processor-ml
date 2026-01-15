@@ -13,7 +13,6 @@ import cv2
 
 # --- IMPORTS ---
 from preprocessing import load_image, convert_to_grayscale, remove_noise
-from ocr import extract_text
 from extraction import structure_output
 from ml_extraction import extract_ml_based
 from schema import InvoiceData
@@ -90,13 +89,10 @@ def process_invoice(image_path: str,
                 
         elif method == 'rules':
             try:
-                image = load_image(image_path)
-                gray_image = convert_to_grayscale(image)
-                preprocessed_image = remove_noise(gray_image, kernel_size=3)
-                text = extract_text(preprocessed_image, config='--psm 6')
-                raw_result = structure_output(text)
+                print("⚠️ Rule-based mode is deprecated. Redirecting to ML-based extraction.")
+                raw_result = extract_ml_based(image_path)
             except Exception as e:
-                raise ValueError(f"Error during rule-based extraction: {e}")
+                raise ValueError(f"Error during ML-based extraction: {e}")
                 
         # Clean up temp file if we created one
         if image_path.endswith('.jpg') and 'sample_pdf' in image_path: # Safety check

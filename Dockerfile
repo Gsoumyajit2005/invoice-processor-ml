@@ -1,10 +1,13 @@
 # Use an official Python runtime
 FROM python:3.10-slim
 
-# 1. Install system dependencies (Tesseract + OpenCV + POPPLER)
-# Added poppler-utils because src/pdf_utils.py uses pdf2image
+# 1. Install system dependencies (DocTR + OpenCV + POPPLER)
+# DocTR requires OpenGL and GStreamer libraries for image processing
 RUN apt-get update && apt-get install -y \
-    tesseract-ocr \
+    libgl1-mesa-dev \
+    libglib2.0-0 \
+    libgstreamer1.0-0 \
+    libgstreamer-plugins-base1.0-0 \
     poppler-utils \
     ffmpeg libsm6 libxext6 \
     && rm -rf /var/lib/apt/lists/*
