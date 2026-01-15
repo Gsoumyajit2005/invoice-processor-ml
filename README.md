@@ -15,7 +15,7 @@ A production-grade Hybrid Invoice Extraction System that combines the semantic u
 
 ![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.51+-red.svg)
-![Tesseract](https://img.shields.io/badge/Tesseract-5.0+-green.svg)
+![DocTR](https://img.shields.io/badge/DocTR-0.9+-green.svg)
 ![Transformers](https://img.shields.io/badge/Transformers-4.x-purple.svg)
 ![PyTorch](https://img.shields.io/badge/PyTorch-2.x-orange.svg)
 
@@ -44,7 +44,7 @@ A production-grade Hybrid Invoice Extraction System that combines the semantic u
 ### 🛡️ Robustness & Engineering
 
 - **Defensive Data Handling:** Implemented coordinate clamping to prevent model crashes from negative OCR bounding boxes.
-- **Cross-Platform OCR:** Dynamic Tesseract path discovery that works out-of-the-box on Windows (Local) and Linux (Docker/Production).
+- **GPU-Accelerated OCR:** DocTR (Mindee) with automatic CUDA acceleration for faster inference in production.
 - **Clean JSON Output:** Normalized schema handling nested entities, line items, and validation flags.
 
 ### 💻 Usability
@@ -69,7 +69,7 @@ Standard ML models often fail on specific fields like "Invoice Number" if the la
 
 ### 2. Robustness & Error Handling
 
-- **OCR Noise:** Handles common Tesseract errors (e.g., reading "1nvoice" as "Invoice").
+- **OCR Noise:** Uses DocTR's deep learning-based text recognition for improved accuracy over traditional OCR.
 - **Coordinate Normalization:** A custom `clamp()` function ensures all bounding boxes stay strictly within [0, 1000] to prevent Transformer index errors.
 
 ### 3. Dual-Engine Architecture
@@ -190,15 +190,7 @@ python -m venv venv
 pip install -r requirements.txt
 ```
 
-4. Install Tesseract OCR
-
-- **Windows**: Download from [UB Mannheim](https://github.com/UB-Mannheim/tesseract/wiki)
-- **Mac**: `brew install tesseract`
-- **Linux**: `sudo apt install tesseract-ocr`
-
-5. Tesseract Configuration (Auto-Detected) The system automatically detects Tesseract on both Windows (Registry/Standard Paths) and Linux (`/usr/bin/tesseract`). No manual configuration is required in `src/ocr.py`.
-
-6. Run the web app
+4. Run the web app
 
 ```bash
 streamlit run app.py
@@ -282,7 +274,7 @@ print(json.dumps(result, indent=2))
                                   │
                                   ▼
                           ┌───────────────┐
-                          │     OCR       │  (Tesseract)
+                          │     OCR       │  (DocTR)
                           └───────┬───────┘
                                   │
                    ┌──────────────┴──────────────┐
@@ -321,31 +313,38 @@ invoice-processor-ml/
 │   └── screenshots/            # UI Screenshots for the README demo
 │
 ├── models/
-│   └── layoutlmv3-sroie-generalized/  # Fine-tuned model (created after training)
+│   └── layoutlmv3-doctr-trained/      # Fine-tuned model (trained with DocTR OCR)
 │
 ├── outputs/                    # Default folder for saved JSON results
 │
 ├── scripts/                    # Training and analysis scripts
-│   ├── train_combined.py       # Main training loop (SROIE + Custom Data)
 │   ├── eval_new_dataset.py     # Evaluation scripts
-│   └── explore_new_dataset.py  # Dataset exploration tools
+│   ├── explore_new_dataset.py  # Dataset exploration tools
+│   ├── prepare_doctr_data.py   # DocTR data alignment for training
+│   ├── train_combined.py       # Main training loop (SROIE + Custom Data)
+│   └── train_layoutlm.py       # LayoutLMv3 fine-tuning script
 │
 ├── src/
-│   ├── sroie_loader.py         # SROIE dataset loading logic
+│   ├── api.py                  # FastAPI REST endpoint for API access
 │   ├── data_loader.py          # Unified data loader for training
-│   ├── preprocessing.py        # Image preprocessing functions (grayscale, denoise)
-│   ├── ocr.py                  # Tesseract OCR integration
-│   ├── extraction.py           # Regex-based information extraction logic
-│   ├── ml_extraction.py        # ML-based extraction (LayoutLMv3)
-│   ├── pipeline.py             # Main orchestrator for the pipeline and CLI
 │   ├── database.py             # PostgreSQL connection (scaffolded)
+│   ├── extraction.py           # Regex-based information extraction logic
+│   ├── ml_extraction.py        # ML-based extraction (LayoutLMv3 + DocTR)
 │   ├── models.py               # SQLModel tables for persistence (scaffolded)
-│   └── repository.py           # CRUD operations for invoices (scaffolded)
+│   ├── pdf_utils.py            # PDF text extraction and image conversion
+│   ├── pipeline.py             # Main orchestrator for the pipeline and CLI
+│   ├── preprocessing.py        # Image preprocessing functions (grayscale, denoise)
+│   ├── repository.py           # CRUD operations for invoices (scaffolded)
+│   ├── schema.py               # Pydantic models for API response validation
+│   ├── sroie_loader.py         # SROIE dataset loading logic
+│   └── utils.py                # Utility functions (semantic hashing, etc.)
 │
 ├── tests/
-│   ├── test_preprocessing.py   # Tests for the preprocessing module
+│   ├── test_extraction.py      # Tests for regex extraction module
+│   ├── test_full_pipeline.py   # Full end-to-end integration tests
 │   ├── test_ocr.py             # Tests for the OCR module
-│   └── test_pipeline.py        # End-to-end pipeline tests
+│   ├── test_pipeline.py        # Pipeline process tests
+│   └── test_preprocessing.py   # Tests for the preprocessing module
 │
 ├── app.py                      # Streamlit web interface
 ├── requirements.txt            # Python dependencies
@@ -358,26 +357,25 @@ invoice-processor-ml/
 - **Task**: Token Classification (NER) with 9 labels: `O, B/I-COMPANY, B/I-ADDRESS, B/I-DATE, B/I-TOTAL`
 - **Dataset**: SROIE (ICDAR 2019, English retail receipts), mychen76/invoices-and-receipts_ocr_v1 (English)
 - **Training**: RTX 3050 6GB, PyTorch 2.x, Transformers 4.x
-- **Result**: Best F1 ≈ 0.922 on validation (epoch 5 saved)
+- **Result**: F1 Score ≈ 0.83 (Real-world performance on DocTR-aligned validation set)
 
 - Training scripts (local):
 - `scripts/train_combined.py` (data prep, training loop with validation + model save)
-- Model saved to: `models/layoutlmv3-sroie-generalized/`
+- Model saved to: `models/layoutlmv3-doctr-trained/`
 
 ## 📈 Performance
 
-- **OCR accuracy (clear images)**: High with Tesseract
-- **Rule-based extraction**: Strong on simple retail receipts
-- **ML-based extraction (SROIE-style)**:
-  - COMPANY / ADDRESS / DATE / TOTAL: High F1 on simple receipts
-  - Complex business invoices: Partial extraction unless further fine-tuned
+- **OCR Precision**: State-of-the-art hierarchical detection using **DocTR (ResNet-50)**. Outperforms Tesseract on complex/noisy layouts.
+- **ML-based Extraction**: 
+  - **Accuracy**: ~83% F1 Score on SROIE + Custom Dataset.
+  - **Speed**: ~5-7s per invoice (CPU) / <1s (GPU). Prioritizes high precision over raw speed.
 
 ## ⚠️ Known Limitations
 
 1. **Layout Sensitivity**: The ML model was fine‑tuned on SROIE (retail receipts) and mychen76/invoices-and-receipts_ocr_v1 (English). Professional multi-column invoices may underperform until you fine‑tune on more diverse datasets.
 2. **Invoice Number**: SROIE dataset lacks invoice number labels. The system solves this by using the Hybrid Fallback Engine, which successfully extracts invoice numbers using Regex whenever the ML model output is empty.
 3. **Line Items/Tables**: Not trained for table extraction yet. Rule-based supports simple totals; table extraction comes later.
-4. **OCR Variability**: Tesseract outputs can vary; preprocessing and thresholds can impact ML results.
+4. **Inference Latency**: Using the heavy **DocTR (ResNet-50)** backbone ensures maximum accuracy but results in higher inference time (~5-7s on CPU) compared to lightweight engines.
 
 ## 🔮 Future Enhancements
 
@@ -396,7 +394,7 @@ invoice-processor-ml/
 
 | Component        | Technology                          |
 | ---------------- | ----------------------------------- |
-| OCR              | Tesseract 5.0+                      |
+| OCR              | DocTR (Mindee)                      |
 | Image Processing | OpenCV, Pillow                      |
 | ML/NLP           | PyTorch 2.x, Transformers           |
 | Model            | LayoutLMv3 (token class.)           |
