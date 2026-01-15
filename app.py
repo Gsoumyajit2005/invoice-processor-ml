@@ -43,6 +43,23 @@ st.set_page_config(
 )
 
 # --------------------------------------------------
+# Custom CSS
+# --------------------------------------------------
+st.markdown(
+    """
+    <style>
+    /* Fix Hugging Face iframe glitch */
+    .stApp > header {visibility: hidden;}
+    .main .block-container {padding-top: 2rem;}
+    img { max-width: 100%; height: auto; }
+    /* Disable spinner blur */
+    .st-emotion-cache-16idsys { filter: none !important; transition: none !important; }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+# --------------------------------------------------
 # Header (v2 style)
 # --------------------------------------------------
 st.title("🧾 Smart Invoice Processor (Hybrid ML Pipeline)")
@@ -110,7 +127,7 @@ with tab1:
 
                 st.image(
                     image,
-                    width=350,
+                    width=250,
                     caption="Uploaded Invoice"
                 )
 
@@ -167,7 +184,13 @@ with tab1:
                                     width=2
                                 )
 
-                        st.image(overlay_image, caption="AI Detection Overlay", use_container_width=True)
+                        overlay_image.thumbnail((800, 800))
+    
+                        st.image(
+                            overlay_image,
+                            caption="AI Detection Overlay",
+                            width="content"
+                        )
 
                 except Exception as e:
                     st.error(f"Pipeline error: {e}")
