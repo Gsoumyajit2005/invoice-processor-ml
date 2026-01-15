@@ -13,6 +13,7 @@ from pathlib import Path
 import numpy as np
 import random
 import os
+import pickle
 
 # --- IMPORTS ---
 from src.sroie_loader import load_sroie
@@ -21,8 +22,9 @@ from src.data_loader import load_unified_dataset
 # --- CONFIGURATION ---
 # Points to your local SROIE copy
 SROIE_DATA_PATH = "data/sroie" 
+DOCTR_CACHE_PATH = "data/doctr_trained_cache.pkl"  # DocTR pre-processed cache
 MODEL_CHECKPOINT = "microsoft/layoutlmv3-base"
-OUTPUT_DIR = "models/layoutlmv3-generalized"
+OUTPUT_DIR = "models/layoutlmv3-doctr-trained"
 
 # Standard Label Set
 LABEL_LIST = ['O', 'B-COMPANY', 'I-COMPANY', 'B-DATE', 'I-DATE', 
@@ -86,18 +88,34 @@ class UnifiedDataset(Dataset):
         
         return {k: v.squeeze(0) for k, v in encoding.items()}
 
+
+def load_doctr_cache(cache_path: str) -> dict:
+    """Load pre-processed DocTR training data from cache."""
+    print(f"📦 Loading DocTR cache from {cache_path}...")
+    with open(cache_path, "rb") as f:
+        data = pickle.load(f)
+    print(f"   ✅ Loaded {len(data.get('train', []))} train, {len(data.get('test', []))} test examples")
+    return data
+
+
 def train():
     print(f"{'='*40}\n🚀 STARTING HYBRID TRAINING\n{'='*40}")
     
-    # Check SROIE path
-    if not os.path.exists(SROIE_DATA_PATH):
-        print(f"❌ Error: SROIE path not found at {SROIE_DATA_PATH}")
-        print("Please make sure you copied the 'sroie' folder into 'data/'.")
-        return
-
-    # 1. Load SROIE
-    print("📦 Loading SROIE dataset...")
-    sroie_data = load_sroie(SROIE_DATA_PATH)
+    # 1. Load SROIE data (prefer DocTR cache if available)
+    if os.path.exists(DOCTR_CACHE_PATH):
+        print("🔄 Using DocTR-aligned training data (recommended)")
+        sroie_data = load_doctr_cache(DOCTR_CACHE_PATH)
+    else:
+        print("⚠️  DocTR cache not found. Using original SROIE loader.")
+        print("   Run 'python scripts/prepare_doctr_data.py' to generate the cache.")
+        
+        if not os.path.exists(SROIE_DATA_PATH):
+            print(f"❌ Error: SROIE path not found at {SROIE_DATA_PATH}")
+            print("Please make sure you copied the 'sroie' folder into 'data/'.")
+            return
+        
+        sroie_data = load_sroie(SROIE_DATA_PATH)
+    
     print(f"   - SROIE Train: {len(sroie_data['train'])}")
     print(f"   - SROIE Test:  {len(sroie_data['test'])}")
 
@@ -141,7 +159,7 @@ def train():
     # 6. Optimize & Train
     optimizer = torch.optim.AdamW(model.parameters(), lr=3e-5)
     best_f1 = 0.0
-    NUM_EPOCHS = 5
+    NUM_EPOCHS = 10
     
     print("\n🔥 Beginning Fine-Tuning...")
     for epoch in range(NUM_EPOCHS):

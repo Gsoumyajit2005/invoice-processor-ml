@@ -23,6 +23,7 @@ credentials.json
 *.log
 logs/
 .cache/
+*.pkl
 
 # OS
 .DS_Store

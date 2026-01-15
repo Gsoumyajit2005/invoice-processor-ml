@@ -102,29 +102,57 @@ def extract_vendor(text: str) -> Optional[str]:
     return None
 
 def extract_invoice_number(text: str) -> Optional[str]:
-    """
-    Improved regex that handles alphanumeric AND numeric IDs, plus variations like "Tax Inv".
-    """
     if not text: return None
-    
-    # Strategy 1: Look for "Invoice No: XXXXX" pattern
-    # UPDATED: Handles "Tax Invoice", "Inv No", and standard variations
-    keyword_pattern = r'(?:TAX\s*)?(?:INVOICE|INV|BILL|RECEIPT)\s*(?:NO|NUMBER|#|NUM)?[\s\.:-]*([A-Z0-9\-/]{3,})'
-    match = re.search(keyword_pattern, text, re.IGNORECASE)
-    if match:
-        return match.group(1)
 
-    # Strategy 2: Look for standalone labeled patterns (Existing Logic)
-    # Only if Strategy 1 fails
+    # 1. BLOCK LIST: Words that might be captured as the ID itself by mistake
+    FORBIDDEN_WORDS = {
+        'INVOICE', 'TAX', 'RECEIPT', 'BILL', 'NUMBER', 'NO', 'DATE', 
+        'ORIGINAL', 'COPY', 'GST', 'REG', 'MEMBER', 'SLIP', 'TEL', 'FAX'
+    }
+
+    # 2. TOXIC CONTEXTS: If a line contains these, it's likely a Tax ID or Phone #, not an Invoice #
+    # We skip the line entirely if these are found (unless "INVOICE" is also strictly present)
+    TOXIC_LINE_INDICATORS = ['GST', 'REG', 'SSM', 'TIN', 'PHONE', 'TEL', 'FAX', 'UBL', 'UEN']
+
+    # Strategy 1: Explicit Label Search (High Confidence)
+    # matches "Invoice No:", "Slip No:", "Bill #:", etc.
+    # ADDED: 'SLIP' to the valid prefixes
+    keyword_pattern = r'(?i)(?:TAX\s*)?(?:INVOICE|INV|BILL|RECEIPT|SLIP)\s*(?:NO|NUMBER|#|NUM)\s*[:\.]?\s*([A-Z0-9\-/]+)'
+    matches = re.findall(keyword_pattern, text)
+    
+    for match in matches:
+        clean_match = match.strip()
+        # Verify length and ensure the match itself isn't a forbidden word
+        if len(clean_match) >= 3 and clean_match.upper() not in FORBIDDEN_WORDS:
+            return clean_match
+
+    # Strategy 2: Contextual Line Search (Medium Confidence)
+    # We scan line-by-line for loose patterns like "No: 12345" or "Slip: 555"
     lines = text.split('\n')
-    for line in lines[:20]:
-        if any(k in line.lower() for k in ['invoice', 'no', '#']):
-            # Allow pure digits now if they are long enough (e.g. 40378170)
-            # Match 4+ digits OR alphanumeric
-            token_match = re.search(r'\b([A-Z0-9-]{4,})\b', line)
-            if token_match:
-                return token_match.group(1)
+    for line in lines[:25]: # Scan top 25 lines
+        line_upper = line.upper()
+
+        # ⚠️ CRITICAL FIX: Skip lines that look like Tax IDs (GST/REG)
+        # But allow if the line explicitly says "INVOICE" (e.g. "Tax Invoice / GST Reg No")
+        if any(bad in line_upper for bad in TOXIC_LINE_INDICATORS) and "INVOICE" not in line_upper:
+            continue
+
+        # Look for Invoice-like keywords (Added SLIP)
+        # matches " NO", " #", "SLIP"
+        if any(k in line_upper for k in ['INVOICE', ' NO', ' #', 'INV', 'SLIP', 'BILL']):
+            
+            # Find candidate tokens: 3+ alphanumeric chars
+            tokens = re.findall(r'\b[A-Z0-9\-/]{3,}\b', line_upper)
+            
+            for token in tokens:
+                if token in FORBIDDEN_WORDS:
+                    continue
                 
+                # Heuristic: Invoice numbers almost always have digits.
+                # This filters out purely alpha strings like "CREDIT" or "CASH"
+                if any(c.isdigit() for c in token):
+                    return token
+
     return None
 
 def extract_bill_to(text: str) -> Optional[Dict[str, str]]:
