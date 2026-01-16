@@ -8,7 +8,7 @@ from PIL import Image
 from typing import List, Dict, Any, Tuple
 import re
 import numpy as np
-from extraction import extract_invoice_number, extract_total
+from extraction import extract_invoice_number, extract_total, extract_address
 from doctr.io import DocumentFile
 from doctr.models import ocr_predictor
 
@@ -254,6 +254,41 @@ def extract_ml_based(image_path: str) -> Dict[str, Any]:
             largest_idx = max(top_words_indices, key=lambda i: unnormalized_boxes[i][3])
             final_output["vendor"] = words[largest_idx]
     
+    # --- ADDRESS FALLBACK ---
+    if not final_output["address"]:
+        # We pass the extracted (or fallback) Vendor Name to help anchor the search
+        # Use the raw text and the known vendor to find the address spatially
+        fallback_address = extract_address(raw_text, vendor_name=final_output["vendor"])
+        
+        if fallback_address:
+            final_output["address"] = fallback_address
+    
+    # Backfill Bounding Boxes for Address Fallback
+    # If Regex found the address but ML didn't, find its boxes in the OCR data
+    if final_output["address"] and "ADDRESS" not in final_output["raw_predictions"]:
+        address_text = final_output["address"]
+        address_boxes = []
+        
+        # The address may span multiple words, so we search for each word
+        # Split by comma first (since extract_address joins lines with ", ")
+        address_parts = [part.strip() for part in address_text.split(",")]
+        
+        for part in address_parts:
+            part_words = part.split()
+            for target_word in part_words:                    
+                for i, word in enumerate(words):
+                    # Case-insensitive match
+                    if target_word.lower() == word.lower() or target_word.lower() in word.lower():
+                        address_boxes.append(unnormalized_boxes[i])
+                        break  # Only match once per target word
+        
+        # If we found any boxes, inject into raw_predictions
+        if address_boxes:
+            final_output["raw_predictions"]["ADDRESS"] = {
+                "text": address_text,
+                "bbox": address_boxes
+            }
+
     # Fallbacks
     ml_total = extracted_entities.get("TOTAL", {}).get("text")
     if ml_total:

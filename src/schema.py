@@ -64,9 +64,14 @@ class InvoiceData(BaseModel):
         if isinstance(v, str):
             try:
                 # Try common formats
-                for fmt in ("%d/%m/%Y", "%Y-%m-%d", "%d-%m-%Y", "%d.%m.%Y"):
+                for fmt in (
+                    "%d/%m/%Y", "%Y-%m-%d", "%d-%m-%Y", "%d.%m.%Y", 
+                    "%m/%d/%Y", "%m-%d-%Y"  
+                ):
                     try:
                         parsed_date = datetime.strptime(v, fmt).date()
+                        # Sanity check: If we parsed 05/01/2020, was it May 1st or Jan 5th?
+                        # Usually, if we are here, strict parsing succeeded.
                         break
                     except ValueError:
                         continue
@@ -78,8 +83,8 @@ class InvoiceData(BaseModel):
             if parsed_date > today:
                 return None 
             
-            # ⚠️ FIX: Use 'DateType' constructor
-            min_date = DateType(today.year - 10, 1, 1)
+            # FIX: Use 'DateType' constructor
+            min_date = DateType(today.year - 30, 1, 1)
             if parsed_date < min_date:
                 return None
             

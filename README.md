@@ -156,7 +156,6 @@ _UI shows simple format hints and confidence._
 ### Prerequisites
 
 - Python 3.10+
-- Tesseract OCR
 - (Optional) CUDA-capable GPU for training/inference speed
 
 ### Installation
@@ -342,7 +341,6 @@ invoice-processor-ml/
 ├── tests/
 │   ├── test_extraction.py      # Tests for regex extraction module
 │   ├── test_full_pipeline.py   # Full end-to-end integration tests
-│   ├── test_ocr.py             # Tests for the OCR module
 │   ├── test_pipeline.py        # Pipeline process tests
 │   └── test_preprocessing.py   # Tests for the preprocessing module
 │

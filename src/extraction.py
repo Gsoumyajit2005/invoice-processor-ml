@@ -3,6 +3,7 @@
 import re
 from typing import List, Dict, Optional, Any
 from datetime import datetime
+from difflib import SequenceMatcher
 
 def extract_dates(text: str) -> List[str]:
     """
@@ -132,7 +133,7 @@ def extract_invoice_number(text: str) -> Optional[str]:
     for line in lines[:25]: # Scan top 25 lines
         line_upper = line.upper()
 
-        # ⚠️ CRITICAL FIX: Skip lines that look like Tax IDs (GST/REG)
+        # CRITICAL FIX: Skip lines that look like Tax IDs (GST/REG)
         # But allow if the line explicitly says "INVOICE" (e.g. "Tax Invoice / GST Reg No")
         if any(bad in line_upper for bad in TOXIC_LINE_INDICATORS) and "INVOICE" not in line_upper:
             continue
@@ -163,6 +164,107 @@ def extract_bill_to(text: str) -> Optional[Dict[str, str]]:
     if match:
         name = match.group(1).strip()
         return {"name": name, "email": None}
+    return None
+
+def extract_address(text: str, vendor_name: Optional[str] = None) -> Optional[str]:
+    """
+    Generalized Address Extraction using Spatial Heuristics.
+    Strategy:
+    1. If Vendor is known, look at the lines immediately FOLLOWING it (Spatial).
+    2. If Vendor is unknown, look for lines in the top header with 'Address-like' traits
+       (mix of text + numbers, 3+ words, contains Zip-code-like patterns).
+    """
+    if not text: return None
+    
+    lines = [line.strip() for line in text.split('\n') if line.strip()]
+    
+    # --- FILTERS (Generalized) ---
+    # Skip lines that are clearly NOT addresses
+    def is_invalid_line(line):
+        line_upper = line.upper()
+        # 1. It's a Phone/Fax/Email/URL
+        if any(x in line_upper for x in ['TEL', 'FAX', 'PHONE', 'EMAIL', '@', 'WWW.', '.COM', 'HTTP']):
+            return True
+        # 2. It's a Date
+        if len(line) < 15 and any(c.isdigit() for c in line) and ('/' in line or '-' in line):
+            return True
+        # 3. It's the Vendor name itself (if provided)
+        if vendor_name and vendor_name.lower() in line.lower():
+            return True
+        return False
+
+    # --- STRATEGY 1: Contextual Search (Below Vendor) ---
+    # This is the most accurate method for receipts worldwide.
+    candidate_lines = []
+    
+    if vendor_name:
+        vendor_found = False
+        # Find where the vendor appears
+        for i, line in enumerate(lines[:15]): # Check top 15 lines only
+            if vendor_name.lower() in line.lower() or (len(vendor_name) > 5 and SequenceMatcher(None, vendor_name, line).ratio() > 0.8):
+                vendor_found = True
+                # Grab the next 1-3 lines as the potential address block
+                # We stop if we hit a phone number or blank line
+                for j in range(1, 4): 
+                    if i + j < len(lines):
+                        next_line = lines[i + j]
+                        if not is_invalid_line(next_line):
+                            candidate_lines.append(next_line)
+                        else:
+                            # If we hit a phone number, the address block usually ended
+                            break 
+                break
+    
+    # If Strategy 1 found something, join it and return
+    if candidate_lines:
+        return ", ".join(candidate_lines)
+
+    # --- STRATEGY 2: Header Scan (Density Heuristic) ---
+    # If we couldn't anchor to the vendor, we scan the top 10 lines for "Address-looking" text.
+    # An address usually has:
+    # - At least one digit (Building number, Zip code)
+    # - At least 3 words
+    # - Is NOT a phone number
+    # 
+    # CONTIGUITY RULE: Once we start collecting candidates, we STOP at the first
+    # invalid line (phone/fax/etc). This prevents capturing non-adjacent lines
+    # like GST numbers that appear after phone numbers.
+    
+    fallback_candidates = []
+    started_collecting = False
+    
+    for line in lines[:10]:
+        if is_invalid_line(line):
+            # If we've already started collecting, an invalid line means 
+            # the address block has ended - don't continue past it
+            if started_collecting:
+                break
+            continue
+            
+        # Check for Address Density:
+        # 1. Has digits (e.g. "123 Main St" or "Singapore 55123")
+        has_digits = any(c.isdigit() for c in line)
+        # 2. Length is substantial (avoid short noise)
+        is_long_enough = len(line) > 10
+        # 3. Has spaces (at least 2 spaces => 3 words)
+        is_multi_word = line.count(' ') >= 2
+        
+        # FIRST line must have digits (to anchor on building/street number)
+        # CONTINUATION lines only need length + multi-word (city/state names often lack digits)
+        is_valid_first_line = has_digits and is_long_enough and is_multi_word
+        is_valid_continuation = started_collecting and is_long_enough and is_multi_word
+        
+        if is_valid_first_line or is_valid_continuation:
+            # We found a strong candidate line
+            fallback_candidates.append(line)
+            started_collecting = True
+            # If we have 3 candidates, that's probably the full address block
+            if len(fallback_candidates) >= 3:
+                break
+                
+    if fallback_candidates:
+        return ", ".join(fallback_candidates)
+
     return None
 
 def extract_line_items(text: str) -> List[Dict[str, Any]]:
