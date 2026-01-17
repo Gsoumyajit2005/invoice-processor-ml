@@ -141,38 +141,30 @@ def process_invoice(image_path: str,
     final_data['semantic_hash'] = generate_semantic_hash(final_data)
 
     # --- DATABASE SAVE (ASYNC - Fire and Forget) ---
-    def background_save(data_to_save):
-        """Save to database in background thread"""
+    def background_db_operation(data_to_save):
+        """Check for duplicate and save in background thread"""
         try:
             repo = InvoiceRepository()
             if repo.session:
-                saved = repo.save_invoice(data_to_save)
-                if saved:
-                    print(f"   ✅ [Background] Invoice saved: {data_to_save.get('receipt_number')}")
+                # Check for duplicate first
+                existing = repo.get_by_hash(data_to_save.get('semantic_hash', ''))
+                if existing:
+                    print(f"   ⚠️ [Background] Duplicate: {data_to_save.get('receipt_number')}")
                 else:
-                    print(f"   ⚠️ [Background] Duplicate or error for: {data_to_save.get('receipt_number')}")
+                    # Not a duplicate - save it
+                    saved = repo.save_invoice(data_to_save)
+                    if saved:
+                        print(f"   ✅ [Background] Saved: {data_to_save.get('receipt_number')}")
+                    else:
+                        print(f"   ⚠️ [Background] Save failed: {data_to_save.get('receipt_number')}")
         except Exception as e:
-            print(f"   ⚠️ [Background] Save failed: {e}")
+            print(f"   ⚠️ [Background] DB Error: {e}")
 
     if DB_CONNECTED:
-        # Quick duplicate check before queueing save
-        try:
-            repo = InvoiceRepository()
-            if repo.session:
-                existing = repo.get_by_hash(final_data.get('semantic_hash', ''))
-                if existing:
-                    print("   ⚠️ Duplicate invoice (already in database)")
-                    final_data['_db_status'] = 'duplicate'
-                else:
-                    # Not a duplicate - save in background
-                    save_thread = threading.Thread(target=background_save, args=(final_data.copy(),))
-                    save_thread.start()
-                    final_data['_db_status'] = 'queued'
-            else:
-                final_data['_db_status'] = 'disabled'
-        except Exception as e:
-            print(f"   ⚠️ Duplicate check failed: {e}")
-            final_data['_db_status'] = 'error'
+        # Fire and forget - don't wait for result
+        save_thread = threading.Thread(target=background_db_operation, args=(final_data.copy(),))
+        save_thread.start()
+        final_data['_db_status'] = 'queued'
     else:
         final_data['_db_status'] = 'disabled'
     
