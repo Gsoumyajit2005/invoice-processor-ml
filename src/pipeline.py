@@ -8,6 +8,7 @@ Orchestrates preprocessing, OCR, and extraction
 from typing import Dict, Any, Optional
 from pathlib import Path
 import json
+import threading
 from pydantic import ValidationError
 import cv2 
 
@@ -139,37 +140,41 @@ def process_invoice(image_path: str,
     # This gives us a unique fingerprint for this specific business transaction.
     final_data['semantic_hash'] = generate_semantic_hash(final_data)
 
-    # --- DATABASE SAVE (The Integration) ---
-    if not DB_CONNECTED:
-        # Database not available - skip save entirely (message shown once at startup)
-        final_data['_db_status'] = 'disabled'
-    else:
-        final_data['_db_status'] = 'disabled'  # Default assumption
+    # --- DATABASE SAVE (ASYNC - Fire and Forget) ---
+    def background_save(data_to_save):
+        """Save to database in background thread"""
         try:
-            print("💾 Attempting to save to Database...")
             repo = InvoiceRepository()
-            
             if repo.session:
-                saved_record = repo.save_invoice(final_data)
-                if saved_record:
-                    print(f"   ✅ Successfully saved Invoice #{saved_record.id}")
-                    final_data['_db_status'] = 'saved'
+                saved = repo.save_invoice(data_to_save)
+                if saved:
+                    print(f"   ✅ [Background] Invoice saved: {data_to_save.get('receipt_number')}")
                 else:
-                    # Check if it's a duplicate by looking up the hash
-                    existing = repo.get_by_hash(final_data.get('semantic_hash', ''))
-                    if existing:
-                        print("   ⚠️  Duplicate invoice detected (already in database)")
-                        final_data['_db_status'] = 'duplicate'
-                    else:
-                        print("   ⚠️  Save failed (unknown error)")
-                        final_data['_db_status'] = 'error'
-            else:
-                print("   ⚠️  Skipped DB Save (Database disabled)")
-                final_data['_db_status'] = 'disabled'
-                
+                    print(f"   ⚠️ [Background] Duplicate or error for: {data_to_save.get('receipt_number')}")
         except Exception as e:
-            print(f"   ⚠️  Database Error (Ignored): {e}")
+            print(f"   ⚠️ [Background] Save failed: {e}")
+
+    if DB_CONNECTED:
+        # Quick duplicate check before queueing save
+        try:
+            repo = InvoiceRepository()
+            if repo.session:
+                existing = repo.get_by_hash(final_data.get('semantic_hash', ''))
+                if existing:
+                    print("   ⚠️ Duplicate invoice (already in database)")
+                    final_data['_db_status'] = 'duplicate'
+                else:
+                    # Not a duplicate - save in background
+                    save_thread = threading.Thread(target=background_save, args=(final_data.copy(),))
+                    save_thread.start()
+                    final_data['_db_status'] = 'queued'
+            else:
+                final_data['_db_status'] = 'disabled'
+        except Exception as e:
+            print(f"   ⚠️ Duplicate check failed: {e}")
             final_data['_db_status'] = 'error'
+    else:
+        final_data['_db_status'] = 'disabled'
     
     # --- SAVING STEP ---
     if save_results:

@@ -20,8 +20,13 @@ except ImportError:
 from src.pipeline import process_invoice
 from src.database import init_db
 
-# Initialize database
-init_db()
+# Initialize database (cached to run only once per session)
+@st.cache_resource
+def initialize_database_once():
+    """Run DB init only once per session/restart"""
+    init_db()
+
+initialize_database_once()
 
 # --------------------------------------------------
 # Mock format detection (UI-level, safe)
@@ -173,6 +178,10 @@ with tab1:
                     if db_status == 'saved':
                         st.success("✅ Extraction & Storage Complete")
                         st.toast("Invoice saved to Database!", icon="💾")
+                    
+                    elif db_status == 'queued':
+                        st.success("✅ Extraction Complete")
+                        st.toast("Saving to database...", icon="💾")
                     
                     elif db_status == 'duplicate':
                         st.success("✅ Extraction Complete") 
