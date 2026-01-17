@@ -7,12 +7,21 @@ from PIL import Image, ImageDraw
 import pandas as pd
 import sys
 
+# PDF to image conversion
+try:
+    from pdf2image import convert_from_bytes
+    PDF_SUPPORT = True
+except ImportError:
+    PDF_SUPPORT = False
+
 # --------------------------------------------------
 # Pipeline import (PURE DATA ONLY)
 # --------------------------------------------------
-sys.path.append("src")
-from pipeline import process_invoice
+from src.pipeline import process_invoice
+from src.database import init_db
 
+# Initialize database
+init_db()
 
 # --------------------------------------------------
 # Mock format detection (UI-level, safe)
@@ -119,17 +128,22 @@ with tab1:
 
         if uploaded_file:
             st.caption(f"File: {uploaded_file.name}")
-
+            
+            # Handle PDF preview
             if uploaded_file.type == "application/pdf":
-                st.info("PDF uploaded (preview not available)")
+                if PDF_SUPPORT:
+                    pdf_bytes = uploaded_file.read()
+                    uploaded_file.seek(0)  # Reset for later processing
+                    pages = convert_from_bytes(pdf_bytes, first_page=1, last_page=1)
+                    if pages:
+                        pdf_preview_image = pages[0]
+                        st.session_state.pdf_preview = pdf_preview_image
+                        st.image(pdf_preview_image, width=250, caption="PDF Preview (Page 1)")
+                else:
+                    st.warning("PDF preview requires pdf2image. Install with: `pip install pdf2image`")
             else:
                 image = Image.open(uploaded_file)
-
-                st.image(
-                    image,
-                    width=250,
-                    caption="Uploaded Invoice"
-                )
+                st.image(image, width=250, caption="Uploaded Invoice")
 
 
     # -----------------------------
@@ -149,12 +163,39 @@ with tab1:
                         f.write(uploaded_file.getbuffer())
 
                     method = "ml" if "ML" in extraction_method else "rules"
+                    
+                    # CALL PIPELINE
                     result = process_invoice(str(temp_path), method=method)
 
-                    # Hard guard — prevents DeltaGenerator bugs forever
+                    # --- SMART STATUS NOTIFICATIONS ---
+                    db_status = result.get('_db_status', 'disabled')
+                    
+                    if db_status == 'saved':
+                        st.success("✅ Extraction & Storage Complete")
+                        st.toast("Invoice saved to Database!", icon="💾")
+                    
+                    elif db_status == 'duplicate':
+                        st.success("✅ Extraction Complete") 
+                        st.toast("Duplicate invoice (already in database)", icon="⚠️")
+                        
+                    elif db_status == 'disabled':
+                        st.success("✅ Extraction Complete")
+                        # Only show "Demo Mode" toast once per session
+                        if not st.session_state.get('_db_warning_shown', False):
+                            st.toast("Database disabled (Demo Mode)", icon="ℹ️")
+                            st.session_state['_db_warning_shown'] = True
+                        
+                    else:
+                        st.success("✅ Extraction Complete")
+
+                    # Hard guard — prevents DeltaGenerator bugs
                     if not isinstance(result, dict):
                         st.error("Pipeline returned invalid data.")
                         st.stop()
+                        
+                    # Remove the metadata field so it doesn't show up in the JSON view
+                    if '_db_status' in result:
+                        del result['_db_status']
 
                     st.session_state.data = result
                     st.session_state.format_info = detect_invoice_format(
@@ -162,35 +203,43 @@ with tab1:
                     )
                     st.session_state.processed_count += 1
 
-                    st.success("Extraction Complete")
-
                     # --- AI Detection Overlay Visualization ---
                     raw_predictions = result.get("raw_predictions")
-                    if raw_predictions and uploaded_file.type != "application/pdf":
-                        # Reload the original image for annotation
-                        uploaded_file.seek(0)
-                        overlay_image = Image.open(uploaded_file).convert("RGB")
-                        draw = ImageDraw.Draw(overlay_image)
+                    if raw_predictions:
+                        # Get the base image for annotation
+                        if uploaded_file.type == "application/pdf":
+                            # Use the converted PDF preview image
+                            if "pdf_preview" in st.session_state:
+                                overlay_image = st.session_state.pdf_preview.copy().convert("RGB")
+                            else:
+                                overlay_image = None
+                        else:
+                            # Reload the original image for annotation
+                            uploaded_file.seek(0)
+                            overlay_image = Image.open(uploaded_file).convert("RGB")
+                        
+                        if overlay_image:
+                            draw = ImageDraw.Draw(overlay_image)
 
-                        # Draw red rectangles around each detected entity's bounding boxes
-                        for entity_name, entity_data in raw_predictions.items():
-                            bboxes = entity_data.get("bbox", [])
-                            for box in bboxes:
-                                # bbox format: [x, y, width, height]
-                                x, y, w, h = box
-                                draw.rectangle(
-                                    [x, y, x + w, y + h],
-                                    outline="red",
-                                    width=2
-                                )
+                            # Draw red rectangles around each detected entity's bounding boxes
+                            for entity_name, entity_data in raw_predictions.items():
+                                bboxes = entity_data.get("bbox", [])
+                                for box in bboxes:
+                                    # bbox format: [x, y, width, height]
+                                    x, y, w, h = box
+                                    draw.rectangle(
+                                        [x, y, x + w, y + h],
+                                        outline="red",
+                                        width=2
+                                    )
 
-                        overlay_image.thumbnail((800, 800))
-    
-                        st.image(
-                            overlay_image,
-                            caption="AI Detection Overlay",
-                            width="content"
-                        )
+                            overlay_image.thumbnail((800, 800))
+        
+                            st.image(
+                                overlay_image,
+                                caption="AI Detection Overlay",
+                                width="content"
+                            )
 
                 except Exception as e:
                     st.error(f"Pipeline error: {e}")
@@ -276,7 +325,7 @@ with tab2:
             st.image(
                 Image.open(samples[0]),
                 caption=samples[0].name,
-                use_container_width=True
+                width=250
             )
         else:
             st.info("No sample invoices found.")

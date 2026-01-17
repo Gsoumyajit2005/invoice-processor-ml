@@ -12,12 +12,14 @@ from pydantic import ValidationError
 import cv2 
 
 # --- IMPORTS ---
-from preprocessing import load_image, convert_to_grayscale, remove_noise
-from extraction import structure_output
-from ml_extraction import extract_ml_based
-from schema import InvoiceData
-from pdf_utils import extract_text_from_pdf, convert_pdf_to_images
-from utils import generate_semantic_hash
+from src.preprocessing import load_image, convert_to_grayscale, remove_noise
+from src.extraction import structure_output
+from src.ml_extraction import extract_ml_based
+from src.schema import InvoiceData
+from src.pdf_utils import extract_text_from_pdf, convert_pdf_to_images
+from src.utils import generate_semantic_hash
+from src.repository import InvoiceRepository
+from src.database import DB_CONNECTED
 
 def process_invoice(image_path: str, 
                    method: str = 'ml',
@@ -136,6 +138,38 @@ def process_invoice(image_path: str,
     # We calculate the hash based on the final (or raw) data.
     # This gives us a unique fingerprint for this specific business transaction.
     final_data['semantic_hash'] = generate_semantic_hash(final_data)
+
+    # --- DATABASE SAVE (The Integration) ---
+    if not DB_CONNECTED:
+        # Database not available - skip save entirely (message shown once at startup)
+        final_data['_db_status'] = 'disabled'
+    else:
+        final_data['_db_status'] = 'disabled'  # Default assumption
+        try:
+            print("💾 Attempting to save to Database...")
+            repo = InvoiceRepository()
+            
+            if repo.session:
+                saved_record = repo.save_invoice(final_data)
+                if saved_record:
+                    print(f"   ✅ Successfully saved Invoice #{saved_record.id}")
+                    final_data['_db_status'] = 'saved'
+                else:
+                    # Check if it's a duplicate by looking up the hash
+                    existing = repo.get_by_hash(final_data.get('semantic_hash', ''))
+                    if existing:
+                        print("   ⚠️  Duplicate invoice detected (already in database)")
+                        final_data['_db_status'] = 'duplicate'
+                    else:
+                        print("   ⚠️  Save failed (unknown error)")
+                        final_data['_db_status'] = 'error'
+            else:
+                print("   ⚠️  Skipped DB Save (Database disabled)")
+                final_data['_db_status'] = 'disabled'
+                
+        except Exception as e:
+            print(f"   ⚠️  Database Error (Ignored): {e}")
+            final_data['_db_status'] = 'error'
     
     # --- SAVING STEP ---
     if save_results:

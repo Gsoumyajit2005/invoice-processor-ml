@@ -8,7 +8,7 @@ from PIL import Image
 from typing import List, Dict, Any, Tuple
 import re
 import numpy as np
-from extraction import extract_invoice_number, extract_total, extract_address
+from src.extraction import extract_invoice_number, extract_total, extract_address
 from doctr.io import DocumentFile
 from doctr.models import ocr_predictor
 
@@ -219,10 +219,12 @@ def extract_ml_based(image_path: str) -> Dict[str, Any]:
     encoding = PROCESSOR(
         image, text=words, boxes=normalized_boxes, 
         truncation=True, max_length=512, return_tensors="pt"
-    ).to(DEVICE)
+    )
+    # Move tensors to device for inference, but keep original encoding for word_ids()
+    model_inputs = {k: v.to(DEVICE) for k, v in encoding.items()}
 
     with torch.no_grad():
-        outputs = MODEL(**encoding)
+        outputs = MODEL(**model_inputs)
 
     predictions = outputs.logits.argmax(-1).squeeze().tolist()
     extracted_entities = _process_predictions(words, unnormalized_boxes, encoding, predictions, MODEL.config.id2label)

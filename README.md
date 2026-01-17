@@ -46,6 +46,8 @@ A production-grade Hybrid Invoice Extraction System that combines the semantic u
 - **Defensive Data Handling:** Implemented coordinate clamping to prevent model crashes from negative OCR bounding boxes.
 - **GPU-Accelerated OCR:** DocTR (Mindee) with automatic CUDA acceleration for faster inference in production.
 - **Clean JSON Output:** Normalized schema handling nested entities, line items, and validation flags.
+- **Defensive Persistence:** Optional PostgreSQL integration that automatically saves extracted data when credentials are present, but gracefully degrades (skips saving) in serverless/demo environments like Hugging Face Spaces.
+- **Duplicate Prevention:** Implemented *Semantic Hashing* (Vendor + Date + Total + ID) to automatically detect and prevent duplicate invoice entries.
 
 ### 💻 Usability
 
@@ -90,6 +92,14 @@ The system outputs a clean JSON with the following fields:
 - `total_amount`: The total amount (extracted by LayoutLMv3 or Regex).
 - `extraction_confidence`: The confidence of the extraction (0-100).
 - `validation_passed`: Whether the validation passed (true/false).
+
+### 5. Defensive Database Architecture
+
+To support both local development (with full persistence) and lightweight cloud demos (without databases), the system uses a **"Soft Fail" Persistence Layer**:
+
+1. **Connection Check:** On startup, the system checks for PostgreSQL credentials. If missing, the database engine is disabled.
+2. **Repository Guard:** All CRUD operations check for an active session. If the database is disabled, save operations are skipped silently without crashing the pipeline.
+3. **Semantic Hashing:** Before saving, a content-based hash is generated to ensure idempotency.
 
 ---
 
@@ -156,37 +166,35 @@ _UI shows simple format hints and confidence._
 ### Prerequisites
 
 - Python 3.10+
-- (Optional) CUDA-capable GPU for training/inference speed
+- Conda / Miniforge (recommended)
+- NVIDIA GPU with CUDA (strongly recommended for usable performance)
 
-### Installation
+⚠️ CPU-only execution is supported but significantly slower
+(5–10s per invoice) and intended only for testing.
 
-1. Clone the repository
+### Installation (Conda – Recommended)
+
+1. Clone the repository:
 
 ```bash
 git clone https://github.com/GSoumyajit2005/invoice-processor-ml
 cd invoice-processor-ml
 ```
 
-2. Create and Activate Virtual Environment (Recommended) Ensures the correct Python version and isolates dependencies.
-
-- **Linux / macOS**:
+2. Create and activate the Conda environment:
 
 ```bash
-python3 -m venv venv
-source venv/bin/activate
+conda env create -f environment.yml
+conda activate invoice-ml
 ```
 
-- **Windows**:
+3. Verify CUDA availability (recommended):
 
 ```bash
-python -m venv venv
-.\venv\Scripts\activate
-```
-
-3. Install dependencies
-
-```bash
-pip install -r requirements.txt
+python - <<EOF
+import torch
+print(torch.cuda.is_available())
+EOF
 ```
 
 4. Run the web app
@@ -194,6 +202,9 @@ pip install -r requirements.txt
 ```bash
 streamlit run app.py
 ```
+
+> Note: `requirements.txt` is consumed internally by `environment.yml`.
+> Do not install it manually with pip.
 
 ### Training the Model (Optional)
 
@@ -204,6 +215,27 @@ python scripts/train_combined.py
 ```
 
 (Note: Requires SROIE dataset in data/sroie)
+
+### API Usage (Optional)
+
+To run the API server:
+
+```bash
+python src/api.py
+```
+
+The API provides endpoints for processing invoices and extracting information.
+
+### Running with Database (Optional)
+
+To enable data persistence, run the included Docker Compose file to spin up PostgreSQL:
+
+```bash
+docker-compose up -d
+```
+
+The application will automatically detect the database and start saving invoices.
+
 
 ## 💻 Usage
 
@@ -290,10 +322,16 @@ print(json.dumps(result, indent=2))
                          │   Post-process   │
                          │ validate, scores │
                          └────────┬─────────┘
-                                  ▼
-                         ┌──────────────────┐
-                         │    JSON Output   │
-                         └──────────────────┘
+                                  │
+                   ┌──────────────┴──────────────┐
+                   │                             │
+                   ▼                             ▼
+         ┌──────────────────┐         ┌────────────────────┐
+         │    JSON Output   │         │  DB (PostgreSQL)   │
+         └──────────────────┘         │   (Optional Save)  │
+                                      └────────────────────┘
+
+
 ```
 
 ## 📁 Project Structure
@@ -326,14 +364,14 @@ invoice-processor-ml/
 ├── src/
 │   ├── api.py                  # FastAPI REST endpoint for API access
 │   ├── data_loader.py          # Unified data loader for training
-│   ├── database.py             # PostgreSQL connection (scaffolded)
+│   ├── database.py             # Database connection with environment-aware 'soft fail' check
 │   ├── extraction.py           # Regex-based information extraction logic
 │   ├── ml_extraction.py        # ML-based extraction (LayoutLMv3 + DocTR)
-│   ├── models.py               # SQLModel tables for persistence (scaffolded)
+│   ├── models.py               # SQLModel tables (Invoice, LineItem) with schema validation
 │   ├── pdf_utils.py            # PDF text extraction and image conversion
 │   ├── pipeline.py             # Main orchestrator for the pipeline and CLI
 │   ├── preprocessing.py        # Image preprocessing functions (grayscale, denoise)
-│   ├── repository.py           # CRUD operations for invoices (scaffolded)
+│   ├── repository.py           # CRUD operations with session safety handling
 │   ├── schema.py               # Pydantic models for API response validation
 │   ├── sroie_loader.py         # SROIE dataset loading logic
 │   └── utils.py                # Utility functions (semantic hashing, etc.)
@@ -346,6 +384,10 @@ invoice-processor-ml/
 │
 ├── app.py                      # Streamlit web interface
 ├── requirements.txt            # Python dependencies
+├── environment.yml             # Conda environment configuration
+├── docker-compose.yml          # Docker Compose configuration for PostgreSQL
+├── Dockerfile                  # Dockerfile for building the application container
+├── .gitignore                  # Git ignore file
 └── README.md                   # You are Here!
 ```
 
@@ -364,16 +406,21 @@ invoice-processor-ml/
 ## 📈 Performance
 
 - **OCR Precision**: State-of-the-art hierarchical detection using **DocTR (ResNet-50)**. Outperforms Tesseract on complex/noisy layouts.
-- **ML-based Extraction**: 
-  - **Accuracy**: ~83% F1 Score on SROIE + Custom Dataset.
-  - **Speed**: ~5-7s per invoice (CPU) / <1s (GPU). Prioritizes high precision over raw speed.
+- **ML-based Extraction**:
+  - **Accuracy**: ~83% F1 Score on SROIE + custom invoices
+  - **Speed**:
+    - **GPU (recommended)**: <1s per invoice
+    - **CPU (fallback)**: ~5–7s per invoice
+
+⚠️ CPU-only execution is supported for testing and experimentation but results
+in significantly higher latency due to the heavy OCR and layout-aware models.
 
 ## ⚠️ Known Limitations
 
 1. **Layout Sensitivity**: The ML model was fine‑tuned on SROIE (retail receipts) and mychen76/invoices-and-receipts_ocr_v1 (English). Professional multi-column invoices may underperform until you fine‑tune on more diverse datasets.
 2. **Invoice Number**: SROIE dataset lacks invoice number labels. The system solves this by using the Hybrid Fallback Engine, which successfully extracts invoice numbers using Regex whenever the ML model output is empty.
 3. **Line Items/Tables**: Not trained for table extraction yet. Rule-based supports simple totals; table extraction comes later.
-4. **Inference Latency**: Using the heavy **DocTR (ResNet-50)** backbone ensures maximum accuracy but results in higher inference time (~5-7s on CPU) compared to lightweight engines.
+4. **Inference Latency**: CPU execution is significantly slower due to heavy OCR and layout-aware models.
 
 ## 🔮 Future Enhancements
 
@@ -386,7 +433,7 @@ invoice-processor-ml/
 - [x] CI/CD pipeline (GitHub Actions → HuggingFace Spaces auto-deploy)
 - [ ] Multilingual OCR (PaddleOCR) and multilingual fine‑tuning
 - [ ] Confidence calibration and better validation rules
-- [ ] Database persistence layer (PostgreSQL - scaffolded, ready for implementation)
+- [x] Database persistence layer (PostgreSQL with SQLModel & Redundancy checks)
 
 ## 🛠️ Tech Stack
 
@@ -400,6 +447,8 @@ invoice-processor-ml/
 | Data Format      | JSON                                |
 | CI/CD            | GitHub Actions → HuggingFace Spaces |
 | Containerization | Docker                              |
+| Database         | PostgreSQL, SQLModel                |
+| Containerization | Docker & Docker Compose             |
 
 ## 📚 What I Learned
 

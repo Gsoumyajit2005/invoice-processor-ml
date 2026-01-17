@@ -8,10 +8,8 @@ from pathlib import Path
 import uuid
 import sys
 
-# Import modules
-sys.path.append(str(Path(__file__).resolve().parent))
-from pipeline import process_invoice
-from schema import InvoiceData 
+from src.pipeline import process_invoice
+from src.schema import InvoiceData 
 
 app = FastAPI(
     title="Invoice Extraction API",

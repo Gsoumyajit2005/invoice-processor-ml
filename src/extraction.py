@@ -7,29 +7,83 @@ from difflib import SequenceMatcher
 
 def extract_dates(text: str) -> List[str]:
     """
-    Robust date extraction that handles noisy OCR separators (spaces, pipes, dots)
-    and validates using datetime to ensure semantic correctness.
+    Robust date extraction that handles:
+    - Numeric formats: DD/MM/YYYY, DD-MM-YYYY, DD.MM.YYYY
+    - Text month formats: 22 Mar 18, March 22, 2018, 22-Mar-2018
+    - OCR noise like pipes (|) instead of slashes
+    Validates using datetime to ensure semantic correctness.
     """
     if not text: return []
     
-    # Matches DD/MM/YYYY, DD-MM-YYYY, DD.MM.YYYY, DD MM YYYY
-    # Also handles OCR noise like pipes (|) instead of slashes
-    pattern = r'\b(\d{1,2})[\s/|.-](\d{1,2})[\s/|.-](\d{2,4})\b'
-    matches = re.findall(pattern, text)
+    # Month name mappings
+    MONTH_MAP = {
+        'jan': 1, 'january': 1,
+        'feb': 2, 'february': 2,
+        'mar': 3, 'march': 3,
+        'apr': 4, 'april': 4,
+        'may': 5,
+        'jun': 6, 'june': 6,
+        'jul': 7, 'july': 7,
+        'aug': 8, 'august': 8,
+        'sep': 9, 'sept': 9, 'september': 9,
+        'oct': 10, 'october': 10,
+        'nov': 11, 'november': 11,
+        'dec': 12, 'december': 12
+    }
     
     valid_dates = []
-    for d, m, y in matches:
+    
+    # Pattern 1: Numeric dates - DD/MM/YYYY, DD-MM-YYYY, DD.MM.YYYY, DD MM YYYY
+    # Also handles OCR noise like pipes (|) instead of slashes
+    numeric_pattern = r'\b(\d{1,2})[\s/|.-](\d{1,2})[\s/|.-](\d{2,4})\b'
+    for d, m, y in re.findall(numeric_pattern, text):
         try:
-            # Try to parse it to check if it's a real date
-            # This filters out "99/99/2000" or random phone numbers like 12 34 5678
-            # Assuming Day-Month-Year format which is common in SROIE/International
-            # For US format, you might swap d and m
+            year = int(y)
+            if year < 100:
+                year = 2000 + year if year < 50 else 1900 + year
+            dt = datetime(year, int(m), int(d))
+            valid_dates.append(dt.strftime("%d/%m/%Y"))
+        except ValueError:
+            continue
+    
+    # Pattern 2: DD Mon YY/YYYY (e.g., "22 Mar 18", "22-Mar-2018", "22 March 2018")
+    text_month_pattern1 = r'\b(\d{1,2})[\s/.-]?([A-Za-z]{3,9})[\s/.-]?(\d{2,4})\b'
+    for d, m, y in re.findall(text_month_pattern1, text, re.IGNORECASE):
+        month_num = MONTH_MAP.get(m.lower())
+        if month_num:
+            try:
+                year = int(y)
+                if year < 100:
+                    year = 2000 + year if year < 50 else 1900 + year
+                dt = datetime(year, month_num, int(d))
+                valid_dates.append(dt.strftime("%d/%m/%Y"))
+            except ValueError:
+                continue
+    
+    # Pattern 3: Mon DD, YYYY (e.g., "March 22, 2018", "Mar 22 2018")
+    text_month_pattern2 = r'\b([A-Za-z]{3,9})[\s.-]?(\d{1,2})[,\s.-]+(\d{2,4})\b'
+    for m, d, y in re.findall(text_month_pattern2, text, re.IGNORECASE):
+        month_num = MONTH_MAP.get(m.lower())
+        if month_num:
+            try:
+                year = int(y)
+                if year < 100:
+                    year = 2000 + year if year < 50 else 1900 + year
+                dt = datetime(year, month_num, int(d))
+                valid_dates.append(dt.strftime("%d/%m/%Y"))
+            except ValueError:
+                continue
+    
+    # Pattern 4: YYYY-MM-DD (ISO format)
+    iso_pattern = r'\b(\d{4})[-/](\d{1,2})[-/](\d{1,2})\b'
+    for y, m, d in re.findall(iso_pattern, text):
+        try:
             dt = datetime(int(y), int(m), int(d))
             valid_dates.append(dt.strftime("%d/%m/%Y"))
         except ValueError:
-            continue # Invalid date logic (e.g. Month 13 or Day 32)
+            continue
             
-    return list(dict.fromkeys(valid_dates)) # Deduplicate
+    return list(dict.fromkeys(valid_dates))  # Deduplicate while preserving order
 
 def extract_amounts(text:  str) -> List[float]:
     if not text: return []

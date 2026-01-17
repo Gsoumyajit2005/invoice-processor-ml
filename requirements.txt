@@ -1,22 +1,25 @@
-# ----- Streamlit ----- 
+# ----- Streamlit -----
 streamlit>=1.28.0
 
-# ----- OCR ----- 
-python-doctr[torch]>=0.8.0
-opencv-python>=4.8.0
+# ----- OCR -----
+python-doctr>=0.8.0
+opencv-python-headless>=4.8.0
 Pillow>=10.0.0
 
-# ----- Data ----- 
-numpy>=1.24.0
-pandas>=2.0.0
-
-# ----- Machine Learning ----- 
-torch>=2.0.0
-torchvision>=0.15.0
+# ----- NLP / Transformers -----
 transformers>=4.30.0
 datasets>=2.14.0
 huggingface-hub>=0.17.0
 seqeval>=1.2.2
+
+# ----- Utilities -----
+python-dotenv>=1.0.0
+httpx>=0.28.0
+tenacity>=8.0.0
+validators>=0.22.0
+langdetect>=1.0.9
+RapidFuzz>=3.0.0
+python-dateutil>=2.9.0
 
 # ----- Data Validation -----
 pydantic>=2.12.0

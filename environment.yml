@@ -1,0 +1,31 @@
+name: invoice-ml
+
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+
+dependencies:
+  # ----- Python -----
+  - python=3.10
+  - pip
+
+  # ----- CUDA-enabled PyTorch -----
+  - pytorch
+  - torchvision
+  - torchaudio
+  - pytorch-cuda=11.8
+
+  # ----- Core numeric / system -----
+  - numpy
+  - certifi
+  - openssl
+  - ca-certificates
+
+  # ----- Computer Vision / PDF -----
+  - poppler
+  - ghostscript
+
+  # ----- App-level Python deps -----
+  - pip:
+      - -r requirements.txt
