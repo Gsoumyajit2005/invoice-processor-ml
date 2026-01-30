@@ -6,6 +6,7 @@ from pathlib import Path
 from PIL import Image, ImageDraw
 import pandas as pd
 import sys
+from src.report_generator import generate_bulk_html_report
 
 # PDF to image conversion
 try:
@@ -126,19 +127,75 @@ with tab1:
     with col_left:
         st.subheader("1. Upload Invoice")
 
-        uploaded_file = st.file_uploader(
-            "Upload JPG, PNG, or PDF",
-            type=["jpg", "jpeg", "png", "pdf"]
+        # 1. Allow Multiple Files
+        uploaded_files = st.file_uploader(
+            "Upload Invoices (Bulk Supported)",
+            type=["jpg", "jpeg", "png", "pdf"],
+            accept_multiple_files=True 
         )
 
-        if uploaded_file:
-            st.caption(f"File: {uploaded_file.name}")
+        if "bulk_results" not in st.session_state:
+            st.session_state.bulk_results = None
+
+        if uploaded_files and st.button("✨ Process All Files", type="primary"):
+            all_results = []
+            progress_bar = st.progress(0)
+            status_text = st.empty()
+            
+            with st.spinner(f"Processing {len(uploaded_files)} documents..."):
+                temp_dir = Path("temp")
+                temp_dir.mkdir(exist_ok=True)
+
+                for i, uploaded_file in enumerate(uploaded_files):
+                    status_text.text(f"Processing file {i+1}/{len(uploaded_files)}: {uploaded_file.name}")
+                    # Save temp file
+                    temp_path = temp_dir / uploaded_file.name
+                    with open(temp_path, "wb") as f:
+                        f.write(uploaded_file.getbuffer())
+
+                    # Run Pipeline
+                    try:
+                        # Use 'ml' method as per the requirement
+                        result = process_invoice(str(temp_path), method='ml')
+                        all_results.append(result)
+                    except Exception as e:
+                        st.error(f"Error processing {uploaded_file.name}: {e}")
+                
+                    # Update Progress
+                    progress_bar.progress((i + 1) / len(uploaded_files))
+
+            st.success("✅ Bulk Processing Complete!")
+            st.session_state.bulk_results = all_results
+            
+        if st.session_state.bulk_results:
+            # Generate Report
+            html_report = generate_bulk_html_report(st.session_state.bulk_results)
+    
+            # Download Button for the HTML
+            st.download_button(
+                label="📥 Download Bulk HTML Report",
+                data=html_report,
+                file_name="bulk_invoice_report.html",
+                mime="text/html"
+            )
+        
+            # Display Summary Table in UI
+            st.subheader("Summary")
+            df = pd.DataFrame(st.session_state.bulk_results)
+            if not df.empty:
+                # Select clean columns for display
+                cols = [c for c in ["vendor", "date", "total_amount", "validation_status"] if c in df.columns]
+                st.dataframe(df[cols], width='stretch')
+        # Preview first file (if any files selected)
+        if uploaded_files:
+            first_file = uploaded_files[0]
+            st.caption(f"Preview: {first_file.name}" + (f" (+{len(uploaded_files)-1} more)" if len(uploaded_files) > 1 else ""))
             
             # Handle PDF preview
-            if uploaded_file.type == "application/pdf":
+            if first_file.type == "application/pdf":
                 if PDF_SUPPORT:
-                    pdf_bytes = uploaded_file.read()
-                    uploaded_file.seek(0)  # Reset for later processing
+                    pdf_bytes = first_file.read()
+                    first_file.seek(0)  # Reset for later processing
                     pages = convert_from_bytes(pdf_bytes, first_page=1, last_page=1)
                     if pages:
                         pdf_preview_image = pages[0]
@@ -147,7 +204,8 @@ with tab1:
                 else:
                     st.warning("PDF preview requires pdf2image. Install with: `pip install pdf2image`")
             else:
-                image = Image.open(uploaded_file)
+                image = Image.open(first_file)
+                first_file.seek(0)  # Reset for later processing
                 st.image(image, width=250, caption="Uploaded Invoice")
 
 
@@ -157,101 +215,84 @@ with tab1:
     with col_right:
         st.subheader("2. Extraction Results")
 
-        if uploaded_file and st.button("✨ Extract Data", type="primary"):
-            with st.spinner("Running invoice extraction pipeline..."):
-                try:
-                    temp_dir = Path("temp")
-                    temp_dir.mkdir(exist_ok=True)
-                    temp_path = temp_dir / uploaded_file.name
+        # Single-file extraction (original functionality)
+        # Works when exactly 1 file is uploaded
+        if uploaded_files and len(uploaded_files) == 1:
+            single_file = uploaded_files[0]
+            if st.button("✨ Extract Data", type="primary"):
+                with st.spinner("Running invoice extraction pipeline..."):
+                    try:
+                        temp_dir = Path("temp")
+                        temp_dir.mkdir(exist_ok=True)
+                        temp_path = temp_dir / single_file.name
 
-                    with open(temp_path, "wb") as f:
-                        f.write(uploaded_file.getbuffer())
+                        with open(temp_path, "wb") as f:
+                            f.write(single_file.getbuffer())
 
-                    method = "ml" if "ML" in extraction_method else "rules"
-                    
-                    # CALL PIPELINE
-                    result = process_invoice(str(temp_path), method=method)
-
-                    # --- SMART STATUS NOTIFICATIONS ---
-                    db_status = result.get('_db_status', 'disabled')
-                    
-                    if db_status == 'saved':
-                        st.success("✅ Extraction & Storage Complete")
-                        st.toast("Invoice saved to Database!", icon="💾")
-                    
-                    elif db_status == 'queued':
-                        st.success("✅ Extraction Complete")
-                        st.toast("Saving to database...", icon="💾")
-                    
-                    elif db_status == 'duplicate':
-                        st.success("✅ Extraction Complete") 
-                        st.toast("Duplicate invoice (already in database)", icon="⚠️")
+                        method = "ml" if "ML" in extraction_method else "rules"
                         
-                    elif db_status == 'disabled':
-                        st.success("✅ Extraction Complete")
-                        # Only show "Demo Mode" toast once per session
-                        if not st.session_state.get('_db_warning_shown', False):
-                            st.toast("Database disabled (Demo Mode)", icon="ℹ️")
-                            st.session_state['_db_warning_shown'] = True
+                        # CALL PIPELINE
+                        result = process_invoice(str(temp_path), method=method)
+
+                        # --- SMART STATUS NOTIFICATIONS ---
+                        db_status = result.get('_db_status', 'disabled')
                         
-                    else:
-                        st.success("✅ Extraction Complete")
-
-                    # Hard guard — prevents DeltaGenerator bugs
-                    if not isinstance(result, dict):
-                        st.error("Pipeline returned invalid data.")
-                        st.stop()
-                        
-                    # Remove the metadata field so it doesn't show up in the JSON view
-                    if '_db_status' in result:
-                        del result['_db_status']
-
-                    st.session_state.data = result
-                    st.session_state.format_info = detect_invoice_format(
-                        result.get("raw_text", "")
-                    )
-                    st.session_state.processed_count += 1
-
-                    # --- AI Detection Overlay Visualization ---
-                    raw_predictions = result.get("raw_predictions")
-                    if raw_predictions:
-                        # Get the base image for annotation
-                        if uploaded_file.type == "application/pdf":
-                            # Use the converted PDF preview image
-                            if "pdf_preview" in st.session_state:
-                                overlay_image = st.session_state.pdf_preview.copy().convert("RGB")
-                            else:
-                                overlay_image = None
+                        if db_status == 'saved':
+                            st.success("✅ Extraction & Storage Complete")
+                            st.toast("Invoice saved to Database!", icon="💾")
+                        elif db_status == 'queued':
+                            st.success("✅ Extraction Complete")
+                            st.toast("Saving to database...", icon="💾")
+                        elif db_status == 'duplicate':
+                            st.success("✅ Extraction Complete") 
+                            st.toast("Duplicate invoice (already in database)", icon="⚠️")
+                        elif db_status == 'disabled':
+                            st.success("✅ Extraction Complete")
+                            if not st.session_state.get('_db_warning_shown', False):
+                                st.toast("Database disabled (Demo Mode)", icon="ℹ️")
+                                st.session_state['_db_warning_shown'] = True
                         else:
-                            # Reload the original image for annotation
-                            uploaded_file.seek(0)
-                            overlay_image = Image.open(uploaded_file).convert("RGB")
-                        
-                        if overlay_image:
-                            draw = ImageDraw.Draw(overlay_image)
+                            st.success("✅ Extraction Complete")
 
-                            # Draw red rectangles around each detected entity's bounding boxes
-                            for entity_name, entity_data in raw_predictions.items():
-                                bboxes = entity_data.get("bbox", [])
-                                for box in bboxes:
-                                    # bbox format: [x, y, width, height]
-                                    x, y, w, h = box
-                                    draw.rectangle(
-                                        [x, y, x + w, y + h],
-                                        outline="red",
-                                        width=2
-                                    )
+                        # Hard guard
+                        if not isinstance(result, dict):
+                            st.error("Pipeline returned invalid data.")
+                            st.stop()
+                            
+                        if '_db_status' in result:
+                            del result['_db_status']
 
-                            overlay_image.thumbnail((800, 800))
-        
-                            st.image(
-                                overlay_image,
-                                caption="AI Detection Overlay",
-                                width="content"
-                            )
+                        st.session_state.data = result
+                        st.session_state.format_info = detect_invoice_format(
+                            result.get("raw_text", "")
+                        )
+                        st.session_state.processed_count += 1
 
-                except Exception as e:
-                    st.error(f"Pipeline error: {e}")
+                        # --- AI Detection Overlay Visualization ---
+                        raw_predictions = result.get("raw_predictions")
+                        if raw_predictions:
+                            if single_file.type == "application/pdf":
+                                if "pdf_preview" in st.session_state:
+                                    overlay_image = st.session_state.pdf_preview.copy().convert("RGB")
+                                else:
+                                    overlay_image = None
+                            else:
+                                single_file.seek(0)
+                                overlay_image = Image.open(single_file).convert("RGB")
+                            
+                            if overlay_image:
+                                draw = ImageDraw.Draw(overlay_image)
+                                for entity_name, entity_data in raw_predictions.items():
+                                    bboxes = entity_data.get("bbox", [])
+                                    for box in bboxes:
+                                        x, y, w, h = box
+                                        draw.rectangle([x, y, x + w, y + h], outline="red", width=2)
+
+                                overlay_image.thumbnail((800, 800))
+                                st.image(overlay_image, caption="AI Detection Overlay", width="content")
+
+                    except Exception as e:
+                        st.error(f"Pipeline error: {e}")
 
         # -----------------------------
         # Render Results
@@ -290,7 +331,7 @@ with tab1:
             st.subheader("🛒 Line Items")
             items = data.get("items", [])
             if items:
-                st.dataframe(pd.DataFrame(items), use_container_width=True)
+                st.dataframe(pd.DataFrame(items), width='stretch')
             else:
                 st.info("No line items extracted.")
 
@@ -315,6 +356,14 @@ with tab1:
                 json.dumps(data, indent=2),
                 file_name=f"invoice_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json",
                 mime="application/json"
+            )
+
+            html_report = generate_bulk_html_report([data])
+            st.download_button(
+                "📥 Download HTML Report",
+                html_report,
+                file_name=f"invoice_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.html",
+                mime="text/html"
             )
 
             with st.expander("📝 Raw OCR Text"):

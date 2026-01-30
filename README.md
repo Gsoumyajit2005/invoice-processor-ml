@@ -46,12 +46,14 @@ A production-grade Hybrid Invoice Extraction System that combines the semantic u
 - **Defensive Data Handling:** Implemented coordinate clamping to prevent model crashes from negative OCR bounding boxes.
 - **GPU-Accelerated OCR:** DocTR (Mindee) with automatic CUDA acceleration for faster inference in production.
 - **Clean JSON Output:** Normalized schema handling nested entities, line items, and validation flags.
-- **Defensive Persistence:** Optional PostgreSQL integration that automatically saves extracted data when credentials are present, but gracefully degrades (skips saving) in serverless/demo environments like Hugging Face Spaces.
-- **Duplicate Prevention:** Implemented *Semantic Hashing* (Vendor + Date + Total + ID) to automatically detect and prevent duplicate invoice entries.
+- **Defensive Persistence:** Optional PostgreSQL integration (local Docker or cloud Supabase) that automatically saves extracted data when credentials are present, but gracefully degrades (skips saving) in serverless/demo environments.
+- **Async Database Saves:** Background thread processing ensures fast UI response (~5-7s) while database operations happen asynchronously.
+- **Duplicate Prevention:** Implemented _Semantic Hashing_ (Vendor + Date + Total + ID) to automatically detect and prevent duplicate invoice entries.
 
 ### 💻 Usability
 
 - **Streamlit Web UI:** Interactive dashboard for real-time inference, visualization, and side-by-side comparison (ML vs. Regex).
+- **PDF Preview & Overlay:** Visual preview of uploaded PDFs with ML-detected bounding boxes overlay for transparency.
 - **CLI & Batch Processing:** Process single files or entire directories via command line with JSON export.
 - **Auto-Validation:** Heuristic checks to validate that the extracted "Total Amount" matches the sum of line items.
 
@@ -235,7 +237,6 @@ docker-compose up -d
 ```
 
 The application will automatically detect the database and start saving invoices.
-
 
 ## 💻 Usage
 
@@ -428,7 +429,7 @@ in significantly higher latency due to the heavy OCR and layout-aware models.
 - [ ] (Optional) Add FATURA (table-focused) for line-item extraction
 - [ ] Sliding-window chunking for >512 token documents (to avoid truncation)
 - [ ] Table detection (Camelot/Tabula/DeepDeSRT) for line items
-- [ ] PDF support (pdf2image) for multipage invoices
+- [x] PDF support (pdf2image) for multipage invoices
 - [x] FastAPI backend + Docker
 - [x] CI/CD pipeline (GitHub Actions → HuggingFace Spaces auto-deploy)
 - [ ] Multilingual OCR (PaddleOCR) and multilingual fine‑tuning

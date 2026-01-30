@@ -9,6 +9,7 @@ from typing import List, Dict, Any, Tuple
 import re
 import numpy as np
 from src.extraction import extract_invoice_number, extract_total, extract_address
+from src.table_extraction import extract_table_items
 from doctr.io import DocumentFile
 from doctr.models import ocr_predictor
 
@@ -155,7 +156,6 @@ def _process_predictions(words, unnormalized_boxes, encoding, predictions, id2la
 
     return entities
 
-
 def extract_ml_based(image_path: str) -> Dict[str, Any]:
     if not MODEL or not PROCESSOR:
         raise RuntimeError("ML model is not loaded.")
@@ -176,7 +176,6 @@ def extract_ml_based(image_path: str) -> Dict[str, Any]:
     # Reconstructs lines so regex can work line-by-line
     lines = []
     current_line = []
-    
     if len(unnormalized_boxes) > 0:
         # Initialize with first word's Y and Height
         current_y = unnormalized_boxes[0][1]
@@ -329,5 +328,12 @@ def extract_ml_based(image_path: str) -> Dict[str, Any]:
                 "text": target_val,
                 "bbox": [found_box] 
             }
+    
+    # --- TABLE EXTRACTION (Geometric Heuristic) ---
+    # Use the geometric fallback to extract line items from table region
+    if words and unnormalized_boxes:
+        extracted_items = extract_table_items(words, unnormalized_boxes)
+        if extracted_items:
+            final_output["items"] = extracted_items
     
     return final_output
