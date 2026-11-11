@@ -1,76 +1,67 @@
-# Python
+# Python & build artifacts
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+.Python
+build/
+dist/
 
-# Environment
-env/
+# Virtual environments & tool caches
+.venv/
 venv/
+env/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.cache/
+.coverage
+htmlcov/
+
+# Environment & secrets
 .env
-config.yaml
+.env.*
+!.env.example
 credentials.json
 
-# IDE / Editor
+# IDE / OS
 .vscode/
 .idea/
 *.swp
 *.swo
-
-# Notebooks / caches / logs
-.ipynb_checkpoints/
-.pytest_cache/
-*.log
-logs/
-.cache/
-*.pkl
-
-# OS
 .DS_Store
 Thumbs.db
-ehthumbs.db
-*.code-workspace
-Desktop.ini
 
-# Streamlit temp folder
-temp/
-.streamlit/
+# Local databases & uploads
+*.db
+*.sqlite
+*.sqlite3
+backend/uploads/
 
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# JSON outputs
-outputs/
-
-# Logs
-logs/
-*.log
-
-# --- Data Folders ---
-# Ignore all files inside the raw and processed data folders
+# Data & datasets (keep curated data/samples/ tracked)
 data/raw/*
-data/processed/*
-
-# But DO NOT ignore the .gitkeep files inside them
 !data/raw/.gitkeep
+data/processed/*
 !data/processed/.gitkeep
-
-!requirements.txt
-!README.md
-
+data/sroie/
 datasets/
-checkpoints/
-lightning_logs/
-wandb/
-mlruns/
 
-# Ignore all files in the models directory
+# Models, checkpoints & training artifacts
 models/*
 !models/.gitkeep
 !models/README.md
+checkpoints/
+ml/train/checkpoints/
+ml/train/outputs/
+lightning_logs/
+wandb/
+mlruns/
+*.pkl
+*.log
+logs/
 
-# Ignore sroie files in the data directory
-data/sroie/
-
-# Ignore temp uploads
-temp_uploads/
+# Frontend (Phase 4)
+frontend/node_modules/
+frontend/.next/
+frontend/out/

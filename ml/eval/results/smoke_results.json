@@ -1,0 +1,1488 @@
+{
+  "summaries": [
+    {
+      "model": "xiaomi-fp16",
+      "dataset": "sroie_test",
+      "n": 2,
+      "json_valid_rate": 1.0,
+      "mean_latency_s": 6.695,
+      "median_latency_s": 6.695,
+      "mean_ocr_s": 0.141,
+      "mean_vlm_s": 6.553,
+      "peak_vram_mb": 1889.5,
+      "fields": {
+        "address_fuzzy": 1.0,
+        "date_exact": 1.0,
+        "total_amount_close": 1.0,
+        "vendor_exact": 1.0,
+        "vendor_fuzzy": 1.0
+      },
+      "line_item_f1": null,
+      "line_item_recall": null,
+      "line_item_price_match": null,
+      "math_reconcile_rate": 1.0,
+      "items_sum_match_rate": 0.5
+    },
+    {
+      "model": "xiaomi-fp16",
+      "dataset": "cord_v2_test",
+      "n": 2,
+      "json_valid_rate": 1.0,
+      "mean_latency_s": 3.791,
+      "median_latency_s": 3.791,
+      "mean_ocr_s": 0.116,
+      "mean_vlm_s": 3.675,
+      "peak_vram_mb": 1932.3,
+      "fields": {
+        "discount_amount_close": 0.0,
+        "subtotal_close": 0.5,
+        "tax_amount_close": 0.5,
+        "total_amount_close": 0.5
+      },
+      "line_item_f1": 1.0,
+      "line_item_recall": 1.0,
+      "line_item_price_match": 0.5,
+      "math_reconcile_rate": 0.5,
+      "items_sum_match_rate": 1.0
+    },
+    {
+      "model": "xiaomi-fp16",
+      "dataset": "temp_docs",
+      "n": 3,
+      "json_valid_rate": 1.0,
+      "mean_latency_s": 7.273,
+      "median_latency_s": 7.289,
+      "mean_ocr_s": 0.228,
+      "mean_vlm_s": 7.044,
+      "peak_vram_mb": 2022.2,
+      "fields": {
+        "currency": 1.0,
+        "date_exact": 1.0,
+        "receipt_no_exact": 0.3333,
+        "subtotal_close": 1.0,
+        "tax_amount_close": 1.0,
+        "total_amount_close": 0.3333,
+        "vendor_exact": 0.6667,
+        "vendor_fuzzy": 0.6667
+      },
+      "line_item_f1": 0.8889,
+      "line_item_recall": 1.0,
+      "line_item_price_match": 0.7778,
+      "math_reconcile_rate": 0.3333,
+      "items_sum_match_rate": 0.3333
+    },
+    {
+      "model": "qwen35-fp16",
+      "dataset": "sroie_test",
+      "n": 2,
+      "json_valid_rate": 1.0,
+      "mean_latency_s": 5.761,
+      "median_latency_s": 5.761,
+      "mean_ocr_s": 0.141,
+      "mean_vlm_s": 5.62,
+      "peak_vram_mb": 1889.5,
+      "fields": {
+        "address_fuzzy": 1.0,
+        "date_exact": 1.0,
+        "total_amount_close": 1.0,
+        "vendor_exact": 1.0,
+        "vendor_fuzzy": 1.0
+      },
+      "line_item_f1": null,
+      "line_item_recall": null,
+      "line_item_price_match": null,
+      "math_reconcile_rate": 1.0,
+      "items_sum_match_rate": 0.5
+    },
+    {
+      "model": "qwen35-fp16",
+      "dataset": "cord_v2_test",
+      "n": 2,
+      "json_valid_rate": 1.0,
+      "mean_latency_s": 4.889,
+      "median_latency_s": 4.889,
+      "mean_ocr_s": 0.116,
+      "mean_vlm_s": 4.773,
+      "peak_vram_mb": 1932.3,
+      "fields": {
+        "discount_amount_close": 0.0,
+        "subtotal_close": 1.0,
+        "tax_amount_close": 1.0,
+        "total_amount_close": 0.5
+      },
+      "line_item_f1": 0.8333,
+      "line_item_recall": 1.0,
+      "line_item_price_match": 1.0,
+      "math_reconcile_rate": 1.0,
+      "items_sum_match_rate": 0.5
+    },
+    {
+      "model": "qwen35-fp16",
+      "dataset": "temp_docs",
+      "n": 3,
+      "json_valid_rate": 1.0,
+      "mean_latency_s": 7.284,
+      "median_latency_s": 7.515,
+      "mean_ocr_s": 0.228,
+      "mean_vlm_s": 7.055,
+      "peak_vram_mb": 2022.2,
+      "fields": {
+        "currency": 1.0,
+        "date_exact": 1.0,
+        "receipt_no_exact": 0.6667,
+        "subtotal_close": 1.0,
+        "tax_amount_close": 1.0,
+        "total_amount_close": 0.6667,
+        "vendor_exact": 0.3333,
+        "vendor_fuzzy": 0.3333
+      },
+      "line_item_f1": 0.8889,
+      "line_item_recall": 1.0,
+      "line_item_price_match": 1.0,
+      "math_reconcile_rate": 1.0,
+      "items_sum_match_rate": 0.6667
+    }
+  ],
+  "records": [
+    {
+      "model": "xiaomi-fp16",
+      "dataset": "sroie_test",
+      "sample_id": "X00016469670",
+      "is_multipage_stress": false,
+      "json_valid": true,
+      "latency_s": 6.915,
+      "ocr_latency_s": 0.148,
+      "model_latency_s": 6.766,
+      "peak_vram_mb": 1854.6,
+      "error": null,
+      "ground_truth": {
+        "vendor": "OJC MARKETING SDN BHD",
+        "vendor_address": "NO 2 & 4, JALAN BAYU 4, BANDAR SERI ALAM, 81750 MASAI, JOHOR",
+        "date": "15/01/2019",
+        "total_amount": 193.0
+      },
+      "prediction": {
+        "vendor": "OJC MARKETING SDN BHD",
+        "vendor_address": "OJC MARKETING SDN BHD ROC NO: 538358-H NO 2 & 4, JALAN BAYU 4, BANDAR SERI ALAM, 81750 MASAI, JOHOR",
+        "receipt_number": "PEGIV-1030765",
+        "date": "2019-01-15",
+        "currency": "SR",
+        "subtotal": 193.0,
+        "tax_amount": 0.0,
+        "discount_amount": 0.0,
+        "total_amount": 193.0,
+        "bill_to": "THE PEAK QUARRY WORKS",
+        "line_items": [
+          {
+            "description": "KINGS SAFETY SHOES KWD B05",
+            "quantity": 1.0,
+            "unit_price": 193.0,
+            "total_price": 193.0
+          }
+        ]
+      },
+      "raw_output": "{\n  \"vendor\": \"OJC MARKETING SDN BHD\",\n  \"vendor_address\": \"OJC MARKETING SDN BHD\\nROC NO: 538358-H\\nNO 2 & 4, JALAN BAYU 4,\\nBANDAR SERI ALAM,\\n81750 MASAI, JOHOR\",\n  \"receipt_number\": \"PEGIV-1030765\",\n  \"date\": \"2019-01-15\",\n  \"currency\": \"SR\",\n  \"subtotal\": \"193.00\",\n  \"tax_amount\": \"0.00\",\n  \"discount_amount\": \"0.00\",\n  \"total_amount\": \"193.00\",\n  \"bill_to\": \"THE PEAK QUARRY WORKS\",\n  \"line_items\": [\n    {\n      \"description\": \"KINGS SAFETY SHOES KWD B05\",\n      \"quantity\": \"1\",\n      \"unit_price\": \"193.00\",\n      \"total_price\": \"193.00\"\n    }\n  ]\n}",
+      "scores": {
+        "vendor": {
+          "present": true,
+          "exact": true,
+          "fuzzy_match": true,
+          "similarity": 100.0
+        },
+        "vendor_address": {
+          "present": true,
+          "exact": false,
+          "fuzzy_match": true,
+          "similarity": 100.0
+        },
+        "date": {
+          "present": true,
+          "exact": true,
+          "fuzzy_match": true,
+          "similarity": 100.0
+        },
+        "total_amount": {
+          "present": true,
+          "exact": true,
+          "close": true,
+          "abs_err": 0.0
+        },
+        "validation": {
+          "items_sum": 193.0,
+          "items_match_subtotal": true,
+          "totals_reconcile": true
+        }
+      }
+    },
+    {
+      "model": "xiaomi-fp16",
+      "dataset": "sroie_test",
+      "sample_id": "X51006389898",
+      "is_multipage_stress": false,
+      "json_valid": true,
+      "latency_s": 6.475,
+      "ocr_latency_s": 0.133,
+      "model_latency_s": 6.341,
+      "peak_vram_mb": 1889.5,
+      "error": null,
+      "ground_truth": {
+        "vendor": "RESTORAN WAN SHF",
+        "vendor_address": "No. 2, Jalan Temenggung 19/9, Seksyen 9, Bandar Mahkota Cheras, 43200 Cheras, Selangor",
+        "date": "29-09-2017",
+        "total_amount": 164.4
+      },
+      "prediction": {
+        "vendor": "RESTORAN WAN SHF",
+        "vendor_address": "No.2, Jalan Temenggung 19/9, Seksyen 9, Bandar Mahkota Cheras, 43200 Cheras, Selangor",
+        "receipt_number": "784997",
+        "date": "2017-09-29",
+        "currency": "RM",
+        "subtotal": 155.09,
+        "tax_amount": 9.31,
+        "discount_amount": 9.31,
+        "total_amount": 164.4,
+        "bill_to": null,
+        "line_items": [
+          {
+            "description": "Tiger (B)",
+            "quantity": 6.0,
+            "unit_price": 12.0,
+            "total_price": 72.0
+          },
+          {
+            "description": "Guiness Stout (B) Promotion",
+            "quantity": 6.0,
+            "unit_price": 15.4,
+            "total_price": 92.4
+          }
+        ]
+      },
+      "raw_output": "{\n  \"vendor\": \"RESTORAN WAN SHF\",\n  \"vendor_address\": \"No.2, Jalan Temenggung 19/9, Seksyen 9, Bandar Mahkota Cheras, 43200 Cheras, Selangor\",\n  \"receipt_number\": \"784997\",\n  \"date\": \"2017-09-29\",\n  \"currency\": \"RM\",\n  \"subtotal\": \"155.09\",\n  \"tax_amount\": \"9.31\",\n  \"discount_amount\": \"9.31\",\n  \"total_amount\": \"164.40\",\n  \"bill_to\": \"\",\n  \"line_items\": [\n    {\n      \"description\": \"Tiger (B)\",\n      \"quantity\": \"6\",\n      \"unit_price\": \"12.00\",\n      \"total_price\": \"72.00\",\n      \"tax\": \"SR\"\n    },\n    {\n      \"description\": \"Guiness Stout (B) Promotion\",\n      \"quantity\": \"6\",\n      \"unit_price\": \"15.40\",\n      \"total_price\": \"92.40\",\n      \"tax\": \"SR\"\n    }\n  ]\n}",
+      "scores": {
+        "vendor": {
+          "present": true,
+          "exact": true,
+          "fuzzy_match": true,
+          "similarity": 100.0
+        },
+        "vendor_address": {
+          "present": true,
+          "exact": true,
+          "fuzzy_match": true,
+          "similarity": 100.0
+        },
+        "date": {
+          "present": true,
+          "exact": true,
+          "fuzzy_match": true,
+          "similarity": 100.0
+        },
+        "total_amount": {
+          "present": true,
+          "exact": true,
+          "close": true,
+          "abs_err": 0.0
+        },
+        "validation": {
+          "items_sum": 164.4,
+          "items_match_subtotal": false,
+          "totals_reconcile": true
+        }
+      }
+    },
+    {
+      "model": "xiaomi-fp16",
+      "dataset": "cord_v2_test",
+      "sample_id": "cord_test_000",
+      "is_multipage_stress": false,
+      "json_valid": true,
+      "latency_s": 3.785,
+      "ocr_latency_s": 0.1,
+      "model_latency_s": 3.684,
+      "peak_vram_mb": 1806.1,
+      "error": null,
+      "ground_truth": {
+        "subtotal": 60000.0,
+        "tax_amount": 5455.0,
+        "discount_amount": 60000.0,
+        "total_amount": 60000.0,
+        "line_items": [
+          {
+            "description": "-TICKET CP",
+            "quantity": 2.0,
+            "unit_price": null,
+            "total_price": 60000.0
+          }
+        ]
+      },
+      "prediction": {
+        "vendor": "EDC CIMB NIAGA",
+        "vendor_address": null,
+        "receipt_number": "901016",
+        "date": null,
+        "currency": null,
+        "subtotal": 60.0,
+        "tax_amount": 5.455,
+        "discount_amount": -60.0,
+        "total_amount": 60.0,
+        "bill_to": null,
+        "line_items": [
+          {
+            "description": "- TICKET CP",
+            "quantity": 2.0,
+            "unit_price": 60.0,
+            "total_price": 60.0
+          }
+        ]
+      },
+      "raw_output": "{\n  \"vendor\": \"EDC CIMB NIAGA\",\n  \"vendor_address\": \"\",\n  \"receipt_number\": \"901016\",\n  \"date\": \"\",\n  \"currency\": \"\",\n  \"subtotal\": \"60.000\",\n  \"tax_amount\": \"5.455\",\n  \"discount_amount\": \"-60.000\",\n  \"total_amount\": \"60.000\",\n  \"bill_to\": \"\",\n  \"line_items\": [\n    {\n      \"description\": \"- TICKET CP\",\n      \"quantity\": \"2\",\n      \"unit_price\": \"60.000\",\n      \"total_price\": \"60.000\"\n    }\n  ]\n}",
+      "scores": {
+        "subtotal": {
+          "present": true,
+          "exact": false,
+          "close": false,
+          "abs_err": 59940.0
+        },
+        "tax_amount": {
+          "present": true,
+          "exact": false,
+          "close": false,
+          "abs_err": 5449.545
+        },
+        "discount_amount": {
+          "present": true,
+          "exact": false,
+          "close": false,
+          "abs_err": 60060.0
+        },
+        "total_amount": {
+          "present": true,
+          "exact": false,
+          "close": false,
+          "abs_err": 59940.0
+        },
+        "line_items": {
+          "present": true,
+          "gt_count": 1,
+          "pred_count": 1,
+          "desc_recall": 1.0,
+          "desc_precision": 1.0,
+          "desc_f1": 1.0,
+          "price_match_rate": 0.0
+        },
+        "validation": {
+          "items_sum": 60.0,
+          "items_match_subtotal": true,
+          "totals_reconcile": false
+        }
+      }
+    },
+    {
+      "model": "xiaomi-fp16",
+      "dataset": "cord_v2_test",
+      "sample_id": "cord_test_050",
+      "is_multipage_stress": false,
+      "json_valid": true,
+      "latency_s": 3.796,
+      "ocr_latency_s": 0.131,
+      "model_latency_s": 3.665,
+      "peak_vram_mb": 1932.3,
+      "error": null,
+      "ground_truth": {
+        "subtotal": 17727.0,
+        "tax_amount": 1773.0,
+        "total_amount": 19500.0,
+        "line_items": [
+          {
+            "description": "Superice Cauburry",
+            "quantity": 1.0,
+            "unit_price": null,
+            "total_price": 17727.0
+          }
+        ]
+      },
+      "prediction": {
+        "vendor": "Dras",
+        "vendor_address": null,
+        "receipt_number": null,
+        "date": null,
+        "currency": null,
+        "subtotal": 17727.0,
+        "tax_amount": 1773.0,
+        "discount_amount": null,
+        "total_amount": 19500.0,
+        "bill_to": null,
+        "line_items": [
+          {
+            "description": "SpcPrice Cadbury",
+            "quantity": 1.0,
+            "unit_price": 17727.0,
+            "total_price": 17727.0
+          }
+        ]
+      },
+      "raw_output": "{\n  \"vendor\": \"Dras\",\n  \"vendor_address\": \"\",\n  \"receipt_number\": \"\",\n  \"date\": \"\",\n  \"currency\": \"\",\n  \"subtotal\": \"17,727\",\n  \"tax_amount\": \"1,773\",\n  \"discount_amount\": \"\",\n  \"total_amount\": \"19,500\",\n  \"bill_to\": \"\",\n  \"line_items\": [\n    {\n      \"description\": \"SpcPrice Cadbury\",\n      \"quantity\": \"1\",\n      \"unit_price\": \"17,727\",\n      \"total_price\": \"17,727\"\n    }\n  ]\n}",
+      "scores": {
+        "subtotal": {
+          "present": true,
+          "exact": true,
+          "close": true,
+          "abs_err": 0.0
+        },
+        "tax_amount": {
+          "present": true,
+          "exact": true,
+          "close": true,
+          "abs_err": 0.0
+        },
+        "total_amount": {
+          "present": true,
+          "exact": true,
+          "close": true,
+          "abs_err": 0.0
+        },
+        "line_items": {
+          "present": true,
+          "gt_count": 1,
+          "pred_count": 1,
+          "desc_recall": 1.0,
+          "desc_precision": 1.0,
+          "desc_f1": 1.0,
+          "price_match_rate": 1.0
+        },
+        "validation": {
+          "items_sum": 17727.0,
+          "items_match_subtotal": true,
+          "totals_reconcile": true
+        }
+      }
+    },
+    {
+      "model": "xiaomi-fp16",
+      "dataset": "temp_docs",
+      "sample_id": "sample_pdf_2.pdf",
+      "is_multipage_stress": false,
+      "json_valid": true,
+      "latency_s": 7.289,
+      "ocr_latency_s": 0.323,
+      "model_latency_s": 6.966,
+      "peak_vram_mb": 2022.2,
+      "error": null,
+      "ground_truth": {
+        "vendor": "Unternehmen f\u00fcr Computerteile",
+        "receipt_number": "AUFNR234953",
+        "date": "2022-05-02",
+        "currency": "EUR",
+        "subtotal": 216.0,
+        "tax_amount": 41.04,
+        "total_amount": 257.04,
+        "line_items": [
+          {
+            "description": "LED-Monitore 12'",
+            "quantity": 4.0,
+            "unit_price": 16.0,
+            "total_price": 64.0
+          },
+          {
+            "description": "USB-Maus",
+            "quantity": 2.0,
+            "unit_price": 16.0,
+            "total_price": 32.0
+          },
+          {
+            "description": "mechanische Tastatur",
+            "quantity": 5.0,
+            "unit_price": 24.0,
+            "total_price": 120.0
+          }
+        ]
+      },
+      "prediction": {
+        "vendor": "JKL Corporation",
+        "vendor_address": "Softwareunternehmen \u00b7 Philipp-Ott-Str. 64, S\u00fcd Lenjaberg, SN 48103",
+        "receipt_number": "0293479054",
+        "date": "2022-05-02",
+        "currency": "EUR",
+        "subtotal": 216.0,
+        "tax_amount": 41.04,
+        "discount_amount": 257.04,
+        "total_amount": 216.0,
+        "bill_to": "Softwareunternehmen",
+        "line_items": [
+          {
+            "description": "LED-Monitore 12'",
+            "quantity": 1.0,
+            "unit_price": 4.0,
+            "total_price": 64.0
+          },
+          {
+            "description": "USB-Maus",
+            "quantity": 1.0,
+            "unit_price": 2.0,
+            "total_price": 32.0
+          },
+          {
+            "description": "mechanische Tastatur",
+            "quantity": 1.0,
+            "unit_price": 5.0,
+            "total_price": 120.0
+          }
+        ]
+      },
+      "raw_output": "{\n  \"vendor\": \"JKL Corporation\",\n  \"vendor_address\": \"Softwareunternehmen \u00b7 Philipp-Ott-Str. 64, S\u00fcd Lenjaberg, SN 48103\",\n  \"receipt_number\": \"0293479054\",\n  \"date\": \"2022-05-02\",\n  \"currency\": \"EUR\",\n  \"subtotal\": \"216,00\",\n  \"tax_amount\": \"41,04\",\n  \"discount_amount\": \"257,04\",\n  \"total_amount\": \"216,00\",\n  \"bill_to\": \"Softwareunternehmen\",\n  \"line_items\": [\n    {\n      \"description\": \"LED-Monitore 12'\",\n      \"quantity\": \"1\",\n      \"unit_price\": \"4 VE\",\n      \"total_price\": \"64,00\"\n    },\n    {\n      \"description\": \"USB-Maus\",\n      \"quantity\": \"1\",\n      \"unit_price\": \"2 VE\",\n      \"total_price\": \"32,00\"\n    },\n    {\n      \"description\": \"mechanische Tastatur\",\n      \"quantity\": \"1\",\n      \"unit_price\": \"5 VE\",\n      \"total_price\": \"120,00\"\n    }\n  ]\n}",
+      "scores": {
+        "vendor": {
+          "present": true,
+          "exact": false,
+          "fuzzy_match": false,
+          "similarity": 31.818181818181824
+        },
+        "date": {
+          "present": true,
+          "exact": true,
+          "fuzzy_match": true,
+          "similarity": 100.0
+        },
+        "receipt_number": {
+          "present": true,
+          "exact": false,
+          "fuzzy_match": false,
+          "similarity": 47.61904761904762
+        },
+        "currency": true,
+        "subtotal": {
+          "present": true,
+          "exact": true,
+          "close": true,
+          "abs_err": 0.0
+        },
+        "tax_amount": {
+          "present": true,
+          "exact": true,
+          "close": true,
+          "abs_err": 0.0
+        },
+        "total_amount": {
+          "present": true,
+          "exact": false,
+          "close": false,
+          "abs_err": 41.04000000000002
+        },
+        "line_items": {
+          "present": true,
+          "gt_count": 3,
+          "pred_count": 3,
+          "desc_recall": 1.0,
+          "desc_precision": 1.0,
+          "desc_f1": 1.0,
+          "price_match_rate": 1.0
+        },
+        "validation": {
+          "items_sum": 216.0,
+          "items_match_subtotal": true,
+          "totals_reconcile": false
+        }
+      }
+    },
+    {
+      "model": "xiaomi-fp16",
+      "dataset": "temp_docs",
+      "sample_id": "invoice-eur-english.png",
+      "is_multipage_stress": false,
+      "json_valid": true,
+      "latency_s": 8.08,
+      "ocr_latency_s": 0.249,
+      "model_latency_s": 7.83,
+      "peak_vram_mb": 1996.0,
+      "error": null,
+      "ground_truth": {
+        "vendor": "Sample Company Ltd",
+        "receipt_number": "SRV-1895",
+        "date": "2026-01-27",
+        "currency": "EUR",
+        "subtotal": 16310.0,
+        "tax_amount": 3262.0,
+        "total_amount": 19572.0,
+        "line_items": [
+          {
+            "description": "IT programming and consulting",
+            "quantity": 86.0,
+            "unit_price": 185.0,
+            "total_price": 15910.0
+          },
+          {
+            "description": "Support hours",
+            "quantity": 4.0,
+            "unit_price": 70.0,
+            "total_price": 280.0
+          },
+          {
+            "description": "Domain sample-company.net",
+            "quantity": 1.0,
+            "unit_price": 120.0,
+            "total_price": 120.0
+          }
+        ]
+      },
+      "prediction": {
+        "vendor": "Sample Company Ltd",
+        "vendor_address": "Sample Company Ltd | 65 Mill Lane | N55 5VC Brighton, East Sussex, United Kingdom",
+        "receipt_number": "SRV-1895",
+        "date": "2026-01-27",
+        "currency": "EUR",
+        "subtotal": 16310.0,
+        "tax_amount": 3262.0,
+        "discount_amount": null,
+        "total_amount": 19572.0,
+        "bill_to": "Demo Services GmbH",
+        "line_items": [
+          {
+            "description": "IT programming and consulting - ctc. 3482/2025-12-28",
+            "quantity": 86.0,
+            "unit_price": 185.0,
+            "total_price": 185.0
+          },
+          {
+            "description": "Support hours - ctc. 3482/2026-01-07",
+            "quantity": 4.0,
+            "unit_price": 70.0,
+            "total_price": 70.0
+          },
+          {
+            "description": "Domain sample-company.net",
+            "quantity": 1.0,
+            "unit_price": 120.0,
+            "total_price": 120.0
+          }
+        ]
+      },
+      "raw_output": "{\n  \"vendor\": \"Sample Company Ltd\",\n  \"vendor_address\": \"Sample Company Ltd | 65 Mill Lane | N55 5VC Brighton, East Sussex, United Kingdom\",\n  \"receipt_number\": \"SRV-1895\",\n  \"date\": \"2026-01-27\",\n  \"currency\": \"EUR\",\n  \"subtotal\": \"16.310,00\",\n  \"tax_amount\": \"3.262,00\",\n  \"discount_amount\": \"\",\n  \"total_amount\": \"19.572,00\",\n  \"bill_to\": \"Demo Services GmbH\",\n  \"line_items\": [\n    {\n      \"description\": \"IT programming and consulting - ctc. 3482/2025-12-28\",\n      \"quantity\": \"86\",\n      \"unit_price\": \"185,00\",\n      \"total_price\": \"185,00\"\n    },\n    {\n      \"description\": \"Support hours - ctc. 3482/2026-01-07\",\n      \"quantity\": \"4\",\n      \"unit_price\": \"70,00\",\n      \"total_price\": \"70,00\"\n    },\n    {\n      \"description\": \"Domain sample-company.net\",\n      \"quantity\": \"1\",\n      \"unit_price\": \"120,00\",\n      \"total_price\": \"120,00\"\n    }\n  ]\n}",
+      "scores": {
+        "vendor": {
+          "present": true,
+          "exact": true,
+          "fuzzy_match": true,
+          "similarity": 100.0
+        },
+        "date": {
+          "present": true,
+          "exact": true,
+          "fuzzy_match": true,
+          "similarity": 100.0
+        },
+        "receipt_number": {
+          "present": true,
+          "exact": true,
+          "fuzzy_match": true,
+          "similarity": 100.0
+        },
+        "currency": true,
+        "subtotal": {
+          "present": true,
+          "exact": true,
+          "close": true,
+          "abs_err": 0.0
+        },
+        "tax_amount": {
+          "present": true,
+          "exact": true,
+          "close": true,
+          "abs_err": 0.0
+        },
+        "total_amount": {
+          "present": true,
+          "exact": true,
+          "close": true,
+          "abs_err": 0.0
+        },
+        "line_items": {
+          "present": true,
+          "gt_count": 3,
+          "pred_count": 3,
+          "desc_recall": 1.0,
+          "desc_precision": 1.0,
+          "desc_f1": 1.0,
+          "price_match_rate": 0.3333333333333333
+        },
+        "validation": {
+          "items_sum": 375.0,
+          "items_match_subtotal": false,
+          "totals_reconcile": true
+        }
+      }
+    },
+    {
+      "model": "xiaomi-fp16",
+      "dataset": "temp_docs",
+      "sample_id": "swc enterprise receipt.jpeg",
+      "is_multipage_stress": false,
+      "json_valid": true,
+      "latency_s": 6.449,
+      "ocr_latency_s": 0.112,
+      "model_latency_s": 6.337,
+      "peak_vram_mb": 1952.1,
+      "error": null,
+      "ground_truth": {
+        "vendor": "SWC ENTERPRISE SDN BHD",
+        "receipt_number": "0100080332",
+        "date": "2018-01-08",
+        "tax_amount": 0.45,
+        "total_amount": 8.0,
+        "line_items": [
+          {
+            "description": "20X30 1KG",
+            "quantity": 1.0,
+            "unit_price": 8.0,
+            "total_price": 8.0
+          }
+        ]
+      },
+      "prediction": {
+        "vendor": "SWC ENTERPRISE SDN BHD",
+        "vendor_address": "No. 5-7, Jalan Mahagoni 7/1, Sekysen 4, Bandar Utama, 44300 Batang Kali, Selangor.",
+        "receipt_number": "002017808384",
+        "date": "2018-01-08",
+        "currency": null,
+        "subtotal": 8.0,
+        "tax_amount": 0.45,
+        "discount_amount": 2.0,
+        "total_amount": 10.45,
+        "bill_to": null,
+        "line_items": [
+          {
+            "description": "20X30 BEG 1KG91X30)",
+            "quantity": 1.0,
+            "unit_price": 8.0,
+            "total_price": 8.0
+          },
+          {
+            "description": "20X30 1KG",
+            "quantity": 1.0,
+            "unit_price": 8.0,
+            "total_price": 8.0
+          }
+        ]
+      },
+      "raw_output": "{\n  \"vendor\": \"SWC ENTERPRISE SDN BHD\",\n  \"vendor_address\": \"No. 5-7, Jalan Mahagoni 7/1, Sekysen 4, Bandar Utama, 44300 Batang Kali, Selangor.\",\n  \"receipt_number\": \"002017808384\",\n  \"date\": \"2018-01-08\",\n  \"currency\": \"\",\n  \"subtotal\": \"8.00\",\n  \"tax_amount\": \"0.45\",\n  \"discount_amount\": \"2.00\",\n  \"total_amount\": \"10.45\",\n  \"bill_to\": \"\",\n  \"line_items\": [\n    {\n      \"description\": \"20X30 BEG 1KG91X30)\",\n      \"quantity\": \"1\",\n      \"unit_price\": \"8.00\",\n      \"total_price\": \"8.00\"\n    },\n    {\n      \"description\": \"20X30 1KG\",\n      \"quantity\": \"1\",\n      \"unit_price\": \"8.00\",\n      \"total_price\": \"8.00\"\n    }\n  ]\n}",
+      "scores": {
+        "vendor": {
+          "present": true,
+          "exact": true,
+          "fuzzy_match": true,
+          "similarity": 100.0
+        },
+        "date": {
+          "present": true,
+          "exact": true,
+          "fuzzy_match": true,
+          "similarity": 100.0
+        },
+        "receipt_number": {
+          "present": true,
+          "exact": false,
+          "fuzzy_match": false,
+          "similarity": 54.54545454545455
+        },
+        "tax_amount": {
+          "present": true,
+          "exact": true,
+          "close": true,
+          "abs_err": 0.0
+        },
+        "total_amount": {
+          "present": true,
+          "exact": false,
+          "close": false,
+          "abs_err": 2.4499999999999993
+        },
+        "line_items": {
+          "present": true,
+          "gt_count": 1,
+          "pred_count": 2,
+          "desc_recall": 1.0,
+          "desc_precision": 0.5,
+          "desc_f1": 0.6666666666666666,
+          "price_match_rate": 1.0
+        },
+        "validation": {
+          "items_sum": 16.0,
+          "items_match_subtotal": false,
+          "totals_reconcile": false
+        }
+      }
+    },
+    {
+      "model": "qwen35-fp16",
+      "dataset": "sroie_test",
+      "sample_id": "X00016469670",
+      "is_multipage_stress": false,
+      "json_valid": true,
+      "latency_s": 5.395,
+      "ocr_latency_s": 0.148,
+      "model_latency_s": 5.246,
+      "peak_vram_mb": 1854.6,
+      "error": null,
+      "ground_truth": {
+        "vendor": "OJC MARKETING SDN BHD",
+        "vendor_address": "NO 2 & 4, JALAN BAYU 4, BANDAR SERI ALAM, 81750 MASAI, JOHOR",
+        "date": "15/01/2019",
+        "total_amount": 193.0
+      },
+      "prediction": {
+        "vendor": "OJC MARKETING SDN BHD",
+        "vendor_address": "NO 2 & 4, JALAN BAYU 4, BANDAR SERI ALAM, 81750 MASAI, JOHOR",
+        "receipt_number": "PEGIV-1030765",
+        "date": "2019-01-15",
+        "currency": "SR",
+        "subtotal": 193.0,
+        "tax_amount": 0.0,
+        "discount_amount": 0.0,
+        "total_amount": 193.0,
+        "bill_to": "THE PEAK QUARRY WORKS",
+        "line_items": [
+          {
+            "description": "KINGS SAFETY SHOES KWD B05",
+            "quantity": 1.0,
+            "unit_price": 193.0,
+            "total_price": 193.0
+          }
+        ]
+      },
+      "raw_output": "```json\n{\n  \"vendor\": \"OJC MARKETING SDN BHD\",\n  \"vendor_address\": \"NO 2 & 4, JALAN BAYU 4, BANDAR SERI ALAM, 81750 MASAI, JOHOR\",\n  \"receipt_number\": \"PEGIV-1030765\",\n  \"date\": \"2019-01-15\",\n  \"currency\": \"SR\",\n  \"subtotal\": 193.00,\n  \"tax_amount\": 0.00,\n  \"discount_amount\": 0.00,\n  \"total_amount\": 193.00,\n  \"bill_to\": \"THE PEAK QUARRY WORKS\",\n  \"line_items\": [\n    {\n      \"description\": \"KINGS SAFETY SHOES KWD B05\",\n      \"quantity\": 1,\n      \"unit_price\": 193.00,\n      \"total_price\": 193.00\n    }\n  ]\n}\n```",
+      "scores": {
+        "vendor": {
+          "present": true,
+          "exact": true,
+          "fuzzy_match": true,
+          "similarity": 100.0
+        },
+        "vendor_address": {
+          "present": true,
+          "exact": true,
+          "fuzzy_match": true,
+          "similarity": 100.0
+        },
+        "date": {
+          "present": true,
+          "exact": true,
+          "fuzzy_match": true,
+          "similarity": 100.0
+        },
+        "total_amount": {
+          "present": true,
+          "exact": true,
+          "close": true,
+          "abs_err": 0.0
+        },
+        "validation": {
+          "items_sum": 193.0,
+          "items_match_subtotal": true,
+          "totals_reconcile": true
+        }
+      }
+    },
+    {
+      "model": "qwen35-fp16",
+      "dataset": "sroie_test",
+      "sample_id": "X51006389898",
+      "is_multipage_stress": false,
+      "json_valid": true,
+      "latency_s": 6.128,
+      "ocr_latency_s": 0.133,
+      "model_latency_s": 5.994,
+      "peak_vram_mb": 1889.5,
+      "error": null,
+      "ground_truth": {
+        "vendor": "RESTORAN WAN SHF",
+        "vendor_address": "No. 2, Jalan Temenggung 19/9, Seksyen 9, Bandar Mahkota Cheras, 43200 Cheras, Selangor",
+        "date": "29-09-2017",
+        "total_amount": 164.4
+      },
+      "prediction": {
+        "vendor": "RESTORAN WAN SHF",
+        "vendor_address": "No.2, Jalan Temenggung 19/9, Seksyen 9, Bandar Mahkota Cheras, 43200 Cheras, Selangor",
+        "receipt_number": "001335787521",
+        "date": "2017-09-29",
+        "currency": "MYR",
+        "subtotal": 155.09,
+        "tax_amount": 9.31,
+        "discount_amount": null,
+        "total_amount": 164.4,
+        "bill_to": null,
+        "line_items": [
+          {
+            "description": "Tiger (B)",
+            "quantity": 6.0,
+            "unit_price": 12.0,
+            "total_price": 72.0
+          },
+          {
+            "description": "Guiness Stout (B) Promotion",
+            "quantity": 6.0,
+            "unit_price": 15.4,
+            "total_price": 92.4
+          }
+        ]
+      },
+      "raw_output": "```json\n{\n  \"vendor\": \"RESTORAN WAN SHF\",\n  \"vendor_address\": \"No.2, Jalan Temenggung 19/9, Seksyen 9, Bandar Mahkota Cheras, 43200 Cheras, Selangor\",\n  \"receipt_number\": \"001335787521\",\n  \"date\": \"2017-09-29\",\n  \"currency\": \"MYR\",\n  \"subtotal\": 155.09,\n  \"tax_amount\": 9.31,\n  \"discount_amount\": null,\n  \"total_amount\": 164.4,\n  \"bill_to\": null,\n  \"line_items\": [\n    {\n      \"description\": \"Tiger (B)\",\n      \"quantity\": 6,\n      \"unit_price\": 12.0,\n      \"total_price\": 72.0\n    },\n    {\n      \"description\": \"Guiness Stout (B) Promotion\",\n      \"quantity\": 6,\n      \"unit_price\": 15.4,\n      \"total_price\": 92.4\n    }\n  ]\n}\n```",
+      "scores": {
+        "vendor": {
+          "present": true,
+          "exact": true,
+          "fuzzy_match": true,
+          "similarity": 100.0
+        },
+        "vendor_address": {
+          "present": true,
+          "exact": true,
+          "fuzzy_match": true,
+          "similarity": 100.0
+        },
+        "date": {
+          "present": true,
+          "exact": true,
+          "fuzzy_match": true,
+          "similarity": 100.0
+        },
+        "total_amount": {
+          "present": true,
+          "exact": true,
+          "close": true,
+          "abs_err": 0.0
+        },
+        "validation": {
+          "items_sum": 164.4,
+          "items_match_subtotal": false,
+          "totals_reconcile": true
+        }
+      }
+    },
+    {
+      "model": "qwen35-fp16",
+      "dataset": "cord_v2_test",
+      "sample_id": "cord_test_000",
+      "is_multipage_stress": false,
+      "json_valid": true,
+      "latency_s": 4.654,
+      "ocr_latency_s": 0.1,
+      "model_latency_s": 4.554,
+      "peak_vram_mb": 1806.1,
+      "error": null,
+      "ground_truth": {
+        "subtotal": 60000.0,
+        "tax_amount": 5455.0,
+        "discount_amount": 60000.0,
+        "total_amount": 60000.0,
+        "line_items": [
+          {
+            "description": "-TICKET CP",
+            "quantity": 2.0,
+            "unit_price": null,
+            "total_price": 60000.0
+          }
+        ]
+      },
+      "prediction": {
+        "vendor": "USNI OSHULSIJ",
+        "vendor_address": "DELIXX :ON USUIN BHIJ 303",
+        "receipt_number": "910106",
+        "date": "2024-01-30",
+        "currency": "USD",
+        "subtotal": 60000.0,
+        "tax_amount": 5455.0,
+        "discount_amount": 0.0,
+        "total_amount": 65455.0,
+        "bill_to": "EDC CIMB NIAGA No: xx7730",
+        "line_items": [
+          {
+            "description": "TICKET CP",
+            "quantity": 2.0,
+            "unit_price": 60000.0,
+            "total_price": 60000.0
+          }
+        ]
+      },
+      "raw_output": "```json\n{\n  \"vendor\": \"USNI OSHULSIJ\",\n  \"vendor_address\": \"DELIXX :ON USUIN BHIJ 303\",\n  \"receipt_number\": \"910106\",\n  \"date\": \"2024-01-30\",\n  \"currency\": \"USD\",\n  \"subtotal\": 60000,\n  \"tax_amount\": 5455,\n  \"discount_amount\": 0,\n  \"total_amount\": 65455,\n  \"bill_to\": \"EDC CIMB NIAGA No: xx7730\",\n  \"line_items\": [\n    {\n      \"description\": \"TICKET CP\",\n      \"quantity\": 2,\n      \"unit_price\": 60000,\n      \"total_price\": 60000\n    }\n  ]\n}\n```",
+      "scores": {
+        "subtotal": {
+          "present": true,
+          "exact": true,
+          "close": true,
+          "abs_err": 0.0
+        },
+        "tax_amount": {
+          "present": true,
+          "exact": true,
+          "close": true,
+          "abs_err": 0.0
+        },
+        "discount_amount": {
+          "present": true,
+          "exact": false,
+          "close": false,
+          "abs_err": 60000.0
+        },
+        "total_amount": {
+          "present": true,
+          "exact": false,
+          "close": false,
+          "abs_err": 5455.0
+        },
+        "line_items": {
+          "present": true,
+          "gt_count": 1,
+          "pred_count": 1,
+          "desc_recall": 1.0,
+          "desc_precision": 1.0,
+          "desc_f1": 1.0,
+          "price_match_rate": 1.0
+        },
+        "validation": {
+          "items_sum": 60000.0,
+          "items_match_subtotal": true,
+          "totals_reconcile": true
+        }
+      }
+    },
+    {
+      "model": "qwen35-fp16",
+      "dataset": "cord_v2_test",
+      "sample_id": "cord_test_050",
+      "is_multipage_stress": false,
+      "json_valid": true,
+      "latency_s": 5.124,
+      "ocr_latency_s": 0.131,
+      "model_latency_s": 4.992,
+      "peak_vram_mb": 1932.3,
+      "error": null,
+      "ground_truth": {
+        "subtotal": 17727.0,
+        "tax_amount": 1773.0,
+        "total_amount": 19500.0,
+        "line_items": [
+          {
+            "description": "Superice Cauburry",
+            "quantity": 1.0,
+            "unit_price": null,
+            "total_price": 17727.0
+          }
+        ]
+      },
+      "prediction": {
+        "vendor": "SpcPrice Cauburry",
+        "vendor_address": null,
+        "receipt_number": null,
+        "date": null,
+        "currency": "IDR",
+        "subtotal": 17727.0,
+        "tax_amount": 1773.0,
+        "discount_amount": null,
+        "total_amount": 19500.0,
+        "bill_to": null,
+        "line_items": [
+          {
+            "description": "SpcPrice Cauburry",
+            "quantity": 1.0,
+            "unit_price": 17727.0,
+            "total_price": 17727.0
+          },
+          {
+            "description": "SubTulal",
+            "quantity": 1.0,
+            "unit_price": 1773.0,
+            "total_price": 1773.0
+          }
+        ]
+      },
+      "raw_output": "```json\n{\n  \"vendor\": \"SpcPrice Cauburry\",\n  \"vendor_address\": null,\n  \"receipt_number\": null,\n  \"date\": null,\n  \"currency\": \"IDR\",\n  \"subtotal\": 17727,\n  \"tax_amount\": 1773,\n  \"discount_amount\": null,\n  \"total_amount\": 19500,\n  \"bill_to\": null,\n  \"line_items\": [\n    {\n      \"description\": \"SpcPrice Cauburry\",\n      \"quantity\": 1,\n      \"unit_price\": 17727,\n      \"total_price\": 17727\n    },\n    {\n      \"description\": \"SubTulal\",\n      \"quantity\": 1,\n      \"unit_price\": 1773,\n      \"total_price\": 1773\n    }\n  ]\n}\n```",
+      "scores": {
+        "subtotal": {
+          "present": true,
+          "exact": true,
+          "close": true,
+          "abs_err": 0.0
+        },
+        "tax_amount": {
+          "present": true,
+          "exact": true,
+          "close": true,
+          "abs_err": 0.0
+        },
+        "total_amount": {
+          "present": true,
+          "exact": true,
+          "close": true,
+          "abs_err": 0.0
+        },
+        "line_items": {
+          "present": true,
+          "gt_count": 1,
+          "pred_count": 2,
+          "desc_recall": 1.0,
+          "desc_precision": 0.5,
+          "desc_f1": 0.6666666666666666,
+          "price_match_rate": 1.0
+        },
+        "validation": {
+          "items_sum": 19500.0,
+          "items_match_subtotal": false,
+          "totals_reconcile": true
+        }
+      }
+    },
+    {
+      "model": "qwen35-fp16",
+      "dataset": "temp_docs",
+      "sample_id": "sample_pdf_2.pdf",
+      "is_multipage_stress": false,
+      "json_valid": true,
+      "latency_s": 7.515,
+      "ocr_latency_s": 0.323,
+      "model_latency_s": 7.192,
+      "peak_vram_mb": 2022.2,
+      "error": null,
+      "ground_truth": {
+        "vendor": "Unternehmen f\u00fcr Computerteile",
+        "receipt_number": "AUFNR234953",
+        "date": "2022-05-02",
+        "currency": "EUR",
+        "subtotal": 216.0,
+        "tax_amount": 41.04,
+        "total_amount": 257.04,
+        "line_items": [
+          {
+            "description": "LED-Monitore 12'",
+            "quantity": 4.0,
+            "unit_price": 16.0,
+            "total_price": 64.0
+          },
+          {
+            "description": "USB-Maus",
+            "quantity": 2.0,
+            "unit_price": 16.0,
+            "total_price": 32.0
+          },
+          {
+            "description": "mechanische Tastatur",
+            "quantity": 5.0,
+            "unit_price": 24.0,
+            "total_price": 120.0
+          }
+        ]
+      },
+      "prediction": {
+        "vendor": "JKL Corporation",
+        "vendor_address": "Softwareunternehmen \u00b7 Philipp-Ott-Str. 64, S\u00fcd Lenjaberg, SN 48103",
+        "receipt_number": "AUFNR234953",
+        "date": "2022-05-02",
+        "currency": "EUR",
+        "subtotal": 216.0,
+        "tax_amount": 41.04,
+        "discount_amount": 0.0,
+        "total_amount": 257.04,
+        "bill_to": "Softwareunternehmen",
+        "line_items": [
+          {
+            "description": "LED-Monitore 12'",
+            "quantity": 4.0,
+            "unit_price": 16.0,
+            "total_price": 64.0
+          },
+          {
+            "description": "USB-Maus",
+            "quantity": 2.0,
+            "unit_price": 16.0,
+            "total_price": 32.0
+          },
+          {
+            "description": "mechanische Tastatur",
+            "quantity": 5.0,
+            "unit_price": 24.0,
+            "total_price": 120.0
+          }
+        ]
+      },
+      "raw_output": "{\n  \"vendor\": \"JKL Corporation\",\n  \"vendor_address\": \"Softwareunternehmen \u00b7 Philipp-Ott-Str. 64, S\u00fcd Lenjaberg, SN 48103\",\n  \"receipt_number\": \"AUFNR234953\",\n  \"date\": \"2022-05-02\",\n  \"currency\": \"EUR\",\n  \"subtotal\": 216.00,\n  \"tax_amount\": 41.04,\n  \"discount_amount\": 0.00,\n  \"total_amount\": 257.04,\n  \"bill_to\": \"Softwareunternehmen\",\n  \"line_items\": [\n    {\n      \"description\": \"LED-Monitore 12'\",\n      \"quantity\": 4,\n      \"unit_price\": 16.0000,\n      \"total_price\": 64.00\n    },\n    {\n      \"description\": \"USB-Maus\",\n      \"quantity\": 2,\n      \"unit_price\": 16.0000,\n      \"total_price\": 32.00\n    },\n    {\n      \"description\": \"mechanische Tastatur\",\n      \"quantity\": 5,\n      \"unit_price\": 24.0000,\n      \"total_price\": 120.00\n    }\n  ]\n}",
+      "scores": {
+        "vendor": {
+          "present": true,
+          "exact": false,
+          "fuzzy_match": false,
+          "similarity": 31.818181818181824
+        },
+        "date": {
+          "present": true,
+          "exact": true,
+          "fuzzy_match": true,
+          "similarity": 100.0
+        },
+        "receipt_number": {
+          "present": true,
+          "exact": true,
+          "fuzzy_match": true,
+          "similarity": 100.0
+        },
+        "currency": true,
+        "subtotal": {
+          "present": true,
+          "exact": true,
+          "close": true,
+          "abs_err": 0.0
+        },
+        "tax_amount": {
+          "present": true,
+          "exact": true,
+          "close": true,
+          "abs_err": 0.0
+        },
+        "total_amount": {
+          "present": true,
+          "exact": true,
+          "close": true,
+          "abs_err": 0.0
+        },
+        "line_items": {
+          "present": true,
+          "gt_count": 3,
+          "pred_count": 3,
+          "desc_recall": 1.0,
+          "desc_precision": 1.0,
+          "desc_f1": 1.0,
+          "price_match_rate": 1.0
+        },
+        "validation": {
+          "items_sum": 216.0,
+          "items_match_subtotal": true,
+          "totals_reconcile": true
+        }
+      }
+    },
+    {
+      "model": "qwen35-fp16",
+      "dataset": "temp_docs",
+      "sample_id": "invoice-eur-english.png",
+      "is_multipage_stress": false,
+      "json_valid": true,
+      "latency_s": 7.798,
+      "ocr_latency_s": 0.249,
+      "model_latency_s": 7.548,
+      "peak_vram_mb": 1996.0,
+      "error": null,
+      "ground_truth": {
+        "vendor": "Sample Company Ltd",
+        "receipt_number": "SRV-1895",
+        "date": "2026-01-27",
+        "currency": "EUR",
+        "subtotal": 16310.0,
+        "tax_amount": 3262.0,
+        "total_amount": 19572.0,
+        "line_items": [
+          {
+            "description": "IT programming and consulting",
+            "quantity": 86.0,
+            "unit_price": 185.0,
+            "total_price": 15910.0
+          },
+          {
+            "description": "Support hours",
+            "quantity": 4.0,
+            "unit_price": 70.0,
+            "total_price": 280.0
+          },
+          {
+            "description": "Domain sample-company.net",
+            "quantity": 1.0,
+            "unit_price": 120.0,
+            "total_price": 120.0
+          }
+        ]
+      },
+      "prediction": {
+        "vendor": "Demo Services GmbH",
+        "vendor_address": "13359 Pelsenkirchen, Germany",
+        "receipt_number": "SRV-1895",
+        "date": "27/01/2026",
+        "currency": "EUR",
+        "subtotal": 16310.0,
+        "tax_amount": 3262.0,
+        "discount_amount": 0.0,
+        "total_amount": 19572.0,
+        "bill_to": "Sample Company Ltd",
+        "line_items": [
+          {
+            "description": "IT programming and consulting - ctc. 3482/2025-12-28",
+            "quantity": 86.0,
+            "unit_price": 185.0,
+            "total_price": 15910.0
+          },
+          {
+            "description": "Support hours - ctc. 3482/2026-01-07",
+            "quantity": 4.0,
+            "unit_price": 70.0,
+            "total_price": 280.0
+          },
+          {
+            "description": "Domain sample-company.net",
+            "quantity": 1.0,
+            "unit_price": 120.0,
+            "total_price": 120.0
+          }
+        ]
+      },
+      "raw_output": "```json\n{\n  \"vendor\": \"Demo Services GmbH\",\n  \"vendor_address\": \"13359 Pelsenkirchen, Germany\",\n  \"receipt_number\": \"SRV-1895\",\n  \"date\": \"27/01/2026\",\n  \"currency\": \"EUR\",\n  \"subtotal\": 16310.0,\n  \"tax_amount\": 3262.0,\n  \"discount_amount\": 0,\n  \"total_amount\": 19572.0,\n  \"bill_to\": \"Sample Company Ltd\",\n  \"line_items\": [\n    {\n      \"description\": \"IT programming and consulting - ctc. 3482/2025-12-28\",\n      \"quantity\": 86,\n      \"unit_price\": 185.0,\n      \"total_price\": 15910.0\n    },\n    {\n      \"description\": \"Support hours - ctc. 3482/2026-01-07\",\n      \"quantity\": 4,\n      \"unit_price\": 70.0,\n      \"total_price\": 280.0\n    },\n    {\n      \"description\": \"Domain sample-company.net\",\n      \"quantity\": 1,\n      \"unit_price\": 120.0,\n      \"total_price\": 120.0\n    }\n  ]\n}\n```",
+      "scores": {
+        "vendor": {
+          "present": true,
+          "exact": false,
+          "fuzzy_match": false,
+          "similarity": 27.77777777777777
+        },
+        "date": {
+          "present": true,
+          "exact": true,
+          "fuzzy_match": true,
+          "similarity": 100.0
+        },
+        "receipt_number": {
+          "present": true,
+          "exact": true,
+          "fuzzy_match": true,
+          "similarity": 100.0
+        },
+        "currency": true,
+        "subtotal": {
+          "present": true,
+          "exact": true,
+          "close": true,
+          "abs_err": 0.0
+        },
+        "tax_amount": {
+          "present": true,
+          "exact": true,
+          "close": true,
+          "abs_err": 0.0
+        },
+        "total_amount": {
+          "present": true,
+          "exact": true,
+          "close": true,
+          "abs_err": 0.0
+        },
+        "line_items": {
+          "present": true,
+          "gt_count": 3,
+          "pred_count": 3,
+          "desc_recall": 1.0,
+          "desc_precision": 1.0,
+          "desc_f1": 1.0,
+          "price_match_rate": 1.0
+        },
+        "validation": {
+          "items_sum": 16310.0,
+          "items_match_subtotal": true,
+          "totals_reconcile": true
+        }
+      }
+    },
+    {
+      "model": "qwen35-fp16",
+      "dataset": "temp_docs",
+      "sample_id": "swc enterprise receipt.jpeg",
+      "is_multipage_stress": false,
+      "json_valid": true,
+      "latency_s": 6.538,
+      "ocr_latency_s": 0.112,
+      "model_latency_s": 6.425,
+      "peak_vram_mb": 1952.1,
+      "error": null,
+      "ground_truth": {
+        "vendor": "SWC ENTERPRISE SDN BHD",
+        "receipt_number": "0100080332",
+        "date": "2018-01-08",
+        "tax_amount": 0.45,
+        "total_amount": 8.0,
+        "line_items": [
+          {
+            "description": "20X30 1KG",
+            "quantity": 1.0,
+            "unit_price": 8.0,
+            "total_price": 8.0
+          }
+        ]
+      },
+      "prediction": {
+        "vendor": "SWC ENTERPRISE SDN BHD",
+        "vendor_address": "No. 5-7, Jalan Mahagoni 7/1, Sekysen 4, Bandar Utama, 44300 Batang Kali, Selangor.",
+        "receipt_number": "002017808384",
+        "date": "2018-01-08",
+        "currency": "IDR",
+        "subtotal": 8.0,
+        "tax_amount": 0.45,
+        "discount_amount": 0.0,
+        "total_amount": 8.45,
+        "bill_to": null,
+        "line_items": [
+          {
+            "description": "20X30 BEG 1KG91X30)",
+            "quantity": 1.0,
+            "unit_price": 8.0,
+            "total_price": 8.0
+          },
+          {
+            "description": "20X30 1KG",
+            "quantity": 1.0,
+            "unit_price": 8.0,
+            "total_price": 8.0
+          }
+        ]
+      },
+      "raw_output": "```json\n{\n  \"vendor\": \"SWC ENTERPRISE SDN BHD\",\n  \"vendor_address\": \"No. 5-7, Jalan Mahagoni 7/1, Sekysen 4, Bandar Utama, 44300 Batang Kali, Selangor.\",\n  \"receipt_number\": \"002017808384\",\n  \"date\": \"2018-01-08\",\n  \"currency\": \"IDR\",\n  \"subtotal\": 8.00,\n  \"tax_amount\": 0.45,\n  \"discount_amount\": 0.0,\n  \"total_amount\": 8.45,\n  \"bill_to\": \"null\",\n  \"line_items\": [\n    {\n      \"description\": \"20X30 BEG 1KG91X30)\",\n      \"quantity\": 1,\n      \"unit_price\": 8.00,\n      \"total_price\": 8.00\n    },\n    {\n      \"description\": \"20X30 1KG\",\n      \"quantity\": 1,\n      \"unit_price\": 8.00,\n      \"total_price\": 8.00\n    }\n  ]\n}\n```",
+      "scores": {
+        "vendor": {
+          "present": true,
+          "exact": true,
+          "fuzzy_match": true,
+          "similarity": 100.0
+        },
+        "date": {
+          "present": true,
+          "exact": true,
+          "fuzzy_match": true,
+          "similarity": 100.0
+        },
+        "receipt_number": {
+          "present": true,
+          "exact": false,
+          "fuzzy_match": false,
+          "similarity": 54.54545454545455
+        },
+        "tax_amount": {
+          "present": true,
+          "exact": true,
+          "close": true,
+          "abs_err": 0.0
+        },
+        "total_amount": {
+          "present": true,
+          "exact": false,
+          "close": false,
+          "abs_err": 0.4499999999999993
+        },
+        "line_items": {
+          "present": true,
+          "gt_count": 1,
+          "pred_count": 2,
+          "desc_recall": 1.0,
+          "desc_precision": 0.5,
+          "desc_f1": 0.6666666666666666,
+          "price_match_rate": 1.0
+        },
+        "validation": {
+          "items_sum": 16.0,
+          "items_match_subtotal": false,
+          "totals_reconcile": true
+        }
+      }
+    }
+  ]
+}
