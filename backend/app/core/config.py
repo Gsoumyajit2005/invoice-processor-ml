@@ -49,7 +49,7 @@ class Settings(BaseSettings):
     local_vlm_enabled: bool = True
     local_vlm_dtype: Literal["float16", "bfloat16"] = "float16"
     local_vlm_max_new_tokens: int = Field(default=1536, ge=256, le=4096)
-    local_vlm_adapter_dir: str | None = None
+    local_vlm_adapter_dir: str | None = "models/qwen35-0.8b-invoice-lora"
     local_vlm_offline: bool = True
     ocr_dpi: float = Field(default=150.0, ge=72.0, le=300.0)
     ocr_threads: int = Field(default=4, ge=1, le=16)

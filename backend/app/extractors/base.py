@@ -34,18 +34,23 @@ SCHEMA_TEMPLATE_V2 = """{
 
 
 def build_v2_extraction_prompt(
-    ocr_text: str | None = None, *, max_ocr_chars: int = 10000
+    ocr_text: str | None = None, *, max_ocr_chars: int = 8000
 ) -> str:
-    """Build v2 JSON extraction prompt with optional Indra OCR transcript grounding."""
+    """Build canonical v2 JSON extraction prompt shared across backend, train, and eval."""
     parts = [
-        "Extract structured invoice or receipt fields from the document.",
+        "Extract key invoice or receipt information from the image.",
         "Return ONLY valid JSON matching this exact schema:",
         SCHEMA_TEMPLATE_V2,
         "Rules:",
-        '- "document_type" must be one of "invoice", "receipt", "credit_note", or "unknown".',
+        '- "document_type" must be "invoice", "receipt", "credit_note", or "unknown".',
+        '- "vendor" is the seller/merchant/issuer in the letterhead (never copy the buyer '
+        'from "Bill To" / "Rechnung an"; put the recipient in "bill_to").',
         "- Use null for missing scalar fields and [] if no line items exist.",
         "- Normalize dates and due_date to YYYY-MM-DD when unambiguous.",
         "- Output plain JSON numbers without currency symbols for amounts and quantities.",
+        "- For tax-inclusive receipts (e.g. 'Incl. GST', 'MwSt inkl.'), set 'total_amount' "
+        "to the printed grand total; never add tax on top of a tax-inclusive total or use "
+        "cash tendered/change.",
         "- Convert localized numbers carefully (e.g. '1.285,20' -> 1285.2, "
         "'1,234.56' -> 1234.56; whole-unit '60.000' -> 60000).",
         "- Put a 3-letter ISO 4217 code in currency when identifiable "
@@ -57,7 +62,7 @@ def build_v2_extraction_prompt(
         if len(clipped) > max_ocr_chars:
             half = max_ocr_chars // 2
             clipped = f"{clipped[:half]}\n...\n{clipped[-half:]}"
-        parts.append("\nOCR transcript (for exact value verification):\n" + clipped)
+        parts.append("\nOCR transcript (for exact character verification):\n" + clipped)
     return "\n".join(parts)
 
 

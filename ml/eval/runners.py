@@ -392,7 +392,8 @@ class IndraVLMRunner:
         indra: IndraOCRFrontEnd,
         precision: str = "bf16",
         use_ocr_context: bool = True,
-        max_new_tokens: int = 768,
+        max_new_tokens: int = 1536,
+        adapter_dir: Path | None = None,
     ) -> None:
         self.name = name
         self.model_dir = model_dir
@@ -400,6 +401,7 @@ class IndraVLMRunner:
         self.precision = precision
         self.use_ocr_context = use_ocr_context
         self.max_new_tokens = max_new_tokens
+        self.adapter_dir = adapter_dir
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         self.processor = AutoProcessor.from_pretrained(
@@ -435,6 +437,12 @@ class IndraVLMRunner:
                 dtype=dtype,
                 local_files_only=True,
             )
+            if adapter_dir is not None:
+                from peft import PeftModel
+
+                vlm_model = PeftModel.from_pretrained(
+                    vlm_model, str(adapter_dir)
+                ).merge_and_unload()
             vlm_model.to(self.device)
             vlm_model.eval()
             self.model = vlm_model

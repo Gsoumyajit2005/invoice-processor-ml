@@ -8,7 +8,13 @@ import time
 from pathlib import Path
 from typing import Any
 
-from eval.paths import QWEN35_08B_DIR, REPO_ROOT, XIAOMI_OCR_DIR, configure_local_caches
+from eval.paths import (
+    QWEN35_08B_DIR,
+    QWEN35_LORA_DIR,
+    REPO_ROOT,
+    XIAOMI_OCR_DIR,
+    configure_local_caches,
+)
 
 configure_local_caches(offline=True)
 
@@ -30,6 +36,18 @@ AVAILABLE_CONFIGS: dict[str, dict[str, Any]] = {
     "qwen35-bf16": {"kind": "vlm", "model_dir": QWEN35_08B_DIR, "precision": "bf16"},
     "qwen35-fp16": {"kind": "vlm", "model_dir": QWEN35_08B_DIR, "precision": "fp16"},
     "qwen35-4bit": {"kind": "vlm", "model_dir": QWEN35_08B_DIR, "precision": "4bit"},
+    "qwen35-lora-bf16": {
+        "kind": "vlm",
+        "model_dir": QWEN35_08B_DIR,
+        "precision": "bf16",
+        "use_lora": True,
+    },
+    "qwen35-lora-fp16": {
+        "kind": "vlm",
+        "model_dir": QWEN35_08B_DIR,
+        "precision": "fp16",
+        "use_lora": True,
+    },
 }
 
 
@@ -61,6 +79,8 @@ def _run_config(
     suites: dict[str, list[EvalSample]],
     ocr_cache: dict[tuple[str, str], tuple[str, list[Any], float, str | None]],
     indra: IndraOCRFrontEnd | None,
+    *,
+    adapter_dir: Path | None = None,
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     """Evaluate one model config across all suites."""
     spec = AVAILABLE_CONFIGS[cfg_name]
@@ -69,11 +89,13 @@ def _run_config(
         runner: BaselineLayoutLMv3Runner | IndraVLMRunner = BaselineLayoutLMv3Runner()
     else:
         assert indra is not None
+        eff_adapter = (adapter_dir or QWEN35_LORA_DIR) if spec.get("use_lora") else None
         runner = IndraVLMRunner(
             name=cfg_name,
             model_dir=spec["model_dir"],
             indra=indra,
             precision=spec["precision"],
+            adapter_dir=eff_adapter,
         )
 
     summaries: list[dict[str, Any]] = []
@@ -259,6 +281,17 @@ def main() -> None:
     )
     parser.add_argument("--smoke", action="store_true", help="Run tiny 7-doc smoke benchmark")
     parser.add_argument(
+        "--adapter-dir",
+        type=Path,
+        default=QWEN35_LORA_DIR,
+        help="Optional LoRA adapter directory used for qwen35-lora-* configs",
+    )
+    parser.add_argument(
+        "--report-prefix",
+        default=None,
+        help="Optional output filename prefix (default: benchmark_ or smoke_)",
+    )
+    parser.add_argument(
         "--output-dir",
         type=Path,
         default=REPO_ROOT / "ml" / "eval" / "results",
@@ -278,7 +311,7 @@ def main() -> None:
             "swc enterprise receipt.jpeg",
         }
         suites["temp_docs"] = [s for s in suites["temp_docs"] if s.sample_id in smoke_ids]
-        prefix = "smoke_"
+        prefix = args.report_prefix or "smoke_"
     else:
         suites = load_eval_suite(
             sroie_limit=args.sroie_limit,
@@ -286,7 +319,7 @@ def main() -> None:
             cord_split=args.cord_split,
             include_temp=True,
         )
-        prefix = "benchmark_"
+        prefix = args.report_prefix or "benchmark_"
 
     print("Loaded datasets:", {k: len(v) for k, v in suites.items()}, flush=True)
 
@@ -297,7 +330,7 @@ def main() -> None:
     all_summaries: list[dict[str, Any]] = []
     all_records: list[dict[str, Any]] = []
     for cfg in args.configs:
-        s_list, r_list = _run_config(cfg, suites, ocr_cache, indra)
+        s_list, r_list = _run_config(cfg, suites, ocr_cache, indra, adapter_dir=args.adapter_dir)
         all_summaries.extend(s_list)
         all_records.extend(r_list)
 

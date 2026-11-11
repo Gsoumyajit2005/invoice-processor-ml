@@ -11,6 +11,7 @@ from app.core.paths import (
     LAYOUTLMV3_DOCTR_DIR,
     MODELS_DIR,
     QWEN35_08B_DIR,
+    QWEN35_LORA_DIR,
     REPO_ROOT,
     XIAOMI_OCR_DIR,
 )
@@ -21,6 +22,7 @@ __all__ = [
     "MODELS_DIR",
     "CACHE_DIR",
     "QWEN35_08B_DIR",
+    "QWEN35_LORA_DIR",
     "XIAOMI_OCR_DIR",
     "INDRA_OCR_DIR",
     "DOCTR_MODELS_DIR",

@@ -98,7 +98,7 @@ class LocalVlmExtractor:
             if adapter_dir and adapter_dir.exists():
                 from peft import PeftModel
 
-                model = PeftModel.from_pretrained(model, str(adapter_dir))
+                model = PeftModel.from_pretrained(model, str(adapter_dir)).merge_and_unload()
                 self.name = f"local:Qwen3.5-0.8B+lora({adapter_dir.name})"
 
             model.to(device)

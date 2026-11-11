@@ -54,6 +54,7 @@ models/*
 checkpoints/
 ml/train/checkpoints/
 ml/train/outputs/
+ml/train/cache/
 lightning_logs/
 wandb/
 mlruns/

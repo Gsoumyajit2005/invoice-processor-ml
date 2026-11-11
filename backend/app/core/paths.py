@@ -12,6 +12,7 @@ MODELS_DIR: Path = REPO_ROOT / "models"
 CACHE_DIR: Path = REPO_ROOT / ".cache"
 
 QWEN35_08B_DIR: Path = MODELS_DIR / "Qwen3.5-0.8B"
+QWEN35_LORA_DIR: Path = MODELS_DIR / "qwen35-0.8b-invoice-lora"
 XIAOMI_OCR_DIR: Path = MODELS_DIR / "Xiaomi-OCR-0"
 INDRA_OCR_DIR: Path = MODELS_DIR / "indra-ocr"
 DOCTR_MODELS_DIR: Path = MODELS_DIR / "doctr"
