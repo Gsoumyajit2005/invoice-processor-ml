@@ -114,3 +114,56 @@ async def test_local_disk_storage_crud_and_traversal_guard(tmp_path: Path) -> No
 
     with pytest.raises(FileNotFoundError):
         await storage.get_bytes("invoices/missing/1.png")
+
+
+def test_ground_extraction_tight_substring_interpolation_and_ocr_fallback() -> None:
+    ocr_lines = [
+        OcrLine(
+            page=1,
+            text="Bestellung AUFNR234953 vom 02.05.2022",
+            x1=100.0,
+            y1=200.0,
+            x2=900.0,
+            y2=230.0,
+            confidence=0.98,
+        ),
+        OcrLine(
+            page=1,
+            text="Total Amount: EUR 3,988.40",
+            x1=500.0,
+            y1=800.0,
+            x2=900.0,
+            y2=830.0,
+            confidence=0.99,
+        ),
+    ]
+
+    # Test 1: Fallback recovery from OCR line when receipt_number is None
+    ext_missing_num = InvoiceExtraction(
+        vendor="AutoVendor",
+        date="2022-05-02",
+        total_amount=3988.40,
+    )
+    grounded = ground_extraction(ext_missing_num, ocr_lines)
+    assert grounded.receipt_number is not None
+    assert "234953" in grounded.receipt_number
+
+    # Test 2: Substring bounding box interpolation tightness
+    num_prov = grounded.provenance.get("receipt_number")
+    assert num_prov is not None
+    assert num_prov.bbox is not None
+    # Instead of spanning the entire line (100 to 900), the box is tightly interpolated around the number
+    assert num_prov.bbox.x1 > 100.0
+    assert num_prov.bbox.x2 < 800.0
+
+    # Date bounding box is interpolated to the end of the line
+    date_prov = grounded.provenance.get("date")
+    assert date_prov is not None
+    assert date_prov.bbox is not None
+    assert date_prov.bbox.x1 > 500.0
+
+    # Total amount bounding box is interpolated to the price portion
+    tot_prov = grounded.provenance.get("total_amount")
+    assert tot_prov is not None
+    assert tot_prov.bbox is not None
+    assert tot_prov.bbox.x1 > 600.0

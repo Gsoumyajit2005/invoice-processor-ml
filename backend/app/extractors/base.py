@@ -45,14 +45,22 @@ def build_v2_extraction_prompt(
         '- "document_type" must be "invoice", "receipt", "credit_note", or "unknown".',
         '- "vendor" is the seller/merchant/issuer in the letterhead (never copy the buyer '
         'from "Bill To" / "Rechnung an"; put the recipient in "bill_to").',
+        '- "receipt_number" is the primary document identifier: Invoice Number (e.g. "INV-2024-001", '
+        '"Invoice No: 1234"), Tax Invoice #, Bill Number, Proforma Number (e.g. "Proforma No. 201"), '
+        'Challan Number, Order Number, Rechnungs-Nr, AUFNR, etc. '
+        'Always extract the document reference into "receipt_number" even for proforma invoices or receipts. '
+        'If multiple numbers exist (e.g. Proforma No. and Challan No.), prefer the Invoice / Proforma number. '
+        'NEVER use customer ID/account number, bank IBAN, or government tax registration IDs '
+        '(GSTIN, VAT ID, Steuernummer) as receipt_number.',
         "- Use null for missing scalar fields and [] if no line items exist.",
         "- Normalize dates and due_date to YYYY-MM-DD when unambiguous.",
         "- Output plain JSON numbers without currency symbols for amounts and quantities.",
         "- For tax-inclusive receipts (e.g. 'Incl. GST', 'MwSt inkl.'), set 'total_amount' "
         "to the printed grand total; never add tax on top of a tax-inclusive total or use "
         "cash tendered/change.",
-        "- Convert localized numbers carefully (e.g. '1.285,20' -> 1285.2, "
-        "'1,234.56' -> 1234.56; whole-unit '60.000' -> 60000).",
+        "- Convert localized European decimals carefully: e.g. '16,0000' -> 16.0, '64,00' -> 64.0, "
+        "'1.285,20' -> 1285.2, '1,234.56' -> 1234.56. Never add trailing zeros or turn decimal fractions into whole thousands "
+        "(e.g. '16,0000' is 16.0, NOT 160000). Only remove dots for whole-unit Asian currencies without decimal cents (e.g. 'Rp 60.000' -> 60000).",
         "- Put a 3-letter ISO 4217 code in currency when identifiable "
         "(USD, EUR, MYR, IDR, GBP, INR).",
         "- Do not invent values not present in the document.",

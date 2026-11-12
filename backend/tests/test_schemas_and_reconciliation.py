@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 from app.core.hashing import compute_file_hash, compute_semantic_hash
-from app.core.reconciliation import reconcile_invoice
+from app.core.reconciliation import normalize_extraction_scales, reconcile_invoice
 from app.core.schemas import (
     InvoiceExtraction,
     LineItemSchema,
@@ -121,3 +121,49 @@ def test_semantic_hash_requires_identifying_fields_and_is_order_stable() -> None
     assert compute_semantic_hash(a) == compute_semantic_hash(b)
     assert compute_semantic_hash(a) != compute_semantic_hash(c)
     assert len(compute_file_hash(b"hello")) == 64
+
+
+def test_parse_money_european_decimals_and_units() -> None:
+    assert parse_money("16,0000") == 16.0
+    assert parse_money("64,00") == 64.0
+    assert parse_money("16,0000 pro 1 VE") == 16.0
+    assert parse_money("0,4500 €") == 0.45
+    assert parse_money("12,50 EUR / Stk.") == 12.5
+
+
+def test_invoice_extraction_alias_mapping() -> None:
+    ext1 = InvoiceExtraction.model_validate({"vendor": "ACME", "invoice_number": "INV-2024-999"})
+    assert ext1.receipt_number == "INV-2024-999"
+
+    ext2 = InvoiceExtraction.model_validate({"vendor": "ACME", "rechnungsnummer": "RE-888"})
+    assert ext2.receipt_number == "RE-888"
+
+    ext3 = InvoiceExtraction.model_validate({"vendor": "ACME", "bill_no": "BILL-007"})
+    assert ext3.receipt_number == "BILL-007"
+
+
+def test_normalize_extraction_scales_resolves_power_of_ten_errors() -> None:
+    # 16,0000 misparsed by VLM as 160000.0 with qty=4 and total=64.0
+    ext = InvoiceExtraction(
+        vendor="NormTest",
+        receipt_number="INV-01",
+        subtotal=64000.0,
+        total_amount=64.0,
+        line_items=[
+            LineItemSchema(
+                description="Bügelgriff Aluminium",
+                quantity=4.0,
+                unit_price=160000.0,
+                total_price=64.0,
+            )
+        ],
+    )
+    normalized = normalize_extraction_scales(ext)
+    assert normalized.line_items[0].unit_price == 16.0
+    assert normalized.subtotal == 64.0
+    assert normalized.total_amount == 64.0
+
+    rec = reconcile_invoice(ext)
+    assert rec.totals_reconcile is True
+    assert rec.items_match_subtotal is True
+    assert rec.needs_escalation is False

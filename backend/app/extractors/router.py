@@ -7,7 +7,11 @@ import time
 from typing import Literal
 
 from app.core.config import Settings
-from app.core.reconciliation import ReconciliationResult, reconcile_invoice
+from app.core.reconciliation import (
+    ReconciliationResult,
+    normalize_extraction_scales,
+    reconcile_invoice,
+)
 from app.core.schemas import InvoiceExtraction
 from app.extractors.base import (
     CloudConfig,
@@ -172,6 +176,7 @@ class ExtractionRouter:
         assert chosen_extraction is not None
         assert chosen_reconciliation is not None
 
+        chosen_extraction = normalize_extraction_scales(chosen_extraction)
         grounded = ground_extraction(chosen_extraction, ocr.lines)
         merged_warnings = _dedupe_warnings(
             grounded.validation_warnings,

@@ -26,6 +26,128 @@ _PROVENANCE_FIELDS = (
     "bill_to",
 )
 
+_INVOICE_NUM_PATTERNS = [
+    re.compile(
+        r"(?:invoice\s*(?:no\.?|num\.?|number|#)|tax\s*invoice\s*(?:no\.?|num\.?|#)|inv\s*(?:no\.?|#)|bill\s*(?:no\.?|#)|proforma\s*(?:invoice\s*)?(?:no\.?|num\.?|#)?|challan\s*(?:no\.?|#)?|rechnungs?-?nr\.?|bestellung\s*(?:aufnr)?)\s*[:#.\-\s]\s*([a-zA-Z0-9\-\/]+)",
+        re.IGNORECASE,
+    ),
+    re.compile(r"\bproforma\s*(?:invoice\s*)?no\.?[^0-9a-zA-Z]*([a-zA-Z0-9\-\/]{2,20})", re.IGNORECASE),
+    re.compile(r"\bproforma\s*no\.?.*?\b([0-9]{2,10})\b", re.IGNORECASE),
+    re.compile(r"\b(?:invoice|rechnung|proforma)\s*#\s*([a-zA-Z0-9\-\/]+)", re.IGNORECASE),
+    re.compile(r"\bAUFNR\s*([0-9]+)\b", re.IGNORECASE),
+]
+_DATE_LIKE_RE = re.compile(r"^(\d{1,4}[./-]\d{1,2}[./-]\d{1,4})$")
+_TAX_ID_RE = re.compile(r"^\d{2}[A-Z]{5}\d{4}[A-Z]{1}[A-Z\d]{1}[Z]{1}[A-Z\d]{1}$", re.IGNORECASE)
+
+
+def _recover_receipt_number_from_ocr(ocr_lines: list[OcrLine]) -> str | None:
+    """Intelligently recover missing invoice/receipt numbers directly from OCR transcript."""
+    sorted_lines = sorted(ocr_lines, key=lambda l: (l.page, l.y1))
+    for line in sorted_lines:
+        if line.page > 1 or line.y1 > 700:
+            continue
+        for pat in _INVOICE_NUM_PATTERNS:
+            m = pat.search(line.text)
+            if m:
+                cand = m.group(1).strip()
+                if len(cand) < 3 or len(cand) > 35:
+                    continue
+                if _DATE_LIKE_RE.match(cand) or _TAX_ID_RE.match(cand):
+                    continue
+                if cand.lower() in {
+                    "date",
+                    "invoice",
+                    "number",
+                    "tax",
+                    "total",
+                    "proforma",
+                    "challan",
+                    "proformano",
+                    "challanno",
+                }:
+                    continue
+                return cand
+    return None
+
+
+def _find_candidate_span(
+    line_text: str,
+    candidates: list[str],
+    *,
+    is_numeric: bool,
+) -> tuple[int, int] | None:
+    """Find the best matching character span (start_idx, end_idx) of a candidate in line_text."""
+    if not line_text or not candidates:
+        return None
+
+    line_lower = line_text.lower()
+
+    # 1. Exact substring match in line_text (case-insensitive)
+    for cand in candidates:
+        cand_str = cand.strip()
+        if not cand_str:
+            continue
+        idx = line_lower.find(cand_str.lower())
+        if idx != -1:
+            return (idx, idx + len(cand_str))
+
+    # 2. For numeric fields: search for digits-and-punctuation tokens
+    if is_numeric:
+        for cand in candidates:
+            cand_digits = re.sub(r"\D", "", cand)
+            if not cand_digits:
+                continue
+            for m in re.finditer(r"[\d.,]+", line_text):
+                token_digits = re.sub(r"\D", "", m.group(0))
+                if token_digits == cand_digits:
+                    return (m.start(), m.end())
+
+    # 3. For multi-word text: search for tokens in sequence
+    for cand in candidates:
+        words = [w for w in re.split(r"\s+", cand.strip()) if w]
+        if len(words) > 1:
+            first_idx = line_lower.find(words[0].lower())
+            if first_idx != -1:
+                last_idx = line_lower.find(words[-1].lower(), first_idx)
+                if last_idx != -1:
+                    return (first_idx, last_idx + len(words[-1]))
+
+    return None
+
+
+def _interpolate_substring_bbox(
+    line: OcrLine,
+    start_char: int,
+    end_char: int,
+) -> BoundingBox:
+    """Interpolate a tight sub-bounding box for substring [start_char..end_char] within an OcrLine."""
+    text_len = len(line.text)
+    if text_len == 0 or start_char >= end_char:
+        return _line_to_bbox(line)
+
+    start_char = max(0, min(start_char, text_len))
+    end_char = max(start_char + 1, min(end_char, text_len))
+
+    line_w = max(0.0, line.x2 - line.x1)
+
+    # Linear character interpolation across [0..1000] coordinate space
+    sub_x1 = line.x1 + line_w * (start_char / text_len)
+    sub_x2 = line.x1 + line_w * (end_char / text_len)
+
+    # Apply small padding (up to 3 units or 1.5% of line width) without exceeding original bounds
+    pad = min(3.0, line_w * 0.015)
+    x1 = max(line.x1, sub_x1 - pad)
+    x2 = min(line.x2, sub_x2 + pad)
+
+    return BoundingBox(
+        page=line.page,
+        x1=round(x1, 1),
+        y1=line.y1,
+        x2=round(x2, 1),
+        y2=line.y2,
+        confidence=line.confidence,
+    )
+
 
 def _norm_str(text: str) -> str:
     return re.sub(r"[^a-z0-9]+", " ", text.lower()).strip()
@@ -152,7 +274,14 @@ def _match_field_bbox(
             best_score = adjusted
             best_line = line
 
-    return _line_to_bbox(best_line) if best_line else None
+    if best_line is None:
+        return None
+
+    span = _find_candidate_span(best_line.text, candidates, is_numeric=is_numeric)
+    if span is not None:
+        return _interpolate_substring_bbox(best_line, span[0], span[1])
+
+    return _line_to_bbox(best_line)
 
 
 def _match_line_item_bbox(
@@ -177,12 +306,26 @@ def _match_line_item_bbox(
     if anchor is None:
         return None
 
-    bbox = _line_to_bbox(anchor)
+    desc_span = _find_candidate_span(anchor.text, [description], is_numeric=False)
+    desc_bbox = (
+        _interpolate_substring_bbox(anchor, desc_span[0], desc_span[1])
+        if desc_span is not None
+        else _line_to_bbox(anchor)
+    )
+
     if total_price is None:
-        return bbox
+        return desc_bbox
+
+    price_variants = _money_variants(total_price)
+
+    # Check if total_price is on the same line as anchor
+    same_line_price_span = _find_candidate_span(anchor.text, price_variants, is_numeric=True)
+    if same_line_price_span is not None:
+        min_start = min(desc_span[0] if desc_span else 0, same_line_price_span[0])
+        max_end = max(desc_span[1] if desc_span else len(anchor.text), same_line_price_span[1])
+        return _interpolate_substring_bbox(anchor, min_start, max_end)
 
     # Expand across same-row price cell when total_price shares the horizontal row band
-    price_variants = _money_variants(total_price)
     row_mid_y = (anchor.y1 + anchor.y2) * 0.5
     row_height = max(anchor.y2 - anchor.y1, 12.0)
     for other in ocr_lines:
@@ -192,16 +335,22 @@ def _match_line_item_bbox(
         if abs(other_mid_y - row_mid_y) > row_height * 0.9:
             continue
         if any(_score_line(pv, other.text, is_numeric=True) >= 92.0 for pv in price_variants):
-            bbox = BoundingBox(
+            other_price_span = _find_candidate_span(other.text, price_variants, is_numeric=True)
+            other_bbox = (
+                _interpolate_substring_bbox(other, other_price_span[0], other_price_span[1])
+                if other_price_span is not None
+                else _line_to_bbox(other)
+            )
+            return BoundingBox(
                 page=anchor.page,
-                x1=min(bbox.x1, other.x1),
-                y1=min(bbox.y1, other.y1),
-                x2=max(bbox.x2, other.x2),
-                y2=max(bbox.y2, other.y2),
+                x1=min(desc_bbox.x1, other_bbox.x1),
+                y1=min(desc_bbox.y1, other_bbox.y1),
+                x2=max(desc_bbox.x2, other_bbox.x2),
+                y2=max(desc_bbox.y2, other_bbox.y2),
                 confidence=round((anchor.confidence + other.confidence) / 2.0, 4),
             )
-            break
-    return bbox
+
+    return desc_bbox
 
 
 def ground_extraction(
@@ -209,6 +358,12 @@ def ground_extraction(
     ocr_lines: list[OcrLine],
 ) -> InvoiceExtraction:
     """Attach OCR-matched BoundingBoxes and provenance metadata to extracted fields."""
+    # Fallback: if receipt_number is missing, attempt pattern recovery from OCR text
+    if not extraction.receipt_number:
+        recovered = _recover_receipt_number_from_ocr(ocr_lines)
+        if recovered:
+            extraction = extraction.model_copy(update={"receipt_number": recovered})
+
     provenance: dict[str, FieldProvenance] = dict(extraction.provenance)
 
     for field_name in _PROVENANCE_FIELDS:

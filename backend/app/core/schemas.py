@@ -94,7 +94,12 @@ def parse_money(value: Any, *, strict: bool = True) -> float | None:
         text = text[:-1].strip()
 
     text = _CURRENCY_RE.sub("", text).replace(" ", "").replace("\u00a0", "")
-    cleaned = re.sub(r"[^0-9.,]", "", text)
+    # Isolate leading/primary numeric token so trailing units like "pro 1 VE" or "EUR / pc" don't pollute digits
+    num_match = re.search(r"[-+]?[\d.,]+", text)
+    if num_match:
+        cleaned = num_match.group(0).rstrip(".,")
+    else:
+        cleaned = re.sub(r"[^0-9.,]", "", text)
     if not cleaned:
         if strict:
             raise ValueError(f"Invalid numeric value: {value!r}")
@@ -107,10 +112,13 @@ def parse_money(value: Any, *, strict: bool = True) -> float | None:
             cleaned = cleaned.replace(",", "")
     elif "," in cleaned:
         parts = cleaned.split(",")
-        if len(parts) == 2 and len(parts[1]) == 3 and parts[0].isdigit() and int(parts[0]) >= 1:
-            cleaned = "".join(parts)
-        elif len(parts) == 2:
-            cleaned = f"{parts[0]}.{parts[1]}"
+        if len(parts) == 2:
+            # Standard US thousand separator: exactly 3 digits (e.g. "1,000" or "25,000")
+            # European decimals: 1, 2, 4+ digits (e.g. "64,00" -> 64.0, "16,0000" -> 16.0, "16,5" -> 16.5)
+            if len(parts[1]) == 3 and parts[0].isdigit() and int(parts[0]) >= 1:
+                cleaned = "".join(parts)
+            else:
+                cleaned = f"{parts[0]}.{parts[1]}"
         else:
             cleaned = (
                 "".join(parts[:-1]) + f".{parts[-1]}"
@@ -271,6 +279,40 @@ class InvoiceExtraction(BaseModel):
     line_items: list[LineItemSchema] = Field(default_factory=list)
     provenance: dict[str, FieldProvenance] = Field(default_factory=dict)
     validation_warnings: list[str] = Field(default_factory=list)
+
+    @model_validator(mode="before")
+    @classmethod
+    def _map_aliases_and_fallbacks(cls, data: Any) -> Any:
+        if isinstance(data, dict):
+            # If receipt_number is missing or null, check common VLM field aliases
+            if not data.get("receipt_number"):
+                for alias in (
+                    "invoice_number",
+                    "invoice_no",
+                    "inv_no",
+                    "inv_num",
+                    "inv_number",
+                    "bill_number",
+                    "bill_no",
+                    "order_number",
+                    "order_no",
+                    "rechnungsnummer",
+                    "rechnungs_nr",
+                    "rechnung_nr",
+                    "proforma_no",
+                    "proforma_number",
+                    "challan_no",
+                    "challan_number",
+                    "ref_no",
+                    "reference_no",
+                    "reference_number",
+                    "receipt_no",
+                ):
+                    val = data.get(alias)
+                    if val and clean_optional_str(val):
+                        data["receipt_number"] = clean_optional_str(val)
+                        break
+        return data
 
     @field_validator("document_type", mode="before")
     @classmethod
