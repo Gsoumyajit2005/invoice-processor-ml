@@ -1,485 +1,313 @@
----
-title: Invoice Processor Ml
-emoji: ⚡
-colorFrom: indigo
-colorTo: pink
-sdk: docker
-pinned: false
-license: mit
-short_description: Hybrid invoice extraction using LayoutLMv3 and Regex
----
+# 📄 Hybrid Document AI Invoice Processor v2
 
-# 📄 Smart Invoice Processor
+[![CI](https://github.com/GSoumyajit2005/invoice-processor-ml/actions/workflows/ci.yml/badge.svg)](https://github.com/GSoumyajit2005/invoice-processor-ml/actions/workflows/ci.yml)
+[![Python 3.12](https://img.shields.io/badge/Python-3.12-3776AB.svg?logo=python&logoColor=white)](https://python.org)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688.svg?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+[![PyTorch 2.6](https://img.shields.io/badge/PyTorch-2.6+-EE4C2C.svg?logo=pytorch&logoColor=white)](https://pytorch.org)
+[![Next.js 16](https://img.shields.io/badge/Next.js-16.4+-black.svg?logo=next.js&logoColor=white)](https://nextjs.org)
+[![Tailwind CSS v4](https://img.shields.io/badge/TailwindCSS-v4.0-06B6D4.svg?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+[![Modal](https://img.shields.io/badge/Modal-Serverless%20Split-00D084.svg?logo=modal&logoColor=white)](https://modal.com)
+[![PostgreSQL 16](https://img.shields.io/badge/PostgreSQL-16-4169E1.svg?logo=postgresql&logoColor=white)](https://postgresql.org)
+[![uv](https://img.shields.io/badge/Package%20Manager-uv-DE5FE9.svg)](https://docs.astral.sh/uv/)
 
-A production-grade Hybrid Invoice Extraction System that combines the semantic understanding of LayoutLMv3 with the precision of Regex Heuristics. Designed for robustness, it features a Dual-Engine Architecture with automatic fallback logic to ensure 100% extraction coverage for business-critical fields (Invoice #, Date, Total) even when the AI model is uncertain.
-
-![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)
-![Streamlit](https://img.shields.io/badge/Streamlit-1.51+-red.svg)
-![DocTR](https://img.shields.io/badge/DocTR-0.9+-green.svg)
-![Transformers](https://img.shields.io/badge/Transformers-4.x-purple.svg)
-![PyTorch](https://img.shields.io/badge/PyTorch-2.x-orange.svg)
-
-[![🤗 Live Demo](https://img.shields.io/badge/🤗%20Live%20Demo-Hugging%20Face%20Spaces-yellow.svg)](https://huggingface.co/spaces/GSoumyajit2005/invoice-processor-ml)
+> **A production-grade, enterprise Document AI platform** for automated invoice extraction, mathematical reconciliation, and Human-in-the-Loop (HITL) verification. Powered by a hybrid pipeline pairing **Indra OCR 1.1 (ONNX)** with a fine-tuned **Qwen3.5-0.8B Multimodal Vision-Language Model (LoRA)**, served via a split serverless architecture on **Modal** and **Next.js 16 on Vercel**.
 
 ---
 
-## 🚀 Try it Live!
+## 🚀 Key Highlights & Architectural Evolution
 
-> **No installation required!** Try the full application instantly on Hugging Face Spaces:
->
-> ### 👉 [**Launch Live Demo**](https://huggingface.co/spaces/GSoumyajit2005/invoice-processor-ml) 👈
->
-> Upload any invoice image and watch the hybrid ML+Regex engine extract structured data in real-time.
-
----
-
-## 🎯 Features
-
-### 🧠 Core Intelligence
-
-- **Hybrid Inference Engine:** Automatically triggers a Regex Fallback Engine if the ML model (LayoutLMv3) returns low confidence or missing critical fields (Invoice #, Date).
-- **ML-Based Extraction:** Fine-tuned `LayoutLMv3` Transformer for semantic understanding of complex layouts (SROIE dataset).
-- **Rule-Based Fallback:** Deterministic regex patterns ensure 100% coverage for standard fields when ML is uncertain.
-
-### 🛡️ Robustness & Engineering
-
-- **Defensive Data Handling:** Implemented coordinate clamping to prevent model crashes from negative OCR bounding boxes.
-- **GPU-Accelerated OCR:** DocTR (Mindee) with automatic CUDA acceleration for faster inference in production.
-- **Clean JSON Output:** Normalized schema handling nested entities, line items, and validation flags.
-- **Defensive Persistence:** Optional PostgreSQL integration (local Docker or cloud Supabase) that automatically saves extracted data when credentials are present, but gracefully degrades (skips saving) in serverless/demo environments.
-- **Async Database Saves:** Background thread processing ensures fast UI response (~5-7s) while database operations happen asynchronously.
-- **Duplicate Prevention:** Implemented _Semantic Hashing_ (Vendor + Date + Total + ID) to automatically detect and prevent duplicate invoice entries.
-
-### 💻 Usability
-
-- **Streamlit Web UI:** Interactive dashboard for real-time inference, visualization, and side-by-side comparison (ML vs. Regex).
-- **PDF Preview & Overlay:** Visual preview of uploaded PDFs with ML-detected bounding boxes overlay for transparency.
-- **CLI & Batch Processing:** Process single files or entire directories via command line with JSON export.
-- **Auto-Validation:** Heuristic checks to validate that the extracted "Total Amount" matches the sum of line items.
-
-> Note on Invoice Numbers: The SROIE dataset used for training does not include "Invoice Number" labels. To solve this, the system uses a Hybrid Fallback Mechanism: if the ML model (LayoutLMv3) returns null for the Invoice Number, the system automatically triggers a targeted Regex extraction to ensure this critical field is captured.
+| Capability | Legacy v1 (`v1-legacy-layoutlmv3`) | Modern v2 (Current Production) |
+|---|---|---|
+| **Extraction Model** | LayoutLMv3 (512-token text/token limits, single-page only) | **Qwen3.5-0.8B Multimodal VLM** + **BF16 LoRA** (merged at load time) |
+| **OCR Engine** | DocTR (Mindee PyTorch, high VRAM overhead) | **Indra OCR 1.1** (ONNX Runtime, 15MB weights, 300ms/page on CPU) |
+| **Document Support** | Single-page images only | **Multi-page PDFs** rasterized via `pypdfium2` + text extraction via `pdfplumber` |
+| **Math Reconciliation** | Basic regex heuristic | **Deterministic Verification Engine** (subtotal, tax, discount, total, GST-inclusive receipts) |
+| **Visual Grounding** | None (unconnected bounding boxes) | **Bidirectional [0..1000] SVG Overlay** linking form fields to page boxes |
+| **Web Frontend** | Streamlit single-script prototype | **Next.js 16 App Router (React 19, TypeScript)** with glassmorphic design system |
+| **Theme & UI** | Default Streamlit theme | **Zero-flash dark/light mode** (`useSyncExternalStore`), frosted glass surfaces |
+| **Cloud Deployment** | Monolithic HuggingFace Space | **Split Serverless on Modal** (CPU ASGI app + on-demand T4 GPU worker) + **Vercel** |
+| **Package Management** | Traditional `pip` / `requirements.txt` | **Astral `uv` Workspace** (`invoice-backend`, `invoice-ml`, root dev tools) |
 
 ---
 
-## 🛠️ Technical Deep Dive (Why this architecture?)
+## 🏗️ System Architecture & Data Flow
 
-### 1. The "Safety Net" Fallback Logic
+```mermaid
+flowchart TD
+    subgraph Client ["Client Browser"]
+        UI["Next.js 16 App Router\n(HITL Review Studio, Batch Analytics)"]
+    end
 
-Standard ML models often fail on specific fields like "Invoice Number" if the layout is unseen. This system implements a **priority-based extraction**:
+    subgraph Vercel ["Vercel Edge / Serverless"]
+        BFF["Next.js BFF Proxy\n(/api/v1/*)\n• Injects X-Backend-Secret\n• HMAC Cookie Demo Auth"]
+    end
 
-1.  **Primary:** LayoutLMv3 predicts entity labels (context-aware).
-2.  **Fallback:** If `Invoice_No` or `Total` is null, the system executes a targeted Regex scan on the raw text.
-    _Result:_ Combines the generalization of AI with the determinism of Rules.
+    subgraph Modal ["Modal Serverless Cloud"]
+        subgraph CPU_Tier ["Modal CPU Container (Low Idle Cost)"]
+            FastAPI["FastAPI ASGI App\n• /health, /invoices, /reports\n• Authenticated Page Streaming\n• Rate Limiting (SlowAPI)"]
+        end
 
-### 2. Robustness & Error Handling
+        subgraph GPU_Tier ["Modal GPU Worker (NVIDIA T4 - 120s Scaledown)"]
+            Worker["GPUExtractor\n• Indra OCR 1.1 (ONNX)\n• Qwen3.5-0.8B FP16\n• Merged BF16 LoRA Adapter"]
+        end
 
-- **OCR Noise:** Uses DocTR's deep learning-based text recognition for improved accuracy over traditional OCR.
-- **Coordinate Normalization:** A custom `clamp()` function ensures all bounding boxes stay strictly within [0, 1000] to prevent Transformer index errors.
+        Volume[("modal.Volume\n(/weights)\nCached Model Weights")]
+    end
 
-### 3. Dual-Engine Architecture
+    subgraph Storage ["Cloud Infrastructure"]
+        DB[("PostgreSQL 16 / Neon / Supabase\n(Invoices, Line Items, Deduplication)")]
+        S3[("S3 / Cloudflare R2 / Supabase Storage\n(Original Documents & Page PNGs)")]
+        CloudVLM["LiteLLM Ephemeral Fallback\n(Gemini 2.5 Flash / GPT-4o-mini)\nBYO-Key from Request Headers"]
+    end
 
-The system implements a **Dual-Engine Architecture** with automatic fallback logic:
-
-1. **Primary Engine:** LayoutLMv3 predicts entity labels (context-aware).
-2. **Fallback Engine:** If `Invoice_No` or `Total` is null, the system executes a targeted Regex scan on the raw text.
-
-### 4. Clean JSON Output
-
-The system outputs a clean JSON with the following fields:
-
-- `receipt_number`: The invoice number (extracted by LayoutLMv3 or Regex).
-- `date`: The invoice date (extracted by LayoutLMv3 or Regex).
-- `bill_to`: The bill-to information (extracted by LayoutLMv3 or Regex).
-- `items`: The list of items (extracted by LayoutLMv3 or Regex).
-- `total_amount`: The total amount (extracted by LayoutLMv3 or Regex).
-- `extraction_confidence`: The confidence of the extraction (0-100).
-- `validation_passed`: Whether the validation passed (true/false).
-
-### 5. Defensive Database Architecture
-
-To support both local development (with full persistence) and lightweight cloud demos (without databases), the system uses a **"Soft Fail" Persistence Layer**:
-
-1. **Connection Check:** On startup, the system checks for PostgreSQL credentials. If missing, the database engine is disabled.
-2. **Repository Guard:** All CRUD operations check for an active session. If the database is disabled, save operations are skipped silently without crashing the pipeline.
-3. **Semantic Hashing:** Before saving, a content-based hash is generated to ensure idempotency.
-
----
-
-## 📊 Demo
-
-### Web Interface
-
-![Homepage](docs/screenshots/homepage.png)
-_Clean upload → extract flow with method selector (ML vs Regex)._
-
-### Successful Extraction (ML-based)
-
-![Success Result](docs/screenshots/success_result.png)
-_Fields extracted with LayoutLMv3._
-
-### Format Detection (simulated)
-
-![Format Detection](docs/screenshots/format_detection.png)
-_UI shows simple format hints and confidence._
-
-### Example JSON (Rule-based)
-
-```json
-{
-  "receipt_number": "PEGIV-1030765",
-  "date": "15/01/2019",
-  "bill_to": {
-    "name": "THE PEAK QUARRY WORKS",
-    "email": null
-  },
-  "items": [],
-  "total_amount": 193.0,
-  "extraction_confidence": 100,
-  "validation_passed": true,
-  "vendor": "OJC MARKETING SDN BHD",
-  "address": "NO JALAN BAYU 4, BANDAR SERI ALAM, 81750 MASAI, JOHOR"
-}
+    UI -->|"HTTPS / Cookie"| BFF
+    BFF -->|"HTTP + X-Backend-Secret"| FastAPI
+    FastAPI -->|"modal.remote.aio()"| Worker
+    Worker --- Volume
+    FastAPI -->|"SQLAlchemy AsyncPG"| DB
+    FastAPI -->|"Boto3 S3 Client"| S3
+    FastAPI -.->|"Auto-Escalation on Discrepancy"| CloudVLM
 ```
 
-### Example JSON (ML-based)
+### End-to-End Extraction Pipeline
+1. **Document Ingestion & Validation:** Magic bytes inspection (`PDF`, `PNG`, `JPEG`, `WEBP`), bounded memory uploads (max 20MB, max 20 pages), and SHA-256 file hashing.
+2. **Page Processing:** Multi-page PDF rasterization via `pypdfium2` at 150 DPI, native text layer extraction via `pdfplumber`, and page PNG generation.
+3. **OCR Text Recognition:** Fast ONNX OCR extraction via **Indra OCR 1.1** generating page-normalized `[0..1000]` bounding boxes and structured Markdown transcripts.
+4. **VLM Structured Inference:** Multimodal page rendering + OCR prompt fed into **Qwen3.5-0.8B** with parameter-efficient LoRA weights merged into base FP16 weights.
+5. **Deterministic Math Reconciliation:** Strict arithmetic validation checking `sum(line_items) == subtotal` and `subtotal + tax - discount == total_amount`. Detects tax-inclusive receipts (e.g. Malaysian GST, European MwSt) and prevents cash-tendered / change confusion.
+6. **Visual Grounding:** Fuzzy string matching between extracted values and OCR tokens, linking each scalar field and line item to exact page coordinates.
+7. **Persistence & Deduplication:** Checks for duplicate invoices via combined file hash and semantic hash (`vendor + date + total + receipt_number`). Original files and rendered page images are saved to S3-compatible storage (Cloudflare R2 / Supabase Storage), while metadata and line items are committed to PostgreSQL.
 
-```json
-{
-  "receipt_number": null,
-  "date": "15/01/2019",
-  "bill_to": null,
-  "items": [],
-  "total_amount": 193.0,
-  "vendor": "OJC MARKETING SDN BHD",
-  "address": "NO JALAN BAYU 4, BANDAR SERI ALAM, 81750 MASAI, JOHOR",
-  "raw_text": "…",
-  "raw_ocr_words": ["…"],
-  "raw_predictions": {
-    "DATE": {"text": "15/01/2019", "bbox": [[…]]},
-    "TOTAL": {"text": "193.00", "bbox": [[…]]},
-    "COMPANY": {"text": "OJC MARKETING SDN BHD", "bbox": [[…]]},
-    "ADDRESS": {"text": "…", "bbox": [[…]]}
-  }
-}
-```
+---
 
-## 🚀 Quick Start
+## 📊 Quantitative Benchmarks & LoRA Fine-Tuning
+
+### Phase 1 Model Selection Benchmark ($N = 72$ Documents)
+Evaluated across `sroie_test` (30 receipts), `cord_v2_test` (30 Indonesian receipts), and `temp_docs` (12 multi-page B2B invoices & PDFs):
+
+| Model Architecture | JSON Valid | Mean Latency (s) | Peak VRAM (MiB) | SROIE Total | CORD Total | Temp Docs Total | Math Reconcile |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| `LayoutLMv3 + DocTR` (v1 Baseline) | 100.0% | 0.31s | 1,035 | 80.0% | 48.3% | 36.4% | 15.4% |
+| `Xiaomi-OCR-0` (FP16) | 98.9% | 7.20s | 2,758 | 86.7% | 58.6% | 72.7% | 53.4% |
+| `Xiaomi-OCR-0` (4-bit NF4) | 74.4% | 8.28s | 1,162 | 46.7% | 37.9% | 63.6% | 57.0% |
+| **`Qwen3.5-0.8B` (FP16 Base)** | **98.9%** | **6.96s** | **2,758** | **63.3%** | **82.8%** | **90.9%** | **78.5%** |
+| `Qwen3.5-0.8B` (4-bit NF4) | 97.8% | 7.99s | 1,162 | 76.7% | 65.5% | 72.7% | 61.7% |
+
+*Key Takeaway:* **`Qwen3.5-0.8B FP16`** clearly outperformed both LayoutLMv3 and Xiaomi-OCR-0 on multi-currency, complex tables, and multi-page documents, fitting comfortably inside 2.8 GB VRAM.
+
+---
+
+### Phase 3 LoRA Fine-Tuning Results
+
+To eliminate remaining failure modes (tax-inclusive double-counting, cash-tendered confusion, dot-thousands parsing), we fine-tuned a **BF16 PEFT LoRA adapter** strictly on a consumer laptop GPU (**NVIDIA GeForce RTX 3050 6GB Laptop GPU**):
+
+* **Loss Convergence:** Validation cross-entropy dropped from `0.168` → **`0.0249`** over 52 optimizer steps (2 epochs, 204 train / 32 val sequences).
+* **Peak VRAM Usage:** **`3,341.2 MiB`** (~3.26 GiB) using assistant-only logit slicing (`logits_to_keep = ans_len + 1`) and non-reentrant gradient checkpointing.
+* **Trainable Parameters:** `9,338,880` / `862,324,800` (1.083% of total model weights).
+* **Zero Runtime Overhead:** Adapter is merged at load time with `PeftModel.merge_and_unload()`, eliminating the ~35% PEFT wrapper decoding penalty.
+
+#### Apples-to-Apples Ablation Comparison ($N = 72$)
+
+| Evaluation Metric | Zero-Shot Base `qwen35-fp16` | Fine-Tuned `qwen35-lora-fp16` | Improvement |
+|---|---:|---:|---:|
+| **`cord_v2_test` Total Amount Accuracy** | 79.3% | **100.0%** (30/30) | **+20.7 pts** |
+| **`cord_v2_test` Tax Amount Accuracy** | 40.0% | **100.0%** (30/30) | **+60.0 pts** |
+| **`cord_v2_test` Line-Item F1** | 84.9% | **96.0%** | **+11.1 pts** |
+| **`sroie_test` Total Amount Accuracy** | 70.0% | **86.7%** | **+16.7 pts** |
+| **`sroie_test` Vendor Fuzzy Match** | 83.3% | **100.0%** (30/30) | **+16.7 pts** |
+| **`sroie_test` Date Exact Match** | 83.3% | **96.7%** (29/30) | **+13.4 pts** |
+| **Suite Total Amount / Schema Failures** | 16 failures | **4 failures** | **-75% Error Reduction** |
+
+*Detailed report:* See [`docs/lora-training-and-eval.md`](file:///home/soumyajit-ghosh/Projects/Personal/invoice-processor-ml/docs/lora-training-and-eval.md).
+
+---
+
+## 🖥️ Next.js 16 HITL Review Studio
+
+The web application provides an intuitive Human-in-the-Loop review studio for finance and operations teams:
+
+1. **Side-by-Side Review Studio (`/invoices/[id]`):**
+   - Split-screen workspace pairing an interactive SVG bounding-box overlay directly with editable invoice schema fields.
+   - Hovering or focusing any form field immediately highlights its corresponding OCR bounding box on the rendered page scan with smooth CSS transitions.
+2. **Live Math Reconciliation Badges:**
+   - Real-time arithmetic verification checking line items sum vs subtotal and subtotal + tax = total.
+   - One-click discrepancy resolution and auto-calculation.
+3. **Multi-Currency Batch Processing (`/batch`):**
+   - Sequential fault-isolated batch processing of up to 20 files per request.
+   - Analytics summaries strictly segregated by ISO currency code (never coerced or mixed).
+   - One-click downloads for structured CSVs, JSON, and XSS-safe printable HTML reports.
+4. **Theme Engine & Glassmorphism:**
+   - Zero-flash dark/light theme switching with inline `<head>` script and React 19 `useSyncExternalStore`.
+   - Frosted glass surfaces (`backdrop-blur-xl`, translucent card borders, specular highlights) built on Tailwind CSS v4.
+   - Scanned document papers maintain clean white scan canvases to ensure 100% legibility and true OCR contrast.
+
+*Detailed report:* See [`docs/frontend-hitl-workbench.md`](file:///home/soumyajit-ghosh/Projects/Personal/invoice-processor-ml/docs/frontend-hitl-workbench.md).
+
+---
+
+## ⚡ Quickstart: Local Development
 
 ### Prerequisites
+- [uv](https://docs.astral.sh/uv/) (Astral Python package manager)
+- [Node.js 20+](https://nodejs.org) and `npm`
+- [Docker](https://www.docker.com/) (for local PostgreSQL 16)
 
-- Python 3.10+
-- Conda / Miniforge (recommended)
-- NVIDIA GPU with CUDA (strongly recommended for usable performance)
-
-⚠️ CPU-only execution is supported but significantly slower
-(5–10s per invoice) and intended only for testing.
-
-### Installation (Conda – Recommended)
-
-1. Clone the repository:
-
+### 1. Clone & Set Up Environment
 ```bash
-git clone https://github.com/GSoumyajit2005/invoice-processor-ml
+git clone https://github.com/GSoumyajit2005/invoice-processor-ml.git
 cd invoice-processor-ml
+
+# Copy environment template
+cp .env.example .env
+cp frontend/.env.example frontend/.env.local
 ```
 
-2. Create and activate the Conda environment:
+### 2. Start PostgreSQL 16
+```bash
+# Starts local PostgreSQL 16 on port 5433
+docker compose up -d
+```
+
+### 3. Install Dependencies & Run Database Migrations
+```bash
+# Sync all Python workspace packages and dev dependencies via uv
+uv sync --all-packages --group dev
+
+# Run Alembic migrations to create tables and indexes
+uv run --package invoice-backend alembic upgrade head
+```
+
+### 4. Run the Backend & Frontend
+In Terminal 1 (FastAPI Backend):
+```bash
+uv run --package invoice-backend uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
+```
+
+In Terminal 2 (Next.js Frontend):
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+> **Full Docker Compose Alternative:**
+> To run the entire stack (PostgreSQL + FastAPI + Next.js) inside Docker containers without local Python or Node:
+> ```bash
+> docker compose --profile full up -d
+> ```
+
+---
+
+## ☁️ Split Serverless Deployment
+
+### 1. Modal Cloud Deployment (`modal_app.py`)
+
+The backend architecture is split into a low-idle CPU container and an on-demand NVIDIA T4 GPU worker:
 
 ```bash
-conda env create -f environment.yml
-conda activate invoice-ml
+# Install and authenticate Modal CLI
+uv run modal setup
+
+# Step 1: Seed persistent Modal volume with base model, Indra OCR, and trained LoRA weights
+uv run modal run modal_app.py --action seed
+
+# Step 2: Test remote GPU extraction on a sample document
+uv run modal run modal_app.py --action test --file eval/data/documents/001.pdf
+
+# Step 3: Deploy the FastAPI ASGI application and GPU worker to Modal
+uv run modal deploy modal_app.py
 ```
 
-3. Verify CUDA availability (recommended):
+Modal outputs your live endpoint URL:
+`https://<your-org>--invoice-processor-fastapi-app.modal.run`
+
+### 2. Vercel Frontend Deployment
+
+Deploy the Next.js frontend to Vercel:
+1. Connect your GitHub repository to Vercel and set the Root Directory to `frontend`.
+2. Configure environment variables in the Vercel dashboard:
+   - `BACKEND_API_URL`: Your deployed Modal URL (e.g. `https://<your-org>--invoice-processor-fastapi-app.modal.run`)
+   - `BACKEND_SHARED_SECRET`: A secret string matching `BACKEND_SHARED_SECRET` on Modal.
+   - `DEMO_PASSCODE`: Optional demo gate passcode (leave empty to disable login).
+   - `DEMO_AUTH_SECRET`: Random 32+ character string for HMAC cookie signing.
+3. Deploy!
+
+### 3. Managed Database & Object Storage
+
+- **PostgreSQL:** Fully compatible with [Supabase](https://supabase.com) and [Neon](https://neon.tech). Set `DATABASE_URL=postgresql+asyncpg://...` in `.env`.
+- **Object Storage:** Fully compatible with [Cloudflare R2](https://www.cloudflare.com/developer-platform/r2/), [Supabase Storage](https://supabase.com/storage), or AWS S3. Set `STORAGE_BACKEND=s3` and configure `S3_ENDPOINT_URL`, `S3_BUCKET`, `S3_ACCESS_KEY_ID`, and `S3_SECRET_ACCESS_KEY`.
+
+---
+
+## 🧪 Testing, Quality Assurance & CI/CD
+
+This repository enforces strict linting, static typing, and automated testing across backend and frontend:
 
 ```bash
-python - <<EOF
-import torch
-print(torch.cuda.is_available())
-EOF
+# 1. Run Python Linting (Ruff)
+uv run ruff check .
+
+# 2. Run Python Static Type Checking (Pyright)
+uv run pyright backend ml modal_app.py
+
+# 3. Run Backend Integration & Schema Test Suite (Pytest)
+uv run pytest -v
+
+# 4. Run Frontend Linting & Typecheck
+cd frontend
+npm run lint
+npm run typecheck
+
+# 5. Build Next.js Production Bundle
+npm run build
 ```
 
-4. Run the web app
+Every commit and pull request to `main` and `feat/**` automatically triggers GitHub Actions CI running the full matrix in parallel.
 
-```bash
-streamlit run app.py
-```
+---
 
-> Note: `requirements.txt` is consumed internally by `environment.yml`.
-> Do not install it manually with pip.
-
-### Training the Model (Optional)
-
-To retrain the model from scratch using the provided scripts:
-
-```bash
-python scripts/train_combined.py
-```
-
-(Note: Requires SROIE dataset in data/sroie)
-
-### API Usage (Optional)
-
-To run the API server:
-
-```bash
-python src/api.py
-```
-
-The API provides endpoints for processing invoices and extracting information.
-
-### Running with Database (Optional)
-
-To enable data persistence, run the included Docker Compose file to spin up PostgreSQL:
-
-```bash
-docker-compose up -d
-```
-
-The application will automatically detect the database and start saving invoices.
-
-## 💻 Usage
-
-### Web Interface (Recommended)
-
-The easiest way to use the processor is via the web interface.
-
-```bash
-streamlit run app.py
-```
-
-- Upload an invoice image (PNG/JPG).
-- Choose extraction method in sidebar:
-  - ML-Based (LayoutLMv3)
-  - Rule-Based (Regex)
-- View JSON, download results.
-
-### Command-Line Interface (CLI)
-
-You can also process invoices directly from the command line.
-
-#### 1. Processing a Single Invoice
-
-This command processes the provided sample invoice and prints the results to the console.
-
-```bash
-python src/pipeline.py data/samples/sample_invoice.jpg --save --method ml
-# or
-python src/pipeline.py data/samples/sample_invoice.jpg --save --method rules
-```
-
-#### 2. Batch Processing a Folder
-
-The CLI can process an entire folder of images at once.
-
-First, place your own invoice images (e.g., `my_invoice1.jpg`, `my_invoice2.png`) into the `data/raw/` folder.
-
-Then, run the following command. It will process all images in `data/raw/`. Saved files are written to `outputs/{stem}_{method}.json`.
-
-```bash
-python src/pipeline.py data/raw --save --method ml
-```
-
-### Python API
-
-You can integrate the pipeline directly into your own Python scripts.
-
-```python
-from src.pipeline import process_invoice
-import json
-
-result = process_invoice('data/samples/sample_invoice.jpg', method='ml')
-print(json.dumps(result, indent=2))
-```
-
-## 🏗️ Architecture
-
-```
-                           ┌────────────────┐
-                           │  Upload Image  │
-                           └───────┬────────┘
-                                   │
-                                   ▼
-                         ┌────────────────────┐
-                         │   Preprocessing    │  (OpenCV grayscale/denoise)
-                         └────────┬───────────┘
-                                  │
-                                  ▼
-                          ┌───────────────┐
-                          │     OCR       │  (DocTR)
-                          └───────┬───────┘
-                                  │
-                   ┌──────────────┴──────────────┐
-                   │                             │
-                   ▼                             ▼
-         ┌──────────────────┐           ┌────────────────────────┐
-         │  Rule-based IE   │           │   ML-based IE (NER)    │
-         │  (regex, heur.)  │           │ LayoutLMv3 token-class │
-         └────────┬─────────┘           └───────────┬────────────┘
-                  │                                 │
-                  └──────────────┬──────────────────┘
-                                 ▼
-                         ┌──────────────────┐
-                         │   Post-process   │
-                         │ validate, scores │
-                         └────────┬─────────┘
-                                  │
-                   ┌──────────────┴──────────────┐
-                   │                             │
-                   ▼                             ▼
-         ┌──────────────────┐         ┌────────────────────┐
-         │    JSON Output   │         │  DB (PostgreSQL)   │
-         └──────────────────┘         │   (Optional Save)  │
-                                      └────────────────────┘
-
-
-```
-
-## 📁 Project Structure
+## 📁 Repository Structure
 
 ```
 invoice-processor-ml/
-│
-├── data/
-│   ├── raw/                    # Input invoice images for processing
-│   └── processed/              # (Reserved for future use)
-│
-├── data/samples/
-│   └── sample_invoice.jpg      # Public sample for quick testing
-│
-├── docs/
-│   └── screenshots/            # UI Screenshots for the README demo
-│
-├── models/
-│   └── layoutlmv3-doctr-trained/      # Fine-tuned model (trained with DocTR OCR)
-│
-├── outputs/                    # Default folder for saved JSON results
-│
-├── scripts/                    # Training and analysis scripts
-│   ├── eval_new_dataset.py     # Evaluation scripts
-│   ├── explore_new_dataset.py  # Dataset exploration tools
-│   ├── prepare_doctr_data.py   # DocTR data alignment for training
-│   ├── train_combined.py       # Main training loop (SROIE + Custom Data)
-│   └── train_layoutlm.py       # LayoutLMv3 fine-tuning script
-│
-├── src/
-│   ├── api.py                  # FastAPI REST endpoint for API access
-│   ├── data_loader.py          # Unified data loader for training
-│   ├── database.py             # Database connection with environment-aware 'soft fail' check
-│   ├── extraction.py           # Regex-based information extraction logic
-│   ├── ml_extraction.py        # ML-based extraction (LayoutLMv3 + DocTR)
-│   ├── models.py               # SQLModel tables (Invoice, LineItem) with schema validation
-│   ├── pdf_utils.py            # PDF text extraction and image conversion
-│   ├── pipeline.py             # Main orchestrator for the pipeline and CLI
-│   ├── preprocessing.py        # Image preprocessing functions (grayscale, denoise)
-│   ├── repository.py           # CRUD operations with session safety handling
-│   ├── schema.py               # Pydantic models for API response validation
-│   ├── sroie_loader.py         # SROIE dataset loading logic
-│   └── utils.py                # Utility functions (semantic hashing, etc.)
-│
-├── tests/
-│   ├── test_extraction.py      # Tests for regex extraction module
-│   ├── test_full_pipeline.py   # Full end-to-end integration tests
-│   ├── test_pipeline.py        # Pipeline process tests
-│   └── test_preprocessing.py   # Tests for the preprocessing module
-│
-├── app.py                      # Streamlit web interface
-├── requirements.txt            # Python dependencies
-├── environment.yml             # Conda environment configuration
-├── docker-compose.yml          # Docker Compose configuration for PostgreSQL
-├── Dockerfile                  # Dockerfile for building the application container
-├── .gitignore                  # Git ignore file
-└── README.md                   # You are Here!
+├── .github/
+│   └── workflows/
+│       └── ci.yml                     # GitHub Actions CI matrix (backend + frontend)
+├── backend/
+│   ├── alembic/                       # Database schema migrations
+│   ├── app/
+│   │   ├── api/                       # FastAPI routes (/extract, /invoices, /reports, /health)
+│   │   ├── core/                      # Settings, schemas, paths, hashing, reconciliation
+│   │   ├── db/                        # SQLModel models, session lifecycle, repositories
+│   │   ├── extractors/                # Hybrid router, Indra OCR service, Local Qwen VLM, Cloud VLM
+│   │   ├── pdf/                       # Multi-page PDF rasterization & native text layer extraction
+│   │   ├── services/                  # Document ingestion & persistence orchestration
+│   │   └── storage/                   # Local disk & S3/R2 storage adapters
+│   ├── tests/                         # End-to-end integration & unit test suite
+│   ├── Dockerfile                     # Container build for backend
+│   └── pyproject.toml                 # Backend package specification
+├── frontend/
+│   ├── src/
+│   │   ├── app/                       # Next.js 16 App Router pages & BFF API proxy
+│   │   ├── components/                # HITL Review Studio, SVG overlay, UI controls
+│   │   └── lib/                       # Theme engine, API client, formatting, types
+│   ├── Dockerfile                     # Container build for frontend
+│   ├── vercel.json                    # Vercel serverless deployment config
+│   └── package.json                   # Frontend dependencies & scripts
+├── ml/
+│   ├── eval/                          # Quantitative benchmark harnesses & reports
+│   ├── train/                         # Dataset preparation, teacher audits, LoRA fine-tuning
+│   └── pyproject.toml                 # ML workspace package specification
+├── models/                            # Model checkpoints (Qwen3.5-0.8B, Indra OCR, LoRA adapter)
+├── modal_app.py                       # Modal 1.6+ serverless split architecture (FastAPI + GPU Worker)
+├── docker-compose.yml                 # Local PostgreSQL 16 + optional full-stack containers
+└── pyproject.toml                     # Root uv workspace configuration
 ```
-
-## 🧠 Model & Training
-
-- **Model**: `microsoft/layoutlmv3-base` (125M params)
-- **Task**: Token Classification (NER) with 9 labels: `O, B/I-COMPANY, B/I-ADDRESS, B/I-DATE, B/I-TOTAL`
-- **Dataset**: SROIE (ICDAR 2019, English retail receipts), mychen76/invoices-and-receipts_ocr_v1 (English)
-- **Training**: RTX 3050 6GB, PyTorch 2.x, Transformers 4.x
-- **Result**: F1 Score ≈ 0.83 (Real-world performance on DocTR-aligned validation set)
-
-- Training scripts (local):
-- `scripts/train_combined.py` (data prep, training loop with validation + model save)
-- Model saved to: `models/layoutlmv3-doctr-trained/`
-
-## 📈 Performance
-
-- **OCR Precision**: State-of-the-art hierarchical detection using **DocTR (ResNet-50)**. Outperforms Tesseract on complex/noisy layouts.
-- **ML-based Extraction**:
-  - **Accuracy**: ~83% F1 Score on SROIE + custom invoices
-  - **Speed**:
-    - **GPU (recommended)**: <1s per invoice
-    - **CPU (fallback)**: ~5–7s per invoice
-
-⚠️ CPU-only execution is supported for testing and experimentation but results
-in significantly higher latency due to the heavy OCR and layout-aware models.
-
-## ⚠️ Known Limitations
-
-1. **Layout Sensitivity**: The ML model was fine‑tuned on SROIE (retail receipts) and mychen76/invoices-and-receipts_ocr_v1 (English). Professional multi-column invoices may underperform until you fine‑tune on more diverse datasets.
-2. **Invoice Number**: SROIE dataset lacks invoice number labels. The system solves this by using the Hybrid Fallback Engine, which successfully extracts invoice numbers using Regex whenever the ML model output is empty.
-3. **Line Items/Tables**: Not trained for table extraction yet. Rule-based supports simple totals; table extraction comes later.
-4. **Inference Latency**: CPU execution is significantly slower due to heavy OCR and layout-aware models.
-
-## 🔮 Future Enhancements
-
-- [x] Add and fine‑tune on mychen76/invoices-and-receipts_ocr_v1 (English) for broader invoice formats
-- [ ] (Optional) Add FATURA (table-focused) for line-item extraction
-- [ ] Sliding-window chunking for >512 token documents (to avoid truncation)
-- [ ] Table detection (Camelot/Tabula/DeepDeSRT) for line items
-- [x] PDF support (pdf2image) for multipage invoices
-- [x] FastAPI backend + Docker
-- [x] CI/CD pipeline (GitHub Actions → HuggingFace Spaces auto-deploy)
-- [ ] Multilingual OCR (PaddleOCR) and multilingual fine‑tuning
-- [ ] Confidence calibration and better validation rules
-- [x] Database persistence layer (PostgreSQL with SQLModel & Redundancy checks)
-
-## 🛠️ Tech Stack
-
-| Component        | Technology                          |
-| ---------------- | ----------------------------------- |
-| OCR              | DocTR (Mindee)                      |
-| Image Processing | OpenCV, Pillow                      |
-| ML/NLP           | PyTorch 2.x, Transformers           |
-| Model            | LayoutLMv3 (token class.)           |
-| Web Interface    | Streamlit                           |
-| Data Format      | JSON                                |
-| CI/CD            | GitHub Actions → HuggingFace Spaces |
-| Containerization | Docker                              |
-| Database         | PostgreSQL, SQLModel                |
-| Containerization | Docker & Docker Compose             |
-
-## 📚 What I Learned
-
-- OCR challenges (confusable characters, confidence-based filtering)
-- Layout-aware NER with LayoutLMv3 (text + bbox + pixels)
-- Data normalization (bbox to 0–1000 scale)
-- End-to-end pipelines (UI + CLI + JSON output)
-- When regex is enough vs when ML is needed
-- Evaluation (seqeval F1 for NER)
-
-## 🤝 Contributing
-
-Contributions welcome! Areas needing improvement:
-
-- New patterns for regex extractor
-- Better preprocessing for OCR
-- New datasets and training configs
-- Tests and CI
-
-## 📝 License
-
-MIT License - See LICENSE file for details
-
-## 👨‍💻 Author
-
-**Soumyajit Ghosh** - 3rd Year BTech Student
-
-- Exploring AI/ML and practical applications
-- [LinkedIn](https://www.linkedin.com/in/soumyajit-ghosh-tech) | [GitHub](https://github.com/GSoumyajit2005) | [Portfolio](https://soumyajitghosh.vercel.app)
 
 ---
 
-**Note**: "This is a learning project demonstrating an end-to-end ML pipeline. Not recommended for production use without further validation, retraining on diverse datasets, and security hardening."
+## 📜 License
+
+This project is licensed under the [MIT License](LICENSE).

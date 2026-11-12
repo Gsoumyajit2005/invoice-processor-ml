@@ -1,4 +1,8 @@
 # docker-compose.yml
+#
+# Usage:
+#   docker compose up -d                  # Starts ONLY PostgreSQL 16 on port 5433 (default local dev)
+#   docker compose --profile full up -d   # Starts PostgreSQL 16 + FastAPI backend + Next.js frontend
 
 services:
   postgres:
@@ -21,6 +25,56 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - invoice_net
+
+  backend:
+    profiles: ["full", "app"]
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: invoice_backend
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-password}@postgres:5432/${POSTGRES_DB:-invoices_db}
+      STORAGE_BACKEND: ${STORAGE_BACKEND:-local}
+      BACKEND_SHARED_SECRET: ${BACKEND_SHARED_SECRET:-}
+      CORS_ORIGINS: '["http://localhost:3000","http://127.0.0.1:3000"]'
+      EXTRACTOR_DEFAULT_MODE: ${EXTRACTOR_DEFAULT_MODE:-auto}
+      DEFAULT_CLOUD_PROVIDER: ${DEFAULT_CLOUD_PROVIDER:-gemini}
+      DEFAULT_CLOUD_MODEL: ${DEFAULT_CLOUD_MODEL:-gemini/gemini-2.5-flash}
+      DEFAULT_CLOUD_API_KEY: ${DEFAULT_CLOUD_API_KEY:-}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/uploads:/app/backend/uploads
+      - ./models:/app/models
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - invoice_net
+
+  frontend:
+    profiles: ["full", "app"]
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: invoice_frontend
+    environment:
+      BACKEND_API_URL: http://backend:8000
+      BACKEND_SHARED_SECRET: ${BACKEND_SHARED_SECRET:-}
+      DEMO_PASSCODE: ${DEMO_PASSCODE:-}
+      DEMO_AUTH_SECRET: ${DEMO_AUTH_SECRET:-demo-secret-key-change-in-production-min-32-bytes}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - invoice_net
 
 volumes:
   postgres16_data:
+
+networks:
+  invoice_net:
+    driver: bridge

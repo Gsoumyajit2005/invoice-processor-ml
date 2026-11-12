@@ -8,8 +8,16 @@ from pathlib import Path
 # backend/app/core/paths.py -> parents[3] is repository root
 REPO_ROOT: Path = Path(__file__).resolve().parents[3]
 BACKEND_DIR: Path = REPO_ROOT / "backend"
-MODELS_DIR: Path = REPO_ROOT / "models"
-CACHE_DIR: Path = REPO_ROOT / ".cache"
+MODELS_DIR: Path = (
+    Path(os.environ["INVOICE_MODELS_DIR"])
+    if os.environ.get("INVOICE_MODELS_DIR")
+    else REPO_ROOT / "models"
+)
+CACHE_DIR: Path = (
+    Path(os.environ["INVOICE_CACHE_DIR"])
+    if os.environ.get("INVOICE_CACHE_DIR")
+    else REPO_ROOT / ".cache"
+)
 
 QWEN35_08B_DIR: Path = MODELS_DIR / "Qwen3.5-0.8B"
 QWEN35_LORA_DIR: Path = MODELS_DIR / "qwen35-0.8b-invoice-lora"
