@@ -102,27 +102,27 @@ export function DocumentOverlayViewer({
     boxesOnPage.find((b) => b.key === activeTargetKey) ?? null;
 
   return (
-    <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xs">
+    <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xs dark:border-slate-800 dark:bg-slate-900">
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 bg-slate-50 px-3.5 py-2.5 text-xs">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 bg-slate-50 px-3.5 py-2.5 text-xs dark:border-slate-800 dark:bg-slate-900/95">
         <div className="flex items-center gap-1.5">
           <button
             type="button"
             disabled={activePage <= 1}
             onClick={() => onPageChange(activePage - 1)}
-            className="rounded-lg border border-slate-200 bg-white p-1.5 text-slate-700 hover:bg-slate-50 disabled:opacity-40"
+            className="rounded-lg border border-slate-200 bg-white p-1.5 text-slate-700 hover:bg-slate-50 disabled:opacity-40 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
             aria-label="Previous page"
           >
             <ChevronLeft className="h-3.5 w-3.5" />
           </button>
-          <span className="tabular-nums px-1.5 font-medium text-slate-700">
+          <span className="tabular-nums px-1.5 font-medium text-slate-700 dark:text-slate-200">
             Page {activePage} / {pageCount}
           </span>
           <button
             type="button"
             disabled={activePage >= pageCount}
             onClick={() => onPageChange(activePage + 1)}
-            className="rounded-lg border border-slate-200 bg-white p-1.5 text-slate-700 hover:bg-slate-50 disabled:opacity-40"
+            className="rounded-lg border border-slate-200 bg-white p-1.5 text-slate-700 hover:bg-slate-50 disabled:opacity-40 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
             aria-label="Next page"
           >
             <ChevronRight className="h-3.5 w-3.5" />
@@ -139,7 +139,7 @@ export function DocumentOverlayViewer({
                     "h-6 min-w-6 rounded px-1.5 text-[11px] font-medium transition",
                     activePage === idx + 1
                       ? "bg-indigo-600 text-white"
-                      : "bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-100",
+                      : "bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-300 dark:ring-slate-700 dark:hover:bg-slate-700",
                   )}
                 >
                   {idx + 1}
@@ -156,8 +156,8 @@ export function DocumentOverlayViewer({
             className={cn(
               "inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 font-medium transition",
               showBoxes
-                ? "border-indigo-200 bg-indigo-50 text-indigo-700"
-                : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50",
+                ? "border-indigo-200 bg-indigo-50 text-indigo-700 dark:border-indigo-800 dark:bg-indigo-950/60 dark:text-indigo-300"
+                : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700",
             )}
           >
             {showBoxes ? (
@@ -168,17 +168,17 @@ export function DocumentOverlayViewer({
             <span>Boxes ({boxesOnPage.length})</span>
           </button>
 
-          <div className="inline-flex items-center rounded-lg border border-slate-200 bg-white">
+          <div className="inline-flex items-center rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800">
             <button
               type="button"
               disabled={zoomIndex === 0}
               onClick={() => setZoomIndex((z) => Math.max(0, z - 1))}
-              className="p-1.5 text-slate-600 hover:bg-slate-50 disabled:opacity-40"
+              className="p-1.5 text-slate-600 hover:bg-slate-50 disabled:opacity-40 dark:text-slate-300 dark:hover:bg-slate-700"
               aria-label="Zoom out"
             >
               <ZoomOut className="h-3.5 w-3.5" />
             </button>
-            <span className="tabular-nums min-w-[44px] text-center font-medium text-slate-700">
+            <span className="tabular-nums min-w-[44px] text-center font-medium text-slate-700 dark:text-slate-200">
               {zoom.label}
             </span>
             <button
@@ -187,7 +187,7 @@ export function DocumentOverlayViewer({
               onClick={() =>
                 setZoomIndex((z) => Math.min(ZOOM_LEVELS.length - 1, z + 1))
               }
-              className="p-1.5 text-slate-600 hover:bg-slate-50 disabled:opacity-40"
+              className="p-1.5 text-slate-600 hover:bg-slate-50 disabled:opacity-40 dark:text-slate-300 dark:hover:bg-slate-700"
               aria-label="Zoom in"
             >
               <ZoomIn className="h-3.5 w-3.5" />
@@ -197,18 +197,18 @@ export function DocumentOverlayViewer({
       </div>
 
       {/* Document Canvas */}
-      <div className="relative flex-1 overflow-auto bg-slate-100/90 p-4">
+      <div className="relative flex-1 overflow-auto bg-slate-100/90 p-4 dark:bg-slate-950/90">
         {!currentUrl ? (
-          <div className="flex h-80 items-center justify-center rounded-xl border border-dashed border-slate-300 bg-white text-sm text-slate-500">
+          <div className="flex h-80 items-center justify-center rounded-xl border border-dashed border-slate-300 bg-white text-sm text-slate-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400">
             No rendered document page image available.
           </div>
         ) : imageError ? (
-          <div className="flex h-80 flex-col items-center justify-center gap-2 rounded-xl border border-rose-200 bg-rose-50 text-sm text-rose-700">
+          <div className="flex h-80 flex-col items-center justify-center gap-2 rounded-xl border border-rose-200 bg-rose-50 text-sm text-rose-700 dark:border-rose-900 dark:bg-rose-950/50 dark:text-rose-300">
             <p>Unable to load document page image.</p>
             <button
               type="button"
               onClick={() => setImageError(false)}
-              className="rounded-lg bg-white px-3 py-1 text-xs font-medium text-rose-800 ring-1 ring-rose-200 hover:bg-rose-100"
+              className="rounded-lg bg-white px-3 py-1 text-xs font-medium text-rose-800 ring-1 ring-rose-200 hover:bg-rose-100 dark:bg-slate-900 dark:text-rose-200 dark:ring-rose-800 dark:hover:bg-rose-950"
             >
               Retry
             </button>
@@ -216,15 +216,15 @@ export function DocumentOverlayViewer({
         ) : (
           <div className="flex min-h-full items-start justify-center">
             <div
-              className="relative inline-block overflow-hidden rounded-lg border border-slate-300 bg-white shadow-md"
+              className="relative inline-block overflow-hidden rounded-lg border border-slate-300 bg-white shadow-md dark:border-slate-700"
               style={{
                 width: `${zoom.scale * 100}%`,
                 maxWidth: zoom.scale === 1 ? "100%" : "none",
               }}
             >
               {imageLoadedUrl !== currentUrl ? (
-                <div className="flex h-64 items-center justify-center gap-2 text-xs text-slate-500">
-                  <Loader2 className="h-4 w-4 animate-spin text-indigo-600" />
+                <div className="flex h-64 items-center justify-center gap-2 text-xs text-slate-500 dark:bg-slate-900 dark:text-slate-400">
+                  <Loader2 className="h-4 w-4 animate-spin text-indigo-600 dark:text-indigo-400" />
                   Loading page {activePage}...
                 </div>
               ) : null}
@@ -309,7 +309,7 @@ export function DocumentOverlayViewer({
       </div>
 
       {/* Footer Legend */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-200 bg-slate-50 px-3.5 py-2 text-[11px] text-slate-600">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-200 bg-slate-50 px-3.5 py-2 text-[11px] text-slate-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400">
         <div className="flex items-center gap-3">
           <span className="inline-flex items-center gap-1.5">
             <span className="h-2.5 w-2.5 rounded-xs border border-emerald-600 bg-emerald-500/20" />
@@ -324,7 +324,7 @@ export function DocumentOverlayViewer({
             Active Highlight
           </span>
         </div>
-        <span className="text-slate-400">
+        <span className="text-slate-400 dark:text-slate-500">
           Hover or click any box to jump to field
         </span>
       </div>

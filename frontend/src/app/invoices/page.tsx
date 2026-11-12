@@ -180,10 +180,10 @@ export default function InvoicesLedgerPage() {
       {/* Header */}
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
+          <h1 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
             Invoice Ledger
           </h1>
-          <p className="mt-1 text-sm text-slate-600">
+          <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
             Search extracted documents, inspect reconciliation flags, open HITL
             review, or export filtered sets.
           </p>
@@ -191,7 +191,7 @@ export default function InvoicesLedgerPage() {
         <div className="flex items-center gap-2">
           <Link
             href="/batch"
-            className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
           >
             <FileSpreadsheet className="h-4 w-4" />
             Batch Summary
@@ -207,16 +207,16 @@ export default function InvoicesLedgerPage() {
       </div>
 
       {/* Filters Card */}
-      <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs">
+      <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs dark:border-slate-800 dark:bg-slate-900">
         <div className="grid grid-cols-1 gap-3 md:grid-cols-12">
           <div className="relative md:col-span-5">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
             <input
               type="text"
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               placeholder="Search vendor, receipt #, or filename..."
-              className="w-full rounded-xl border border-slate-200 bg-white py-2 pl-9 pr-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+              className="w-full rounded-xl border border-slate-200 bg-white py-2 pl-9 pr-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-500"
             />
           </div>
 
@@ -229,7 +229,7 @@ export default function InvoicesLedgerPage() {
                 setStatus(e.target.value as InvoiceStatus | "");
               }}
               aria-label="Filter by status"
-              className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-indigo-500 focus:outline-none"
+              className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
             >
               <option value="">All Statuses</option>
               <option value="needs_review">Needs Review</option>
@@ -249,9 +249,11 @@ export default function InvoicesLedgerPage() {
                 setDateFrom(e.target.value);
               }}
               aria-label="Issue date from"
-              className="w-full rounded-xl border border-slate-200 bg-white px-2.5 py-2 text-xs text-slate-800 focus:border-indigo-500 focus:outline-none"
+              className="w-full rounded-xl border border-slate-200 bg-white px-2.5 py-2 text-xs text-slate-800 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
             />
-            <span className="text-xs text-slate-400">to</span>
+            <span className="text-xs text-slate-400 dark:text-slate-500">
+              to
+            </span>
             <input
               type="date"
               value={dateTo}
@@ -261,14 +263,14 @@ export default function InvoicesLedgerPage() {
                 setDateTo(e.target.value);
               }}
               aria-label="Issue date to"
-              className="w-full rounded-xl border border-slate-200 bg-white px-2.5 py-2 text-xs text-slate-800 focus:border-indigo-500 focus:outline-none"
+              className="w-full rounded-xl border border-slate-200 bg-white px-2.5 py-2 text-xs text-slate-800 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
             />
             {hasFilters ? (
               <button
                 type="button"
                 onClick={resetFilters}
                 title="Clear all filters"
-                className="shrink-0 rounded-xl border border-slate-200 bg-slate-50 p-2 text-slate-600 hover:bg-slate-100"
+                className="shrink-0 rounded-xl border border-slate-200 bg-slate-50 p-2 text-slate-600 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
               >
                 <FilterX className="h-4 w-4" />
               </button>
@@ -278,8 +280,8 @@ export default function InvoicesLedgerPage() {
 
         {/* Multi-select Contextual Bar */}
         {selectedIds.size > 0 ? (
-          <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-indigo-200 bg-indigo-50/70 px-3.5 py-2 text-xs">
-            <span className="font-semibold text-indigo-950">
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-indigo-200 bg-indigo-50/70 px-3.5 py-2 text-xs dark:border-indigo-800/70 dark:bg-indigo-950/50">
+            <span className="font-semibold text-indigo-950 dark:text-indigo-200">
               {selectedIds.size} invoice{selectedIds.size > 1 ? "s" : ""}{" "}
               selected
             </span>
@@ -288,7 +290,7 @@ export default function InvoicesLedgerPage() {
                 type="button"
                 disabled={exporting}
                 onClick={() => void handleExportSelected("csv")}
-                className="inline-flex items-center gap-1 rounded-lg bg-white px-2.5 py-1 font-medium text-slate-800 ring-1 ring-slate-200 hover:bg-slate-50 disabled:opacity-50"
+                className="inline-flex items-center gap-1 rounded-lg bg-white px-2.5 py-1 font-medium text-slate-800 ring-1 ring-slate-200 hover:bg-slate-50 disabled:opacity-50 dark:bg-slate-800 dark:text-slate-200 dark:ring-slate-700 dark:hover:bg-slate-700"
               >
                 <Download className="h-3.5 w-3.5" />
                 CSV
@@ -297,7 +299,7 @@ export default function InvoicesLedgerPage() {
                 type="button"
                 disabled={exporting}
                 onClick={() => void handleExportSelected("json")}
-                className="inline-flex items-center gap-1 rounded-lg bg-white px-2.5 py-1 font-medium text-slate-800 ring-1 ring-slate-200 hover:bg-slate-50 disabled:opacity-50"
+                className="inline-flex items-center gap-1 rounded-lg bg-white px-2.5 py-1 font-medium text-slate-800 ring-1 ring-slate-200 hover:bg-slate-50 disabled:opacity-50 dark:bg-slate-800 dark:text-slate-200 dark:ring-slate-700 dark:hover:bg-slate-700"
               >
                 <Download className="h-3.5 w-3.5" />
                 JSON
@@ -317,13 +319,15 @@ export default function InvoicesLedgerPage() {
       </div>
 
       {errorMsg ? <AlertBanner variant="error">{errorMsg}</AlertBanner> : null}
-      {noticeMsg ? <AlertBanner variant="success">{noticeMsg}</AlertBanner> : null}
+      {noticeMsg ? (
+        <AlertBanner variant="success">{noticeMsg}</AlertBanner>
+      ) : null}
 
       {/* Ledger Table */}
-      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xs">
+      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xs dark:border-slate-800 dark:bg-slate-900">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-slate-200 text-sm">
-            <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
+          <table className="min-w-full divide-y divide-slate-200 text-sm dark:divide-slate-800">
+            <thead className="bg-slate-50 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:bg-slate-950/60 dark:text-slate-400">
               <tr>
                 <th className="w-10 px-4 py-3">
                   <input
@@ -333,7 +337,7 @@ export default function InvoicesLedgerPage() {
                     }
                     onChange={toggleAllVisible}
                     aria-label="Select all visible invoices"
-                    className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                    className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:border-slate-600 dark:bg-slate-900"
                   />
                 </th>
                 <th className="px-4 py-3">Vendor / Document</th>
@@ -346,12 +350,12 @@ export default function InvoicesLedgerPage() {
                 <th className="px-4 py-3 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80">
               {loading ? (
                 Array.from({ length: 5 }).map((_, idx) => (
                   <tr key={idx}>
                     <td colSpan={9} className="px-4 py-4">
-                      <div className="h-5 animate-pulse rounded bg-slate-100" />
+                      <div className="h-5 animate-pulse rounded bg-slate-100 dark:bg-slate-800" />
                     </td>
                   </tr>
                 ))
@@ -359,7 +363,7 @@ export default function InvoicesLedgerPage() {
                 <tr>
                   <td
                     colSpan={9}
-                    className="px-4 py-12 text-center text-sm text-slate-500"
+                    className="px-4 py-12 text-center text-sm text-slate-500 dark:text-slate-400"
                   >
                     {hasFilters
                       ? "No invoices match these filters."
@@ -379,8 +383,9 @@ export default function InvoicesLedgerPage() {
                     <tr
                       key={inv.id}
                       className={cn(
-                        "transition hover:bg-slate-50/80",
-                        selectedIds.has(inv.id) && "bg-indigo-50/40",
+                        "transition hover:bg-slate-50/80 dark:hover:bg-slate-800/50",
+                        selectedIds.has(inv.id) &&
+                          "bg-indigo-50/40 dark:bg-indigo-950/35",
                       )}
                     >
                       <td className="px-4 py-3">
@@ -389,7 +394,7 @@ export default function InvoicesLedgerPage() {
                           checked={selectedIds.has(inv.id)}
                           onChange={() => toggleOne(inv.id)}
                           aria-label={`Select ${inv.vendor || inv.filename}`}
-                          className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                          className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:border-slate-600 dark:bg-slate-900"
                         />
                       </td>
                       <td className="px-4 py-3">
@@ -397,11 +402,11 @@ export default function InvoicesLedgerPage() {
                           <div className="min-w-0">
                             <Link
                               href={`/invoices/${inv.id}`}
-                              className="block truncate font-semibold text-slate-900 hover:text-indigo-600"
+                              className="block truncate font-semibold text-slate-900 hover:text-indigo-600 dark:text-slate-100 dark:hover:text-indigo-400"
                             >
                               {inv.vendor || "Unknown Vendor"}
                             </Link>
-                            <div className="mt-0.5 flex flex-wrap items-center gap-1.5 text-xs text-slate-500">
+                            <div className="mt-0.5 flex flex-wrap items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
                               <span className="max-w-[200px] truncate">
                                 {inv.filename}
                               </span>
@@ -410,7 +415,7 @@ export default function InvoicesLedgerPage() {
                                 <Link
                                   href={`/invoices/${inv.duplicate_of_id}`}
                                   title="Duplicate detected — view original"
-                                  className="inline-flex items-center gap-1 rounded bg-amber-50 px-1.5 py-0.5 text-[10px] font-semibold text-amber-800 ring-1 ring-amber-600/15 hover:bg-amber-100"
+                                  className="inline-flex items-center gap-1 rounded bg-amber-50 px-1.5 py-0.5 text-[10px] font-semibold text-amber-800 ring-1 ring-amber-600/15 hover:bg-amber-100 dark:bg-amber-950/70 dark:text-amber-300 dark:ring-amber-400/20 dark:hover:bg-amber-900/60"
                                 >
                                   <Copy className="h-2.5 w-2.5" />
                                   Duplicate
@@ -420,21 +425,23 @@ export default function InvoicesLedgerPage() {
                           </div>
                         </div>
                       </td>
-                      <td className="whitespace-nowrap px-4 py-3 font-mono text-xs text-slate-700">
+                      <td className="whitespace-nowrap px-4 py-3 font-mono text-xs text-slate-700 dark:text-slate-300">
                         {inv.receipt_number || "—"}
                       </td>
-                      <td className="whitespace-nowrap px-4 py-3 tabular-nums text-xs text-slate-700">
+                      <td className="whitespace-nowrap px-4 py-3 tabular-nums text-xs text-slate-700 dark:text-slate-300">
                         {inv.date || "—"}
                       </td>
-                      <td className="whitespace-nowrap px-4 py-3 text-right tabular-nums font-semibold text-slate-900">
+                      <td className="whitespace-nowrap px-4 py-3 text-right tabular-nums font-semibold text-slate-900 dark:text-slate-100">
                         {formatCurrency(inv.total_amount, inv.currency)}
                       </td>
                       <td className="whitespace-nowrap px-4 py-3">
                         {!mathChecked ? (
-                          <span className="text-xs text-slate-400">—</span>
+                          <span className="text-xs text-slate-400 dark:text-slate-500">
+                            —
+                          </span>
                         ) : mathOk ? (
                           <span
-                            className="inline-flex items-center gap-1 text-xs font-medium text-emerald-700"
+                            className="inline-flex items-center gap-1 text-xs font-medium text-emerald-700 dark:text-emerald-400"
                             title="Line items & totals reconcile"
                           >
                             <CheckCircle2 className="h-3.5 w-3.5" />
@@ -442,7 +449,7 @@ export default function InvoicesLedgerPage() {
                           </span>
                         ) : (
                           <span
-                            className="inline-flex items-center gap-1 text-xs font-medium text-amber-700"
+                            className="inline-flex items-center gap-1 text-xs font-medium text-amber-700 dark:text-amber-400"
                             title="Discrepancy detected in subtotal/totals"
                           >
                             <AlertTriangle className="h-3.5 w-3.5" />
@@ -460,7 +467,7 @@ export default function InvoicesLedgerPage() {
                         <div className="inline-flex items-center gap-1">
                           <Link
                             href={`/invoices/${inv.id}`}
-                            className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 hover:border-indigo-300 hover:text-indigo-700"
+                            className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 hover:border-indigo-300 hover:text-indigo-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-indigo-500 dark:hover:text-indigo-300"
                           >
                             Review
                             <ExternalLink className="h-3 w-3" />
@@ -468,7 +475,7 @@ export default function InvoicesLedgerPage() {
                           <button
                             type="button"
                             onClick={() => setDeleteTarget(inv)}
-                            className="rounded-lg p-1.5 text-slate-400 hover:bg-rose-50 hover:text-rose-600"
+                            className="rounded-lg p-1.5 text-slate-400 hover:bg-rose-50 hover:text-rose-600 dark:text-slate-500 dark:hover:bg-rose-950/60 dark:hover:text-rose-400"
                             aria-label={`Delete ${inv.vendor || inv.filename}`}
                           >
                             <Trash2 className="h-4 w-4" />
@@ -484,7 +491,7 @@ export default function InvoicesLedgerPage() {
         </div>
 
         {/* Pagination Footer */}
-        <div className="flex flex-col items-center justify-between gap-3 border-t border-slate-200 bg-slate-50/70 px-4 py-3 text-xs text-slate-600 sm:flex-row">
+        <div className="flex flex-col items-center justify-between gap-3 border-t border-slate-200 bg-slate-50/70 px-4 py-3 text-xs text-slate-600 dark:border-slate-800 dark:bg-slate-950/60 dark:text-slate-400 sm:flex-row">
           <span>
             Showing <span className="font-semibold">{startRow}</span>–
             <span className="font-semibold">{endRow}</span> of{" "}
@@ -498,7 +505,7 @@ export default function InvoicesLedgerPage() {
                 setLoading(true);
                 setOffset((prev) => Math.max(0, prev - PAGE_SIZE));
               }}
-              className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-1.5 font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-40"
+              className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-1.5 font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-40 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
             >
               <ChevronLeft className="h-3.5 w-3.5" />
               Previous
@@ -510,7 +517,7 @@ export default function InvoicesLedgerPage() {
                 setLoading(true);
                 setOffset((prev) => prev + PAGE_SIZE);
               }}
-              className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-1.5 font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-40"
+              className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-1.5 font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-40 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
             >
               Next
               <ChevronRight className="h-3.5 w-3.5" />

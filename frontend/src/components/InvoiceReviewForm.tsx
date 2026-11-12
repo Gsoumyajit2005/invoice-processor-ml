@@ -140,15 +140,18 @@ function GroundedTextField({
     <div
       className={cn(
         "rounded-xl p-1.5 transition",
-        isHighlighted && "bg-indigo-50/70 ring-1 ring-indigo-300",
+        isHighlighted &&
+          "bg-indigo-50/70 ring-1 ring-indigo-300 dark:bg-indigo-950/50 dark:ring-indigo-700",
         containerClassName,
       )}
     >
       <div className="flex items-center justify-between gap-1.5">
-        <label className="text-xs font-medium text-slate-700">{label}</label>
+        <label className="text-xs font-medium text-slate-700 dark:text-slate-300">
+          {label}
+        </label>
         <div className="flex items-center gap-1.5">
           {showPageHint && provenance?.bbox ? (
-            <span className="inline-flex items-center gap-0.5 text-[10px] text-slate-400">
+            <span className="inline-flex items-center gap-0.5 text-[10px] text-slate-400 dark:text-slate-500">
               <MapPin className="h-2.5 w-2.5" />p.{provenance.bbox.page}
             </span>
           ) : null}
@@ -170,7 +173,7 @@ function GroundedTextField({
         onFocus={() => onFocusTarget(targetKey, provenance?.bbox?.page)}
         onMouseLeave={() => onFocusTarget(null)}
         className={cn(
-          "mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none",
+          "mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-500",
           inputClassName,
         )}
       />
@@ -423,34 +426,36 @@ export function InvoiceReviewForm({
           "rounded-2xl border p-4 text-xs shadow-2xs",
           reconciliation.itemsMatchSubtotal === false ||
             reconciliation.totalsReconcile === false
-            ? "border-amber-200 bg-amber-50/70 text-amber-950"
+            ? "border-amber-200 bg-amber-50/70 text-amber-950 dark:border-amber-900/70 dark:bg-amber-950/40 dark:text-amber-200"
             : reconciliation.totalsReconcile === true
-              ? "border-emerald-200 bg-emerald-50/70 text-emerald-950"
-              : "border-slate-200 bg-white text-slate-700",
+              ? "border-emerald-200 bg-emerald-50/70 text-emerald-950 dark:border-emerald-900/70 dark:bg-emerald-950/40 dark:text-emerald-200"
+              : "border-slate-200 bg-white text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300",
         )}
       >
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2 font-semibold">
             {reconciliation.itemsMatchSubtotal === false ||
             reconciliation.totalsReconcile === false ? (
-              <AlertTriangle className="h-4 w-4 text-amber-600" />
+              <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
             ) : (
-              <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+              <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
             )}
             <span>Live Math Reconciliation</span>
           </div>
           {dirty ? (
-            <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-medium text-amber-900">
+            <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-medium text-amber-900 dark:bg-amber-900/60 dark:text-amber-200">
               Unsaved edits
             </span>
           ) : null}
         </div>
 
         <div className="mt-2.5 grid grid-cols-1 gap-2 sm:grid-cols-2">
-          <div className="flex items-center justify-between gap-2 rounded-xl bg-white/80 px-3 py-2 ring-1 ring-slate-200/70">
+          <div className="flex items-center justify-between gap-2 rounded-xl bg-white/80 px-3 py-2 ring-1 ring-slate-200/70 dark:bg-slate-900/80 dark:ring-slate-800">
             <div>
-              <span className="text-slate-500">Line items sum</span>
-              <p className="tabular-nums font-semibold text-slate-900">
+              <span className="text-slate-500 dark:text-slate-400">
+                Line items sum
+              </span>
+              <p className="tabular-nums font-semibold text-slate-900 dark:text-slate-100">
                 {reconciliation.hasLineItems
                   ? formatCurrency(reconciliation.lineItemsSum, currencyCode)
                   : "No item amounts"}
@@ -466,23 +471,23 @@ export function InvoiceReviewForm({
                     reconciliation.lineItemsSum.toFixed(2),
                   )
                 }
-                className="rounded-lg bg-amber-100 px-2 py-1 text-[11px] font-semibold text-amber-900 hover:bg-amber-200"
+                className="rounded-lg bg-amber-100 px-2 py-1 text-[11px] font-semibold text-amber-900 hover:bg-amber-200 dark:bg-amber-900/60 dark:text-amber-200 dark:hover:bg-amber-900"
               >
                 Apply to Subtotal
               </button>
             ) : reconciliation.itemsMatchSubtotal === true ? (
-              <span className="font-semibold text-emerald-700">
+              <span className="font-semibold text-emerald-700 dark:text-emerald-400">
                 Matches Subtotal
               </span>
             ) : null}
           </div>
 
-          <div className="flex items-center justify-between gap-2 rounded-xl bg-white/80 px-3 py-2 ring-1 ring-slate-200/70">
+          <div className="flex items-center justify-between gap-2 rounded-xl bg-white/80 px-3 py-2 ring-1 ring-slate-200/70 dark:bg-slate-900/80 dark:ring-slate-800">
             <div>
-              <span className="text-slate-500">
+              <span className="text-slate-500 dark:text-slate-400">
                 Expected total (sub + tax − disc)
               </span>
-              <p className="tabular-nums font-semibold text-slate-900">
+              <p className="tabular-nums font-semibold text-slate-900 dark:text-slate-100">
                 {reconciliation.expectedTotal !== null
                   ? formatCurrency(reconciliation.expectedTotal, currencyCode)
                   : "—"}
@@ -498,12 +503,12 @@ export function InvoiceReviewForm({
                     reconciliation.expectedTotal!.toFixed(2),
                   )
                 }
-                className="rounded-lg bg-amber-100 px-2 py-1 text-[11px] font-semibold text-amber-900 hover:bg-amber-200"
+                className="rounded-lg bg-amber-100 px-2 py-1 text-[11px] font-semibold text-amber-900 hover:bg-amber-200 dark:bg-amber-900/60 dark:text-amber-200 dark:hover:bg-amber-900"
               >
                 Apply to Total
               </button>
             ) : reconciliation.totalsReconcile === true ? (
-              <span className="font-semibold text-emerald-700">
+              <span className="font-semibold text-emerald-700 dark:text-emerald-400">
                 Balanced
               </span>
             ) : null}
@@ -512,12 +517,12 @@ export function InvoiceReviewForm({
       </div>
 
       {/* Header Fields Card */}
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs">
-        <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-          <h2 className="text-sm font-semibold text-slate-900">
+      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs dark:border-slate-800 dark:bg-slate-900">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-slate-800">
+          <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
             Document Header Fields
           </h2>
-          <span className="text-[11px] text-slate-500">
+          <span className="text-[11px] text-slate-500 dark:text-slate-400">
             Focus a field to highlight its scan bbox
           </span>
         </div>
@@ -537,7 +542,7 @@ export function InvoiceReviewForm({
           />
 
           <div className="p-1.5">
-            <label className="block text-xs font-medium text-slate-700">
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">
               Document Type
             </label>
             <select
@@ -545,7 +550,7 @@ export function InvoiceReviewForm({
               onChange={(e) =>
                 updateScalar("document_type", e.target.value as DocumentType)
               }
-              className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none"
+              className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
             >
               <option value="invoice">Invoice</option>
               <option value="receipt">Receipt</option>
@@ -626,7 +631,7 @@ export function InvoiceReviewForm({
         </div>
 
         {/* Financial Amounts Row */}
-        <div className="mt-4 grid grid-cols-2 gap-3 border-t border-slate-100 pt-4 sm:grid-cols-4">
+        <div className="mt-4 grid grid-cols-2 gap-3 border-t border-slate-100 pt-4 dark:border-slate-800 sm:grid-cols-4">
           {(
             [
               ["subtotal", "Subtotal"],
@@ -644,7 +649,8 @@ export function InvoiceReviewForm({
               placeholder="0.00"
               inputClassName={cn(
                 "px-2.5 text-right tabular-nums",
-                fieldKey === "total_amount" && "border-slate-300 font-semibold",
+                fieldKey === "total_amount" &&
+                  "border-slate-300 font-semibold dark:border-slate-600",
               )}
               provenance={invoice.provenance?.[fieldKey]}
               activeTargetKey={activeTargetKey}
@@ -656,20 +662,20 @@ export function InvoiceReviewForm({
       </section>
 
       {/* Editable Line Items Table */}
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs">
-        <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs dark:border-slate-800 dark:bg-slate-900">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-slate-800">
           <div>
-            <h2 className="text-sm font-semibold text-slate-900">
+            <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
               Line Items ({form.line_items.length})
             </h2>
-            <p className="text-[11px] text-slate-500">
+            <p className="text-[11px] text-slate-500 dark:text-slate-400">
               Hover or focus a row to locate it on the scanned page.
             </p>
           </div>
           <button
             type="button"
             onClick={addLineItem}
-            className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-indigo-600 hover:bg-indigo-50"
+            className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-indigo-600 hover:bg-indigo-50 dark:border-slate-700 dark:bg-slate-800 dark:text-indigo-400 dark:hover:bg-indigo-950/60"
           >
             <Plus className="h-3.5 w-3.5" />
             Add Row
@@ -677,9 +683,9 @@ export function InvoiceReviewForm({
         </div>
 
         <div className="mt-3 overflow-x-auto">
-          <table className="min-w-full divide-y divide-slate-200 text-xs">
+          <table className="min-w-full divide-y divide-slate-200 text-xs dark:divide-slate-800">
             <thead>
-              <tr className="text-left font-semibold uppercase tracking-wider text-slate-500">
+              <tr className="text-left font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 <th className="py-2 pr-2">#</th>
                 <th className="py-2 pr-2">Description</th>
                 <th className="w-20 py-2 pr-2 text-right">Qty</th>
@@ -688,12 +694,12 @@ export function InvoiceReviewForm({
                 <th className="w-8 py-2 text-right" />
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80">
               {form.line_items.length === 0 ? (
                 <tr>
                   <td
                     colSpan={6}
-                    className="py-6 text-center text-xs text-slate-500"
+                    className="py-6 text-center text-xs text-slate-500 dark:text-slate-400"
                   >
                     No line items yet. Click &ldquo;Add Row&rdquo; to insert one.
                   </td>
@@ -713,15 +719,15 @@ export function InvoiceReviewForm({
                       onMouseLeave={() => onFocusTarget(null)}
                       className={cn(
                         "transition",
-                        isHighlighted && "bg-indigo-50/70",
+                        isHighlighted && "bg-indigo-50/70 dark:bg-indigo-950/40",
                       )}
                     >
-                      <td className="py-2 pr-2 tabular-nums text-slate-400">
+                      <td className="py-2 pr-2 tabular-nums text-slate-400 dark:text-slate-500">
                         <div className="flex items-center gap-1">
                           <span>{idx + 1}</span>
                           {item.bbox ? (
                             <MapPin
-                              className="h-3 w-3 text-sky-600"
+                              className="h-3 w-3 text-sky-600 dark:text-sky-400"
                               aria-label={`Grounded on page ${item.bbox.page}`}
                             />
                           ) : null}
@@ -737,7 +743,7 @@ export function InvoiceReviewForm({
                             })
                           }
                           placeholder="Item description"
-                          className="w-full rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-900 focus:border-indigo-500 focus:outline-none"
+                          className="w-full rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-500"
                         />
                       </td>
                       <td className="py-2 pr-2">
@@ -749,7 +755,7 @@ export function InvoiceReviewForm({
                             updateLineItem(idx, { quantity: e.target.value })
                           }
                           placeholder="—"
-                          className="w-full rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-right tabular-nums text-xs text-slate-900 focus:border-indigo-500 focus:outline-none"
+                          className="w-full rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-right tabular-nums text-xs text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-500"
                         />
                       </td>
                       <td className="py-2 pr-2">
@@ -761,7 +767,7 @@ export function InvoiceReviewForm({
                             updateLineItem(idx, { unit_price: e.target.value })
                           }
                           placeholder="—"
-                          className="w-full rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-right tabular-nums text-xs text-slate-900 focus:border-indigo-500 focus:outline-none"
+                          className="w-full rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-right tabular-nums text-xs text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-500"
                         />
                       </td>
                       <td className="py-2 pr-2">
@@ -775,14 +781,14 @@ export function InvoiceReviewForm({
                             })
                           }
                           placeholder="0.00"
-                          className="w-full rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-right tabular-nums text-xs font-medium text-slate-900 focus:border-indigo-500 focus:outline-none"
+                          className="w-full rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-right tabular-nums text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-500"
                         />
                       </td>
                       <td className="py-2 text-right">
                         <button
                           type="button"
                           onClick={() => removeLineItem(idx)}
-                          className="rounded p-1 text-slate-400 hover:bg-rose-50 hover:text-rose-600"
+                          className="rounded p-1 text-slate-400 hover:bg-rose-50 hover:text-rose-600 dark:text-slate-500 dark:hover:bg-rose-950/50 dark:hover:text-rose-400"
                           aria-label={`Remove line item ${idx + 1}`}
                         >
                           <Trash2 className="h-3.5 w-3.5" />
@@ -798,12 +804,12 @@ export function InvoiceReviewForm({
       </section>
 
       {/* Action Bar */}
-      <div className="sticky bottom-3 z-20 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white/95 px-4 py-3 shadow-lg backdrop-blur-md">
+      <div className="sticky bottom-3 z-20 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white/95 px-4 py-3 shadow-lg backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/95">
         <button
           type="button"
           disabled={saving}
           onClick={onRequestDelete}
-          className="inline-flex items-center gap-1.5 rounded-xl border border-rose-200 bg-white px-3.5 py-2 text-xs font-semibold text-rose-700 hover:bg-rose-50 disabled:opacity-50"
+          className="inline-flex items-center gap-1.5 rounded-xl border border-rose-200 bg-white px-3.5 py-2 text-xs font-semibold text-rose-700 hover:bg-rose-50 disabled:opacity-50 dark:border-rose-900 dark:bg-slate-800 dark:text-rose-300 dark:hover:bg-rose-950/60"
         >
           <Trash2 className="h-3.5 w-3.5" />
           Delete
@@ -814,7 +820,7 @@ export function InvoiceReviewForm({
             type="button"
             disabled={saving}
             onClick={() => void handleSubmit(false)}
-            className="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 bg-white px-4 py-2 text-xs font-semibold text-slate-800 hover:bg-slate-50 disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 bg-white px-4 py-2 text-xs font-semibold text-slate-800 hover:bg-slate-50 disabled:opacity-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700"
           >
             {saving ? (
               <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -841,14 +847,14 @@ export function InvoiceReviewForm({
       </div>
 
       {/* Collapsible Raw OCR & Audit Metadata */}
-      <section className="rounded-2xl border border-slate-200 bg-white shadow-xs">
+      <section className="rounded-2xl border border-slate-200 bg-white shadow-xs dark:border-slate-800 dark:bg-slate-900">
         <button
           type="button"
           onClick={() => setShowRawOcr((prev) => !prev)}
-          className="flex w-full items-center justify-between px-4 py-3 text-left text-xs font-semibold text-slate-700"
+          className="flex w-full items-center justify-between px-4 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-200"
         >
           <span className="inline-flex items-center gap-2">
-            <Code2 className="h-4 w-4 text-slate-500" />
+            <Code2 className="h-4 w-4 text-slate-500 dark:text-slate-400" />
             Audit Metadata & Raw Indra OCR Output
           </span>
           {showRawOcr ? (
@@ -859,34 +865,40 @@ export function InvoiceReviewForm({
         </button>
 
         {showRawOcr ? (
-          <div className="space-y-3 border-t border-slate-100 px-4 py-3 text-xs">
+          <div className="space-y-3 border-t border-slate-100 px-4 py-3 text-xs dark:border-slate-800">
             <dl className="grid grid-cols-1 gap-2 sm:grid-cols-2">
               <div>
-                <dt className="text-slate-500">Created / Updated</dt>
-                <dd className="font-medium text-slate-800">
+                <dt className="text-slate-500 dark:text-slate-400">
+                  Created / Updated
+                </dt>
+                <dd className="font-medium text-slate-800 dark:text-slate-200">
                   {formatDateTime(invoice.created_at)} · Updated{" "}
                   {formatDateTime(invoice.updated_at)}
                 </dd>
               </div>
               <div>
-                <dt className="text-slate-500">Extractor Latency</dt>
-                <dd className="font-medium text-slate-800">
+                <dt className="text-slate-500 dark:text-slate-400">
+                  Extractor Latency
+                </dt>
+                <dd className="font-medium text-slate-800 dark:text-slate-200">
                   {invoice.extractor_used || "—"} (
                   {formatLatency(invoice.extraction_latency_ms)})
                 </dd>
               </div>
               <div className="sm:col-span-2">
-                <dt className="text-slate-500">SHA-256 Content Hash</dt>
-                <dd className="truncate font-mono text-[11px] text-slate-700">
+                <dt className="text-slate-500 dark:text-slate-400">
+                  SHA-256 Content Hash
+                </dt>
+                <dd className="truncate font-mono text-[11px] text-slate-700 dark:text-slate-300">
                   {invoice.file_hash}
                 </dd>
               </div>
             </dl>
             <div>
-              <p className="mb-1.5 font-medium text-slate-600">
+              <p className="mb-1.5 font-medium text-slate-600 dark:text-slate-400">
                 Normalized OCR Text
               </p>
-              <pre className="max-h-56 overflow-auto rounded-xl border border-slate-200 bg-slate-50 p-3 font-mono text-[11px] leading-relaxed whitespace-pre-wrap text-slate-700">
+              <pre className="max-h-56 overflow-auto rounded-xl border border-slate-200 bg-slate-50 p-3 font-mono text-[11px] leading-relaxed whitespace-pre-wrap text-slate-700 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-300">
                 {invoice.raw_ocr_markdown || "No raw OCR text captured."}
               </pre>
             </div>

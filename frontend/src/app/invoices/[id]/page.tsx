@@ -137,8 +137,8 @@ export default function InvoiceDetailReviewPage() {
 
   if (loading) {
     return (
-      <div className="flex h-96 items-center justify-center gap-2.5 text-sm text-slate-600">
-        <Loader2 className="h-5 w-5 animate-spin text-indigo-600" />
+      <div className="flex h-96 items-center justify-center gap-2.5 text-sm text-slate-600 dark:text-slate-400">
+        <Loader2 className="h-5 w-5 animate-spin text-indigo-600 dark:text-indigo-400" />
         Loading HITL Review Studio...
       </div>
     );
@@ -149,7 +149,7 @@ export default function InvoiceDetailReviewPage() {
       <div className="space-y-4">
         <Link
           href="/invoices"
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 hover:text-slate-900"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to Ledger
@@ -164,23 +164,23 @@ export default function InvoiceDetailReviewPage() {
   return (
     <div className="space-y-5">
       {/* Breadcrumb & Summary Header */}
-      <div className="flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-white px-5 py-4 shadow-xs sm:flex-row sm:items-center">
+      <div className="flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-white px-5 py-4 shadow-xs dark:border-slate-800 dark:bg-slate-900 sm:flex-row sm:items-center">
         <div className="min-w-0">
           <Link
             href="/invoices"
-            className="inline-flex items-center gap-1 text-xs font-medium text-slate-500 hover:text-indigo-600"
+            className="inline-flex items-center gap-1 text-xs font-medium text-slate-500 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
             Back to Invoice Ledger
           </Link>
           <div className="mt-1 flex flex-wrap items-center gap-2.5">
-            <h1 className="truncate text-xl font-semibold tracking-tight text-slate-900">
+            <h1 className="truncate text-xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
               {invoice.vendor || invoice.filename}
             </h1>
             <StatusBadge status={invoice.status} />
             <ExtractorBadge extractor={invoice.extractor_used} />
           </div>
-          <p className="mt-0.5 text-xs text-slate-500">
+          <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
             {invoice.filename} · {invoice.page_count} page
             {invoice.page_count > 1 ? "s" : ""} ·{" "}
             {formatLatency(invoice.extraction_latency_ms)}
@@ -189,10 +189,10 @@ export default function InvoiceDetailReviewPage() {
 
         <div className="flex shrink-0 items-center gap-3">
           <div className="text-right">
-            <span className="text-[11px] font-medium uppercase tracking-wider text-slate-400">
+            <span className="text-[11px] font-medium uppercase tracking-wider text-slate-400 dark:text-slate-500">
               Document Total
             </span>
-            <p className="tabular-nums text-lg font-semibold text-slate-900">
+            <p className="tabular-nums text-lg font-semibold text-slate-900 dark:text-slate-100">
               {formatCurrency(invoice.total_amount, invoice.currency)}
             </p>
           </div>
@@ -204,7 +204,7 @@ export default function InvoiceDetailReviewPage() {
                 format: "json",
               })
             }
-            className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
             title="Download single-invoice JSON"
           >
             <Download className="h-3.5 w-3.5" />
