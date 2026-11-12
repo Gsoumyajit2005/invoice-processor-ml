@@ -147,6 +147,18 @@ class GPUExtractor:
         self.processor = processor
         self.model = model
 
+        ocr_dir = Path("/weights/indra-ocr")
+        if not (ocr_dir / "det.onnx").exists():
+            print("[GPUExtractor] Downloading missing Indra OCR weights into /weights/indra-ocr...")
+            from huggingface_hub import snapshot_download
+
+            snapshot_download(
+                repo_id="datalab-to/indra-ocr",
+                revision="v1.1.0",
+                local_dir=str(ocr_dir),
+            )
+            weights_vol.commit()
+
         ocr_settings = Settings(local_vlm_offline=False)
         self.ocr_service = IndraOcrService(ocr_settings)
         print(f"[GPUExtractor] Warmup complete with {self.model_label} on {device.upper()}.")
@@ -302,8 +314,6 @@ def seed_weights(
     lora_files: dict[str, bytes] | None = None,
 ) -> dict[str, Any]:
     """Seed /weights Modal volume with Qwen3.5-0.8B, Indra OCR, and LoRA adapter."""
-    from app.core.config import Settings
-    from app.extractors.indra_service import IndraOcrService
     from huggingface_hub import snapshot_download
 
     weights_path = Path("/weights")
@@ -341,9 +351,17 @@ def seed_weights(
 
     # 3. Indra OCR
     ocr_dir.mkdir(parents=True, exist_ok=True)
-    print("[seed_weights] Priming Indra OCR cache...")
-    _ = IndraOcrService(Settings(local_vlm_offline=False))
-    status["indra_ocr"] = "cached"
+    if not (ocr_dir / "det.onnx").exists() or force:
+        print("[seed_weights] Downloading Indra OCR models from Hugging Face...")
+        snapshot_download(
+            repo_id="datalab-to/indra-ocr",
+            revision="v1.1.0",
+            local_dir=str(ocr_dir),
+        )
+        status["indra_ocr"] = "downloaded"
+    else:
+        print("[seed_weights] Indra OCR already present in volume.")
+        status["indra_ocr"] = "cached"
 
     weights_vol.commit()
     print("[seed_weights] Volume successfully committed!")
