@@ -25,7 +25,7 @@
 | **Visual Grounding** | None (unconnected bounding boxes) | **Bidirectional [0..1000] SVG Overlay** linking form fields to page boxes |
 | **Web Frontend** | Streamlit single-script prototype | **Next.js 16 App Router (React 19, TypeScript)** with glassmorphic design system |
 | **Theme & UI** | Default Streamlit theme | **Zero-flash dark/light mode** (`useSyncExternalStore`), frosted glass surfaces |
-| **Cloud Deployment** | Monolithic HuggingFace Space | **Split Serverless on Modal** (CPU ASGI app + on-demand T4 GPU worker) + **Vercel** |
+| **Cloud Deployment** | Monolithic HuggingFace Space | **Sovereign Multi-Cloud**: **Vercel** (Edge Frontend) + **Modal** (CPU FastAPI) + **Hugging Face ZeroGPU** (48GB GPU VLM) + **Supabase** (PostgreSQL 16) |
 | **Package Management** | Traditional `pip` / `requirements.txt` | **Astral `uv` Workspace** (`invoice-backend`, `invoice-ml`, root dev tools) |
 
 ---
@@ -39,33 +39,28 @@ flowchart TD
     end
 
     subgraph Vercel ["Vercel Edge / Serverless"]
-        BFF["Next.js BFF Proxy\n(/api/v1/*)\n• Injects X-Backend-Secret\n• HMAC Cookie Demo Auth"]
+        BFF["Next.js BFF Proxy\n(/api/v1/*)\n• Injects X-Backend-Secret\n• HMAC Cookie Demo Auth\n• maxDuration = 60s"]
     end
 
-    subgraph Modal ["Modal Serverless Cloud"]
-        subgraph CPU_Tier ["Modal CPU Container (Low Idle Cost)"]
-            FastAPI["FastAPI ASGI App\n• /health, /invoices, /reports\n• Authenticated Page Streaming\n• Rate Limiting (SlowAPI)"]
-        end
-
-        subgraph GPU_Tier ["Modal GPU Worker (NVIDIA T4 - 120s Scaledown)"]
-            Worker["GPUExtractor\n• Indra OCR 1.1 (ONNX)\n• Qwen3.5-0.8B FP16\n• Merged BF16 LoRA Adapter"]
-        end
-
-        Volume[("modal.Volume\n(/weights)\nCached Model Weights")]
+    subgraph Modal ["Modal Serverless CPU Tier"]
+        FastAPI["FastAPI ASGI App\n• /health, /invoices, /reports\n• Page Streaming & Rate Limiting\n• Indra OCR 1.1 ONNX Engine (~300ms/page)"]
+        Volume[("modal.Volume\n(/weights/indra-ocr)\nCached OCR Models")]
     end
 
-    subgraph Storage ["Cloud Infrastructure"]
-        DB[("PostgreSQL 16 / Neon / Supabase\n(Invoices, Line Items, Deduplication)")]
-        S3[("S3 / Cloudflare R2 / Supabase Storage\n(Original Documents & Page PNGs)")]
+    subgraph HF ["Hugging Face ZeroGPU Microservice"]
+        ZeroGPU["ZeroGPU Gradio Service (RTX 6000 / A10G 48GB)\n• Qwen3.5-0.8B FP16\n• Math Merged Phase 3 LoRA Adapter\n• @spaces.GPU(duration=30)\n• Endpoint: /extract_invoice"]
+    end
+
+    subgraph Storage ["Persistent Cloud Infrastructure"]
+        DB[("PostgreSQL 16 (Supabase AWS)\n• Invoices & Line Items Schema\n• storage_objects (BYTEA Document & Page PNGs)")]
         CloudVLM["LiteLLM Ephemeral Fallback\n(Gemini 2.5 Flash / GPT-4o-mini)\nBYO-Key from Request Headers"]
     end
 
     UI -->|"HTTPS / Cookie"| BFF
     BFF -->|"HTTP + X-Backend-Secret"| FastAPI
-    FastAPI -->|"modal.remote.aio()"| Worker
-    Worker --- Volume
+    FastAPI -->|"Indra ONNX"| Volume
+    FastAPI -->|"Gradio Client /extract_invoice"| ZeroGPU
     FastAPI -->|"SQLAlchemy AsyncPG"| DB
-    FastAPI -->|"Boto3 S3 Client"| S3
     FastAPI -.->|"Auto-Escalation on Discrepancy"| CloudVLM
 ```
 
@@ -288,6 +283,10 @@ invoice-processor-ml/
 │   ├── tests/                         # End-to-end integration & unit test suite
 │   ├── Dockerfile                     # Container build for backend
 │   └── pyproject.toml                 # Backend package specification
+├── docs/
+│   ├── deployment-specifications.md   # Complete production infrastructure & deployment guide
+│   ├── lora-training-and-eval.md      # Model benchmark & LoRA training logs
+│   └── frontend-hitl-workbench.md     # HITL Review Studio design documentation
 ├── frontend/
 │   ├── src/
 │   │   ├── app/                       # Next.js 16 App Router pages & BFF API proxy

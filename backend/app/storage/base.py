@@ -33,8 +33,12 @@ class StorageBackend(Protocol):
         ...
 
 
-def build_storage_backend(settings: Settings) -> StorageBackend:
-    """Instantiate configured StorageBackend (local disk or S3-compatible)."""
+def build_storage_backend(
+    settings: Settings,
+    *,
+    session_factory: Any | None = None,
+) -> StorageBackend:
+    """Instantiate configured StorageBackend (PostgreSQL, local disk, or S3-compatible)."""
     if settings.storage_backend == "s3":
         from app.storage.s3 import S3Storage
 
@@ -47,6 +51,13 @@ def build_storage_backend(settings: Settings) -> StorageBackend:
             aws_access_key_id=settings.s3_access_key_id,
             aws_secret_access_key=settings.s3_secret_access_key,
         )
+
+    if session_factory is not None and (
+        settings.storage_backend == "database" or "sqlite" not in settings.database_url
+    ):
+        from app.storage.postgres import PostgresStorage
+
+        return PostgresStorage(session_factory)
 
     from app.storage.local import LocalDiskStorage
 

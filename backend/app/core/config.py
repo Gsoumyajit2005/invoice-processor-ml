@@ -27,7 +27,7 @@ class Settings(BaseSettings):
     )
 
     # Storage
-    storage_backend: Literal["local", "s3"] = "local"
+    storage_backend: Literal["local", "s3", "database"] = "database"
     local_upload_dir: str = "backend/uploads"
     s3_bucket: str | None = None
     s3_region: str = "auto"

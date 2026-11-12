@@ -31,7 +31,7 @@ def create_app(
     async def lifespan(app_instance: FastAPI) -> AsyncIterator[None]:
         configure_local_caches(offline=active_settings.local_vlm_offline)
         engine, session_factory = create_engine_and_sessionmaker(active_settings)
-        storage = build_storage_backend(active_settings)
+        storage = build_storage_backend(active_settings, session_factory=session_factory)
         extraction_router = router_override or ExtractionRouter(active_settings)
 
         app_instance.state.settings = active_settings
