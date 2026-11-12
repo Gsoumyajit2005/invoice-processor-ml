@@ -56,7 +56,6 @@ cpu_image = (
     modal.Image.debian_slim(python_version="3.12")
     .apt_install("libgl1", "libglib2.0-0")
     .pip_install(*CPU_DEPS)
-    .add_local_dir("backend/app", remote_path="/root/app")
     .env(
         {
             "PYTHONPATH": "/root",
@@ -64,13 +63,13 @@ cpu_image = (
             "LOCAL_VLM_OFFLINE": "0",
         }
     )
+    .add_local_dir("backend/app", remote_path="/root/app", copy=True)
 )
 
 gpu_image = (
     modal.Image.debian_slim(python_version="3.12")
     .apt_install("libgl1", "libglib2.0-0")
     .pip_install(*GPU_DEPS)
-    .add_local_dir("backend/app", remote_path="/root/app")
     .env(
         {
             "PYTHONPATH": "/root",
@@ -78,6 +77,7 @@ gpu_image = (
             "LOCAL_VLM_OFFLINE": "0",
         }
     )
+    .add_local_dir("backend/app", remote_path="/root/app", copy=True)
 )
 
 
