@@ -849,7 +849,7 @@ export function InvoiceReviewForm({
         >
           <span className="inline-flex items-center gap-2">
             <Code2 className="h-4 w-4 text-slate-500" />
-            Audit Metadata & Raw RapidOCR Output
+            Audit Metadata & Raw Indra OCR Output
           </span>
           {showRawOcr ? (
             <ChevronUp className="h-4 w-4 text-slate-400" />

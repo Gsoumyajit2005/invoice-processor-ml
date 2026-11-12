@@ -69,7 +69,7 @@ const MODE_OPTIONS: Array<{
   {
     value: "local",
     title: "Local GPU Only",
-    subtitle: "Private RapidOCR + Qwen3.5-0.8B LoRA",
+    subtitle: "Private Indra OCR 1.1 + Qwen3.5-0.8B LoRA",
     icon: Cpu,
   },
   {
@@ -804,7 +804,7 @@ export default function UploadExtractPage() {
                   </span>
                   <div>
                     <p className="font-semibold text-slate-900">
-                      RapidOCR + Coordinate Grounding
+                      Indra OCR 1.1 + Coordinate Grounding
                     </p>
                     <p className="mt-0.5 text-slate-600">
                       Normalizes text tokens into a{" "}

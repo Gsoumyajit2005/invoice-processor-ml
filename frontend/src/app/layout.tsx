@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Invoice Studio — Hybrid Document AI & HITL Workbench",
   description:
-    "Structured invoice & receipt extraction powered by fine-tuned Qwen3.5-0.8B VLM, RapidOCR coordinate grounding, and PostgreSQL human-in-the-loop review.",
+    "Structured invoice & receipt extraction powered by fine-tuned Qwen3.5-0.8B VLM, Indra OCR 1.1 coordinate grounding, and PostgreSQL human-in-the-loop review.",
 };
 
 export default function RootLayout({
