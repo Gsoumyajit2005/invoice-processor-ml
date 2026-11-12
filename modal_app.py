@@ -82,14 +82,15 @@ gpu_image = (
 
 
 @app.cls(
-    gpu="T4",
+    cpu=4.0,
+    memory=8192,
     timeout=300,
     scaledown_window=120,
     volumes={"/weights": weights_vol},
     image=gpu_image,
 )
 class GPUExtractor:
-    """Dedicated T4 GPU worker hosting Indra OCR & Qwen3.5-0.8B LoRA."""
+    """Serverless worker hosting Indra OCR & Qwen3.5-0.8B LoRA on multi-core CPU."""
 
     model_label: str = "Qwen3.5-0.8B"
     processor: Any = None
@@ -98,7 +99,7 @@ class GPUExtractor:
 
     @modal.enter()
     def load_models(self) -> None:
-        """Initialize models once per warm GPU container lifecycle."""
+        """Initialize models once per warm container lifecycle."""
         import torch
         from app.core.config import Settings
         from app.core.paths import configure_local_caches
@@ -125,10 +126,13 @@ class GPUExtractor:
                 "longest_edge": 1024 * 1280,
             }
 
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        dtype = torch.float16 if device == "cuda" else torch.float32
+
         model = AutoModelForImageTextToText.from_pretrained(
             str(model_path),
-            torch_dtype=torch.float16,
-            device_map="cuda",
+            torch_dtype=dtype,
+            device_map=device,
             local_files_only=True,
         )
 
@@ -145,7 +149,7 @@ class GPUExtractor:
 
         ocr_settings = Settings(local_vlm_offline=False)
         self.ocr_service = IndraOcrService(ocr_settings)
-        print(f"[GPUExtractor] Warmup complete with {self.model_label} on CUDA.")
+        print(f"[GPUExtractor] Warmup complete with {self.model_label} on {device.upper()}.")
 
     def _infer_vlm_impl(
         self, pages_bytes: list[bytes], ocr_text: str
