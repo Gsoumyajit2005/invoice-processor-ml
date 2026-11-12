@@ -16,6 +16,7 @@ from app.extractors.base import (
 )
 from app.extractors.cloud_vlm import CloudConfigError, CloudVlmExtractor
 from app.extractors.grounding import ground_extraction
+from app.extractors.hf_zerogpu import HfZerogpuExtractor
 from app.extractors.indra_service import IndraOcrService
 from app.extractors.local_vlm import LocalVlmExtractor, LocalVlmUnavailableError
 from app.pdf.processor import ProcessedDocument
@@ -58,7 +59,18 @@ class ExtractionRouter:
     ) -> None:
         self._settings = settings
         self.ocr_service = ocr_service or IndraOcrService(settings)
-        self.local_extractor = local_extractor or LocalVlmExtractor(settings)
+        if local_extractor is not None:
+            self.local_extractor = local_extractor
+        elif settings.extractor_default_mode == "hf_zerogpu":
+            self.local_extractor = HfZerogpuExtractor(settings)
+        else:
+            local_candidate = LocalVlmExtractor(settings)
+            if local_candidate.is_available():
+                self.local_extractor = local_candidate
+            elif getattr(settings, "hf_zerogpu_space", None):
+                self.local_extractor = HfZerogpuExtractor(settings)
+            else:
+                self.local_extractor = local_candidate
         self.cloud_extractor = cloud_extractor or CloudVlmExtractor(settings)
 
     def _cloud_available(self, cloud_config: CloudConfig | None) -> bool:

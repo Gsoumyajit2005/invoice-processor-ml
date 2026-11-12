@@ -29,6 +29,7 @@ dependencies = [
     "rapidfuzz>=3.10.0",
     "python-dateutil>=2.9.0",
     "huggingface-hub>=0.27.0",
+    "gradio-client>=2.7.2",
 ]
 
 [project.optional-dependencies]

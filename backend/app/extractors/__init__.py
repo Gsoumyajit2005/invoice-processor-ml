@@ -10,6 +10,7 @@ from app.extractors.base import (
 )
 from app.extractors.cloud_vlm import CloudConfigError, CloudVlmExtractor
 from app.extractors.grounding import ground_extraction
+from app.extractors.hf_zerogpu import HfZerogpuExtractor
 from app.extractors.indra_service import IndraOcrService
 from app.extractors.local_vlm import LocalVlmExtractor, LocalVlmUnavailableError
 from app.extractors.router import ExtractionRouter
@@ -21,6 +22,7 @@ __all__ = [
     "ExtractionRouter",
     "ExtractionRunResult",
     "ExtractorBackend",
+    "HfZerogpuExtractor",
     "IndraOcrService",
     "LocalVlmExtractor",
     "LocalVlmUnavailableError",

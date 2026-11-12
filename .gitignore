@@ -51,6 +51,7 @@ datasets/
 models/*
 !models/.gitkeep
 !models/README.md
+hf_space/lora_adapter/
 checkpoints/
 ml/train/checkpoints/
 ml/train/outputs/
