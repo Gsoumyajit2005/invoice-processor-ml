@@ -34,8 +34,18 @@ export default function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
       </head>
-      <body className="min-h-full bg-slate-50 text-slate-900 transition-colors dark:bg-slate-950 dark:text-slate-100">
-        <AppShell>{children}</AppShell>
+      <body className="relative min-h-full bg-[#eef2f7] text-slate-900 transition-colors duration-200 dark:bg-[#030712] dark:text-slate-100">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none fixed inset-0 z-0 overflow-hidden"
+        >
+          <div className="absolute -left-32 -top-28 h-[34rem] w-[34rem] rounded-full bg-indigo-400/25 blur-[110px] dark:bg-indigo-600/25" />
+          <div className="absolute -right-24 top-10 h-[30rem] w-[30rem] rounded-full bg-sky-300/35 blur-[110px] dark:bg-cyan-500/15" />
+          <div className="absolute -bottom-36 left-1/3 h-[34rem] w-[34rem] rounded-full bg-violet-300/25 blur-[120px] dark:bg-fuchsia-600/15" />
+        </div>
+        <div className="relative z-10 min-h-full">
+          <AppShell>{children}</AppShell>
+        </div>
       </body>
     </html>
   );

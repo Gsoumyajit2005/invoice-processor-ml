@@ -164,7 +164,7 @@ export default function InvoiceDetailReviewPage() {
   return (
     <div className="space-y-5">
       {/* Breadcrumb & Summary Header */}
-      <div className="flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-white px-5 py-4 shadow-xs dark:border-slate-800 dark:bg-slate-900 sm:flex-row sm:items-center">
+      <div className="glass-surface flex flex-col justify-between gap-3 rounded-2xl px-5 py-4 sm:flex-row sm:items-center">
         <div className="min-w-0">
           <Link
             href="/invoices"
@@ -204,7 +204,7 @@ export default function InvoiceDetailReviewPage() {
                 format: "json",
               })
             }
-            className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200/80 bg-white/75 px-3 py-2 text-xs font-medium text-slate-700 backdrop-blur-md hover:bg-white dark:border-white/12 dark:bg-white/8 dark:text-slate-200 dark:hover:bg-white/14"
             title="Download single-invoice JSON"
           >
             <Download className="h-3.5 w-3.5" />

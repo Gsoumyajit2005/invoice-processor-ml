@@ -39,14 +39,20 @@ export function ThemeToggle({ className }: { className?: string }) {
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
       title={isDark ? "Switch to light mode" : "Switch to dark mode"}
       className={cn(
-        "inline-flex items-center justify-center rounded-lg border border-slate-200 bg-white p-1.5 text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-white",
+        "inline-flex items-center gap-1.5 rounded-full border border-slate-200/80 bg-white/70 px-2.5 py-1.5 text-xs font-medium text-slate-700 backdrop-blur-md shadow-xs transition hover:bg-white/95 hover:text-slate-900 dark:border-white/14 dark:bg-white/8 dark:text-slate-200 dark:hover:bg-white/14 dark:hover:text-white",
         className,
       )}
     >
       {isDark ? (
-        <Sun className="h-4 w-4 text-amber-400" />
+        <>
+          <Sun className="h-3.5 w-3.5 text-amber-400" />
+          <span className="hidden sm:inline">Light</span>
+        </>
       ) : (
-        <Moon className="h-4 w-4" />
+        <>
+          <Moon className="h-3.5 w-3.5 text-indigo-600" />
+          <span className="hidden sm:inline">Dark</span>
+        </>
       )}
     </button>
   );
@@ -61,32 +67,32 @@ export function StatusBadge({
 }) {
   const styles: Record<string, string> = {
     verified:
-      "border-emerald-200 bg-emerald-50 text-emerald-800 ring-1 ring-inset ring-emerald-600/10 dark:border-emerald-800/70 dark:bg-emerald-950/60 dark:text-emerald-300 dark:ring-emerald-400/15",
+      "border-emerald-200/80 bg-emerald-50/80 text-emerald-800 ring-1 ring-inset ring-emerald-600/10 backdrop-blur-sm dark:border-emerald-400/25 dark:bg-emerald-500/12 dark:text-emerald-300 dark:ring-emerald-400/15",
     extracted:
-      "border-sky-200 bg-sky-50 text-sky-800 ring-1 ring-inset ring-sky-600/10 dark:border-sky-800/70 dark:bg-sky-950/60 dark:text-sky-300 dark:ring-sky-400/15",
+      "border-sky-200/80 bg-sky-50/80 text-sky-800 ring-1 ring-inset ring-sky-600/10 backdrop-blur-sm dark:border-sky-400/25 dark:bg-sky-500/12 dark:text-sky-300 dark:ring-sky-400/15",
     needs_review:
-      "border-amber-200 bg-amber-50 text-amber-800 ring-1 ring-inset ring-amber-600/10 dark:border-amber-800/70 dark:bg-amber-950/60 dark:text-amber-300 dark:ring-amber-400/15",
+      "border-amber-200/80 bg-amber-50/80 text-amber-800 ring-1 ring-inset ring-amber-600/10 backdrop-blur-sm dark:border-amber-400/25 dark:bg-amber-500/12 dark:text-amber-300 dark:ring-amber-400/15",
     failed:
-      "border-rose-200 bg-rose-50 text-rose-800 ring-1 ring-inset ring-rose-600/10 dark:border-rose-800/70 dark:bg-rose-950/60 dark:text-rose-300 dark:ring-rose-400/15",
+      "border-rose-200/80 bg-rose-50/80 text-rose-800 ring-1 ring-inset ring-rose-600/10 backdrop-blur-sm dark:border-rose-400/25 dark:bg-rose-500/12 dark:text-rose-300 dark:ring-rose-400/15",
   };
 
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-medium",
+        "inline-flex items-center gap-1 whitespace-nowrap rounded-full border px-2.5 py-0.5 text-xs font-medium",
         styles[status] ??
-          "border-slate-200 bg-slate-100 text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300",
+          "border-slate-200/80 bg-slate-100/80 text-slate-700 backdrop-blur-sm dark:border-white/12 dark:bg-white/8 dark:text-slate-300",
         className,
       )}
     >
       {status === "verified" ? (
-        <ShieldCheck className="h-3.5 w-3.5" />
+        <ShieldCheck className="h-3.5 w-3.5 shrink-0" />
       ) : status === "needs_review" ? (
-        <AlertTriangle className="h-3.5 w-3.5" />
+        <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
       ) : status === "failed" ? (
-        <AlertCircle className="h-3.5 w-3.5" />
+        <AlertCircle className="h-3.5 w-3.5 shrink-0" />
       ) : (
-        <CheckCircle2 className="h-3.5 w-3.5" />
+        <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
       )}
       {statusLabel(status)}
     </span>
@@ -95,27 +101,33 @@ export function StatusBadge({
 
 export function ExtractorBadge({
   extractor,
+  compact = false,
+  className,
 }: {
   extractor: string | null | undefined;
+  compact?: boolean;
+  className?: string;
 }) {
   if (!extractor) return null;
   const isCloud = extractor.toLowerCase().includes("cloud");
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1 rounded-md border px-2 py-0.5 font-mono text-[11px] font-medium",
+        "inline-flex items-center gap-1 rounded-md border px-2 py-0.5 font-mono text-[11px] font-medium backdrop-blur-sm",
         isCloud
-          ? "border-violet-200 bg-violet-50 text-violet-800 dark:border-violet-800/70 dark:bg-violet-950/60 dark:text-violet-300"
-          : "border-indigo-200 bg-indigo-50 text-indigo-800 dark:border-indigo-800/70 dark:bg-indigo-950/60 dark:text-indigo-300",
+          ? "border-violet-200/80 bg-violet-50/80 text-violet-800 dark:border-violet-400/25 dark:bg-violet-500/12 dark:text-violet-300"
+          : "border-indigo-200/80 bg-indigo-50/80 text-indigo-800 dark:border-indigo-400/25 dark:bg-indigo-500/12 dark:text-indigo-300",
+        compact && "max-w-[210px]",
+        className,
       )}
       title={`Extracted via ${extractor}`}
     >
       {isCloud ? (
-        <Globe className="h-3 w-3" />
+        <Globe className="h-3 w-3 shrink-0" />
       ) : (
-        <Cpu className="h-3 w-3" />
+        <Cpu className="h-3 w-3 shrink-0" />
       )}
-      {extractor}
+      <span className={compact ? "truncate" : undefined}>{extractor}</span>
     </span>
   );
 }
@@ -131,7 +143,7 @@ export function ProvenancePill({
   if (source === "ocr_matched") {
     return (
       <span
-        className="inline-flex items-center gap-1 rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/15 dark:bg-emerald-950/60 dark:text-emerald-300 dark:ring-emerald-400/20"
+        className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded bg-emerald-50/80 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/15 backdrop-blur-sm dark:bg-emerald-500/14 dark:text-emerald-300 dark:ring-emerald-400/25"
         title={hasBbox ? "Matched to OCR bounding box" : "Matched in OCR text"}
       >
         <CheckCircle2 className="h-2.5 w-2.5" />
@@ -141,14 +153,14 @@ export function ProvenancePill({
   }
   if (source === "user_edited") {
     return (
-      <span className="inline-flex items-center gap-1 rounded bg-sky-50 px-1.5 py-0.5 text-[10px] font-medium text-sky-700 ring-1 ring-inset ring-sky-600/15 dark:bg-sky-950/60 dark:text-sky-300 dark:ring-sky-400/20">
+      <span className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded bg-sky-50/80 px-1.5 py-0.5 text-[10px] font-medium text-sky-700 ring-1 ring-inset ring-sky-600/15 backdrop-blur-sm dark:bg-sky-500/14 dark:text-sky-300 dark:ring-sky-400/25">
         <UserPen className="h-2.5 w-2.5" />
         Edited
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center gap-1 rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-600 ring-1 ring-inset ring-slate-500/10 dark:bg-slate-800 dark:text-slate-300 dark:ring-slate-400/15">
+    <span className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded bg-slate-100/80 px-1.5 py-0.5 text-[10px] font-medium text-slate-600 ring-1 ring-inset ring-slate-500/10 backdrop-blur-sm dark:bg-white/8 dark:text-slate-300 dark:ring-white/15">
       <Sparkles className="h-2.5 w-2.5" />
       VLM
     </span>
@@ -168,12 +180,12 @@ export function AlertBanner({
 }) {
   const palette = {
     error:
-      "border-rose-200 bg-rose-50 text-rose-900 dark:border-rose-900/70 dark:bg-rose-950/50 dark:text-rose-200",
+      "border-rose-200/80 bg-rose-50/75 text-rose-900 backdrop-blur-md dark:border-rose-400/25 dark:bg-rose-500/12 dark:text-rose-200",
     warning:
-      "border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-900/70 dark:bg-amber-950/50 dark:text-amber-200",
-    info: "border-sky-200 bg-sky-50 text-sky-900 dark:border-sky-900/70 dark:bg-sky-950/50 dark:text-sky-200",
+      "border-amber-200/80 bg-amber-50/75 text-amber-900 backdrop-blur-md dark:border-amber-400/25 dark:bg-amber-500/12 dark:text-amber-200",
+    info: "border-sky-200/80 bg-sky-50/75 text-sky-900 backdrop-blur-md dark:border-sky-400/25 dark:bg-sky-500/12 dark:text-sky-200",
     success:
-      "border-emerald-200 bg-emerald-50 text-emerald-900 dark:border-emerald-900/70 dark:bg-emerald-950/50 dark:text-emerald-200",
+      "border-emerald-200/80 bg-emerald-50/75 text-emerald-900 backdrop-blur-md dark:border-emerald-400/25 dark:bg-emerald-500/12 dark:text-emerald-200",
   }[variant];
 
   const Icon = {
@@ -242,14 +254,14 @@ export function ConfirmModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-4 backdrop-blur-xs dark:bg-black/70"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 p-4 backdrop-blur-sm dark:bg-black/65"
       role="dialog"
       aria-modal="true"
       aria-labelledby="confirm-modal-title"
       onClick={() => !busy && onCancel()}
     >
       <div
-        className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-xl dark:border-slate-800 dark:bg-slate-900"
+        className="glass-surface-elevated w-full max-w-md rounded-2xl p-6"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start justify-between gap-3">
@@ -263,7 +275,7 @@ export function ConfirmModal({
             type="button"
             onClick={onCancel}
             disabled={busy}
-            className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 disabled:opacity-50 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+            className="rounded-lg p-1 text-slate-400 hover:bg-slate-200/60 hover:text-slate-600 disabled:opacity-50 dark:hover:bg-white/10 dark:hover:text-slate-200"
             aria-label="Close modal"
           >
             <X className="h-4 w-4" />
@@ -277,7 +289,7 @@ export function ConfirmModal({
             type="button"
             onClick={onCancel}
             disabled={busy}
-            className="rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+            className="rounded-lg border border-slate-200/80 bg-white/75 px-3.5 py-2 text-sm font-medium text-slate-700 backdrop-blur-sm hover:bg-white disabled:opacity-50 dark:border-white/12 dark:bg-white/8 dark:text-slate-200 dark:hover:bg-white/14"
           >
             Cancel
           </button>

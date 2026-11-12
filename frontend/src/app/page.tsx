@@ -242,11 +242,11 @@ export default function UploadExtractPage() {
             to {MAX_BATCH_FILES} files for batch processing.
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
-          <span className="rounded-full border border-slate-200 bg-white px-2.5 py-1 dark:border-slate-800 dark:bg-slate-900">
+        <div className="flex flex-wrap items-center gap-2 text-xs text-slate-600 dark:text-slate-300">
+          <span className="glass-subtle rounded-full border border-white/80 px-2.5 py-1 dark:border-white/10">
             JPG · PNG · WEBP · PDF
           </span>
-          <span className="rounded-full border border-slate-200 bg-white px-2.5 py-1 dark:border-slate-800 dark:bg-slate-900">
+          <span className="glass-subtle rounded-full border border-white/80 px-2.5 py-1 dark:border-white/10">
             Max {maxUploadMb} MB / file · {maxPdfPages} PDF pages
           </span>
         </div>
@@ -255,7 +255,7 @@ export default function UploadExtractPage() {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
         {/* Left Column: Dropzone + Controls */}
         <div className="space-y-5 lg:col-span-7">
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs dark:border-slate-800 dark:bg-slate-900">
+          <div className="glass-surface rounded-2xl p-5">
             {/* Dropzone */}
             <div
               onDragOver={(e) => {
@@ -274,10 +274,10 @@ export default function UploadExtractPage() {
                 }
               }}
               className={cn(
-                "flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed px-6 py-10 text-center transition",
+                "flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed px-6 py-10 text-center backdrop-blur-sm transition",
                 dragging
-                  ? "border-indigo-500 bg-indigo-50/70 dark:border-indigo-400 dark:bg-indigo-950/40"
-                  : "border-slate-300 bg-slate-50/70 hover:border-indigo-400 hover:bg-indigo-50/30 dark:border-slate-700 dark:bg-slate-950/60 dark:hover:border-indigo-500 dark:hover:bg-indigo-950/25",
+                  ? "border-indigo-500 bg-indigo-500/10 dark:border-indigo-400 dark:bg-indigo-500/15"
+                  : "border-slate-300/80 bg-white/40 hover:border-indigo-400 hover:bg-indigo-500/5 dark:border-white/15 dark:bg-white/[0.03] dark:hover:border-indigo-400/60 dark:hover:bg-indigo-500/10",
               )}
             >
               <input
@@ -293,7 +293,7 @@ export default function UploadExtractPage() {
                   }
                 }}
               />
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white text-indigo-600 shadow-xs ring-1 ring-slate-200 dark:bg-slate-900 dark:text-indigo-400 dark:ring-slate-700">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/85 text-indigo-600 shadow-sm ring-1 ring-slate-200/80 backdrop-blur-md dark:bg-white/10 dark:text-indigo-300 dark:ring-white/15">
                 <UploadCloud className="h-6 w-6" />
               </div>
               <p className="mt-3 text-sm font-semibold text-slate-900 dark:text-slate-100">
@@ -321,7 +321,7 @@ export default function UploadExtractPage() {
                     Clear all
                   </button>
                 </div>
-                <ul className="max-h-52 divide-y divide-slate-100 overflow-y-auto rounded-xl border border-slate-200 bg-white dark:divide-slate-800 dark:border-slate-800 dark:bg-slate-950">
+                <ul className="max-h-52 divide-y divide-slate-200/70 overflow-y-auto rounded-xl border border-slate-200/75 bg-white/55 backdrop-blur-md dark:divide-white/10 dark:border-white/10 dark:bg-slate-950/45">
                   {files.map((file, index) => (
                     <li
                       key={`${file.name}-${file.size}-${index}`}
@@ -344,7 +344,7 @@ export default function UploadExtractPage() {
                               prev.filter((_, i) => i !== index),
                             )
                           }
-                          className="rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:text-slate-500 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+                          className="rounded p-1 text-slate-400 hover:bg-slate-200/60 hover:text-slate-700 dark:text-slate-500 dark:hover:bg-white/10 dark:hover:text-slate-200"
                           aria-label={`Remove ${file.name}`}
                         >
                           <X className="h-3.5 w-3.5" />
@@ -371,10 +371,10 @@ export default function UploadExtractPage() {
                       type="button"
                       onClick={() => setMode(opt.value)}
                       className={cn(
-                        "flex flex-col items-start rounded-xl border p-3 text-left transition",
+                        "flex flex-col items-start rounded-xl border p-3 text-left backdrop-blur-md transition",
                         active
-                          ? "border-indigo-600 bg-indigo-50/70 ring-1 ring-indigo-600/20 dark:border-indigo-500 dark:bg-indigo-950/60 dark:ring-indigo-400/20"
-                          : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-950/60 dark:hover:border-slate-600 dark:hover:bg-slate-800/80",
+                          ? "border-indigo-500/75 bg-indigo-500/10 ring-1 ring-indigo-500/25 shadow-sm shadow-indigo-500/10 dark:border-indigo-400/60 dark:bg-indigo-500/15 dark:ring-indigo-400/25"
+                          : "border-slate-200/75 bg-white/55 hover:border-slate-300 hover:bg-white/80 dark:border-white/10 dark:bg-white/[0.04] dark:hover:border-white/20 dark:hover:bg-white/[0.08]",
                       )}
                     >
                       <div className="flex items-center gap-1.5">
@@ -407,7 +407,7 @@ export default function UploadExtractPage() {
             </div>
 
             {/* Ephemeral BYO Cloud Key Drawer */}
-            <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50/70 dark:border-slate-800 dark:bg-slate-950/60">
+            <div className="glass-subtle mt-4 rounded-xl border border-slate-200/75 dark:border-white/10">
               <button
                 type="button"
                 onClick={() => setShowKeyDrawer((prev) => !prev)}
@@ -417,7 +417,7 @@ export default function UploadExtractPage() {
                   <KeyRound className="h-3.5 w-3.5 text-slate-500 dark:text-slate-400" />
                   BYO Cloud VLM Key (optional · sessionStorage only)
                   {cloudConfig.apiKey.trim() ? (
-                    <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300">
+                    <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-300">
                       Key Active ({cloudConfig.provider})
                     </span>
                   ) : null}
@@ -430,10 +430,10 @@ export default function UploadExtractPage() {
               </button>
 
               {showKeyDrawer ? (
-                <div className="space-y-3 border-t border-slate-200 px-3.5 py-3 text-xs dark:border-slate-800">
+                <div className="space-y-3 border-t border-slate-200/70 px-3.5 py-3 text-xs dark:border-white/10">
                   <p className="text-slate-600 dark:text-slate-400">
                     Sent per-request via{" "}
-                    <code className="rounded bg-white px-1 py-0.5 font-mono text-[11px] ring-1 ring-slate-200 dark:bg-slate-900 dark:text-slate-200 dark:ring-slate-700">
+                    <code className="rounded bg-white/80 px-1 py-0.5 font-mono text-[11px] ring-1 ring-slate-200/80 dark:bg-white/10 dark:text-slate-200 dark:ring-white/15">
                       X-LLM-*
                     </code>{" "}
                     headers through our server proxy. Held in browser{" "}
@@ -452,7 +452,7 @@ export default function UploadExtractPage() {
                         onChange={(e) =>
                           handleProviderChange(e.target.value as CloudProvider)
                         }
-                        className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                        className="mt-1 w-full rounded-lg border border-slate-200/80 bg-white/80 px-2.5 py-1.5 text-xs text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-white/15 dark:bg-slate-950/65 dark:text-slate-100"
                       >
                         {(
                           Object.keys(
@@ -479,7 +479,7 @@ export default function UploadExtractPage() {
                           CLOUD_PROVIDER_DEFAULTS[cloudConfig.provider]
                             .defaultModel
                         }
-                        className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 font-mono text-xs text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                        className="mt-1 w-full rounded-lg border border-slate-200/80 bg-white/80 px-2.5 py-1.5 font-mono text-xs text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-white/15 dark:bg-slate-950/65 dark:text-slate-100"
                       />
                     </div>
                   </div>
@@ -510,7 +510,7 @@ export default function UploadExtractPage() {
                             .placeholder
                         }
                         autoComplete="off"
-                        className="w-full rounded-lg border border-slate-200 bg-white py-1.5 pl-2.5 pr-8 font-mono text-xs text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                        className="w-full rounded-lg border border-slate-200/80 bg-white/80 py-1.5 pl-2.5 pr-8 font-mono text-xs text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-white/15 dark:bg-slate-950/65 dark:text-slate-100"
                       />
                       <button
                         type="button"
@@ -563,7 +563,7 @@ export default function UploadExtractPage() {
                 type="button"
                 disabled={!files.length || submitting}
                 onClick={() => void handleSubmit()}
-                className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-xs transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-indigo-500/25 transition hover:from-indigo-500 hover:to-violet-500 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {submitting ? (
                   <>
@@ -589,7 +589,7 @@ export default function UploadExtractPage() {
         {/* Right Column: Instant Extraction Result or Pipeline Overview */}
         <div className="lg:col-span-5">
           {result ? (
-            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs dark:border-slate-800 dark:bg-slate-900">
+            <div className="glass-surface rounded-2xl p-5">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <div className="flex items-center gap-2">
@@ -648,7 +648,7 @@ export default function UploadExtractPage() {
               ) : null}
 
               {/* Key Fields Summary */}
-              <dl className="mt-4 grid grid-cols-2 gap-3 rounded-xl border border-slate-100 bg-slate-50/70 p-3.5 text-xs dark:border-slate-800 dark:bg-slate-950/60">
+              <dl className="glass-subtle mt-4 grid grid-cols-2 gap-3 rounded-xl border border-slate-200/70 p-3.5 text-xs dark:border-white/10">
                 <div>
                   <dt className="text-slate-500 dark:text-slate-400">
                     Document No.
@@ -741,7 +741,7 @@ export default function UploadExtractPage() {
                   Extracted Line Items ({result.extraction.line_items.length})
                 </p>
                 {result.extraction.line_items.length > 0 ? (
-                  <ul className="mt-2 max-h-44 divide-y divide-slate-100 overflow-y-auto rounded-xl border border-slate-200 text-xs dark:divide-slate-800 dark:border-slate-800">
+                  <ul className="mt-2 max-h-44 divide-y divide-slate-200/70 overflow-y-auto rounded-xl border border-slate-200/75 bg-white/55 text-xs backdrop-blur-sm dark:divide-white/10 dark:border-white/10 dark:bg-slate-950/40">
                     {result.extraction.line_items.map((item, idx) => (
                       <li
                         key={`${idx}-${item.description}`}
@@ -760,7 +760,7 @@ export default function UploadExtractPage() {
                     ))}
                   </ul>
                 ) : (
-                  <p className="mt-2 rounded-xl border border-slate-100 bg-slate-50 px-3 py-2 text-xs text-slate-500 dark:border-slate-800 dark:bg-slate-950/60 dark:text-slate-400">
+                  <p className="glass-subtle mt-2 rounded-xl border border-slate-200/70 px-3 py-2 text-xs text-slate-500 dark:border-white/10 dark:text-slate-400">
                     No individual line items extracted.
                   </p>
                 )}
@@ -770,7 +770,7 @@ export default function UploadExtractPage() {
               <div className="mt-5 flex items-center gap-2.5">
                 <Link
                   href={`/invoices/${result.invoice_id}`}
-                  className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-xs transition hover:bg-indigo-700"
+                  className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-indigo-500/25 transition hover:from-indigo-500 hover:to-violet-500"
                 >
                   Open Review Studio
                   <ArrowRight className="h-4 w-4" />
@@ -781,14 +781,14 @@ export default function UploadExtractPage() {
                     setResult(null);
                     setFiles([]);
                   }}
-                  className="rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+                  className="rounded-xl border border-slate-200/80 bg-white/75 px-3.5 py-2.5 text-sm font-medium text-slate-700 backdrop-blur-md hover:bg-white dark:border-white/12 dark:bg-white/8 dark:text-slate-200 dark:hover:bg-white/14"
                 >
                   New
                 </button>
               </div>
             </div>
           ) : (
-            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs dark:border-slate-800 dark:bg-slate-900">
+            <div className="glass-surface rounded-2xl p-6">
               <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">
                 Hybrid Extraction Pipeline
               </h2>
@@ -799,7 +799,7 @@ export default function UploadExtractPage() {
 
               <ol className="mt-5 space-y-4 text-xs">
                 <li className="flex gap-3">
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-indigo-50 font-semibold text-indigo-700 dark:bg-indigo-950/80 dark:text-indigo-300">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-indigo-500/12 font-semibold text-indigo-700 ring-1 ring-indigo-500/20 dark:bg-indigo-400/15 dark:text-indigo-300 dark:ring-indigo-400/25">
                     1
                   </span>
                   <div>
@@ -813,7 +813,7 @@ export default function UploadExtractPage() {
                   </div>
                 </li>
                 <li className="flex gap-3">
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-indigo-50 font-semibold text-indigo-700 dark:bg-indigo-950/80 dark:text-indigo-300">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-indigo-500/12 font-semibold text-indigo-700 ring-1 ring-indigo-500/20 dark:bg-indigo-400/15 dark:text-indigo-300 dark:ring-indigo-400/25">
                     2
                   </span>
                   <div>
@@ -829,7 +829,7 @@ export default function UploadExtractPage() {
                   </div>
                 </li>
                 <li className="flex gap-3">
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-indigo-50 font-semibold text-indigo-700 dark:bg-indigo-950/80 dark:text-indigo-300">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-indigo-500/12 font-semibold text-indigo-700 ring-1 ring-indigo-500/20 dark:bg-indigo-400/15 dark:text-indigo-300 dark:ring-indigo-400/25">
                     3
                   </span>
                   <div>
@@ -844,7 +844,7 @@ export default function UploadExtractPage() {
                 </li>
               </ol>
 
-              <div className="mt-6 flex items-center justify-between border-t border-slate-100 pt-4 text-xs dark:border-slate-800">
+              <div className="mt-6 flex items-center justify-between border-t border-slate-200/70 pt-4 text-xs dark:border-white/10">
                 <Link
                   href="/invoices"
                   className="font-medium text-indigo-600 hover:underline dark:text-indigo-400"

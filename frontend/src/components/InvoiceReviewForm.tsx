@@ -139,13 +139,13 @@ function GroundedTextField({
   return (
     <div
       className={cn(
-        "rounded-xl p-1.5 transition",
+        "flex h-full flex-col justify-between rounded-xl p-1.5 transition",
         isHighlighted &&
           "bg-indigo-50/70 ring-1 ring-indigo-300 dark:bg-indigo-950/50 dark:ring-indigo-700",
         containerClassName,
       )}
     >
-      <div className="flex items-center justify-between gap-1.5">
+      <div className="flex flex-wrap items-center justify-between gap-1.5">
         <label className="text-xs font-medium text-slate-700 dark:text-slate-300">
           {label}
         </label>
@@ -173,7 +173,7 @@ function GroundedTextField({
         onFocus={() => onFocusTarget(targetKey, provenance?.bbox?.page)}
         onMouseLeave={() => onFocusTarget(null)}
         className={cn(
-          "mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-500",
+          "mt-1 w-full rounded-lg border border-slate-200/80 bg-white/75 px-3 py-1.5 text-sm text-slate-900 backdrop-blur-sm placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none dark:border-white/12 dark:bg-slate-950/60 dark:text-slate-100 dark:placeholder:text-slate-500",
           inputClassName,
         )}
       />
@@ -423,13 +423,13 @@ export function InvoiceReviewForm({
       {/* Live Math Reconciliation Banner */}
       <div
         className={cn(
-          "rounded-2xl border p-4 text-xs shadow-2xs",
+          "rounded-2xl border p-4 text-xs shadow-sm backdrop-blur-xl",
           reconciliation.itemsMatchSubtotal === false ||
             reconciliation.totalsReconcile === false
-            ? "border-amber-200 bg-amber-50/70 text-amber-950 dark:border-amber-900/70 dark:bg-amber-950/40 dark:text-amber-200"
+            ? "border-amber-200/80 bg-amber-50/70 text-amber-950 dark:border-amber-400/25 dark:bg-amber-500/12 dark:text-amber-200"
             : reconciliation.totalsReconcile === true
-              ? "border-emerald-200 bg-emerald-50/70 text-emerald-950 dark:border-emerald-900/70 dark:bg-emerald-950/40 dark:text-emerald-200"
-              : "border-slate-200 bg-white text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300",
+              ? "border-emerald-200/80 bg-emerald-50/70 text-emerald-950 dark:border-emerald-400/25 dark:bg-emerald-500/12 dark:text-emerald-200"
+              : "glass-surface text-slate-700 dark:text-slate-300",
         )}
       >
         <div className="flex flex-wrap items-center justify-between gap-2">
@@ -450,7 +450,7 @@ export function InvoiceReviewForm({
         </div>
 
         <div className="mt-2.5 grid grid-cols-1 gap-2 sm:grid-cols-2">
-          <div className="flex items-center justify-between gap-2 rounded-xl bg-white/80 px-3 py-2 ring-1 ring-slate-200/70 dark:bg-slate-900/80 dark:ring-slate-800">
+          <div className="flex items-center justify-between gap-2 rounded-xl bg-white/75 px-3 py-2 ring-1 ring-slate-200/70 backdrop-blur-md dark:bg-slate-950/55 dark:ring-white/10">
             <div>
               <span className="text-slate-500 dark:text-slate-400">
                 Line items sum
@@ -482,7 +482,7 @@ export function InvoiceReviewForm({
             ) : null}
           </div>
 
-          <div className="flex items-center justify-between gap-2 rounded-xl bg-white/80 px-3 py-2 ring-1 ring-slate-200/70 dark:bg-slate-900/80 dark:ring-slate-800">
+          <div className="flex items-center justify-between gap-2 rounded-xl bg-white/75 px-3 py-2 ring-1 ring-slate-200/70 backdrop-blur-md dark:bg-slate-950/55 dark:ring-white/10">
             <div>
               <span className="text-slate-500 dark:text-slate-400">
                 Expected total (sub + tax − disc)
@@ -517,8 +517,8 @@ export function InvoiceReviewForm({
       </div>
 
       {/* Header Fields Card */}
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs dark:border-slate-800 dark:bg-slate-900">
-        <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-slate-800">
+      <section className="glass-surface rounded-2xl p-5">
+        <div className="flex items-center justify-between border-b border-slate-200/70 pb-3 dark:border-white/10">
           <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
             Document Header Fields
           </h2>
@@ -550,7 +550,7 @@ export function InvoiceReviewForm({
               onChange={(e) =>
                 updateScalar("document_type", e.target.value as DocumentType)
               }
-              className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
+              className="mt-1 w-full rounded-lg border border-slate-200/80 bg-white/75 px-3 py-1.5 text-sm text-slate-900 backdrop-blur-sm focus:border-indigo-500 focus:outline-none dark:border-white/12 dark:bg-slate-950/60 dark:text-slate-100"
             >
               <option value="invoice">Invoice</option>
               <option value="receipt">Receipt</option>
@@ -662,8 +662,8 @@ export function InvoiceReviewForm({
       </section>
 
       {/* Editable Line Items Table */}
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs dark:border-slate-800 dark:bg-slate-900">
-        <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-slate-800">
+      <section className="glass-surface rounded-2xl p-5">
+        <div className="flex items-center justify-between border-b border-slate-200/70 pb-3 dark:border-white/10">
           <div>
             <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
               Line Items ({form.line_items.length})
@@ -675,7 +675,7 @@ export function InvoiceReviewForm({
           <button
             type="button"
             onClick={addLineItem}
-            className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-indigo-600 hover:bg-indigo-50 dark:border-slate-700 dark:bg-slate-800 dark:text-indigo-400 dark:hover:bg-indigo-950/60"
+            className="inline-flex items-center gap-1 rounded-lg border border-slate-200/80 bg-white/75 px-2.5 py-1.5 text-xs font-semibold text-indigo-600 backdrop-blur-sm hover:bg-indigo-50 dark:border-white/12 dark:bg-white/8 dark:text-indigo-300 dark:hover:bg-indigo-500/20"
           >
             <Plus className="h-3.5 w-3.5" />
             Add Row
@@ -743,7 +743,7 @@ export function InvoiceReviewForm({
                             })
                           }
                           placeholder="Item description"
-                          className="w-full rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-500"
+                          className="w-full rounded-lg border border-slate-200/80 bg-white/75 px-2.5 py-1.5 text-xs text-slate-900 backdrop-blur-sm placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none dark:border-white/12 dark:bg-slate-950/60 dark:text-slate-100 dark:placeholder:text-slate-500"
                         />
                       </td>
                       <td className="py-2 pr-2">
@@ -755,7 +755,7 @@ export function InvoiceReviewForm({
                             updateLineItem(idx, { quantity: e.target.value })
                           }
                           placeholder="—"
-                          className="w-full rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-right tabular-nums text-xs text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-500"
+                          className="w-full rounded-lg border border-slate-200/80 bg-white/75 px-2 py-1.5 text-right tabular-nums text-xs text-slate-900 backdrop-blur-sm placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none dark:border-white/12 dark:bg-slate-950/60 dark:text-slate-100 dark:placeholder:text-slate-500"
                         />
                       </td>
                       <td className="py-2 pr-2">
@@ -767,7 +767,7 @@ export function InvoiceReviewForm({
                             updateLineItem(idx, { unit_price: e.target.value })
                           }
                           placeholder="—"
-                          className="w-full rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-right tabular-nums text-xs text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-500"
+                          className="w-full rounded-lg border border-slate-200/80 bg-white/75 px-2 py-1.5 text-right tabular-nums text-xs text-slate-900 backdrop-blur-sm placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none dark:border-white/12 dark:bg-slate-950/60 dark:text-slate-100 dark:placeholder:text-slate-500"
                         />
                       </td>
                       <td className="py-2 pr-2">
@@ -781,14 +781,14 @@ export function InvoiceReviewForm({
                             })
                           }
                           placeholder="0.00"
-                          className="w-full rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-right tabular-nums text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:placeholder:text-slate-500"
+                          className="w-full rounded-lg border border-slate-200/80 bg-white/75 px-2 py-1.5 text-right tabular-nums text-xs font-medium text-slate-900 backdrop-blur-sm placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none dark:border-white/12 dark:bg-slate-950/60 dark:text-slate-100 dark:placeholder:text-slate-500"
                         />
                       </td>
                       <td className="py-2 text-right">
                         <button
                           type="button"
                           onClick={() => removeLineItem(idx)}
-                          className="rounded p-1 text-slate-400 hover:bg-rose-50 hover:text-rose-600 dark:text-slate-500 dark:hover:bg-rose-950/50 dark:hover:text-rose-400"
+                          className="rounded p-1 text-slate-400 hover:bg-rose-50/80 hover:text-rose-600 dark:text-slate-500 dark:hover:bg-rose-500/15 dark:hover:text-rose-400"
                           aria-label={`Remove line item ${idx + 1}`}
                         >
                           <Trash2 className="h-3.5 w-3.5" />
@@ -804,12 +804,12 @@ export function InvoiceReviewForm({
       </section>
 
       {/* Action Bar */}
-      <div className="sticky bottom-3 z-20 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white/95 px-4 py-3 shadow-lg backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/95">
+      <div className="glass-surface-elevated sticky bottom-3 z-20 flex flex-wrap items-center justify-between gap-3 rounded-2xl px-4 py-3">
         <button
           type="button"
           disabled={saving}
           onClick={onRequestDelete}
-          className="inline-flex items-center gap-1.5 rounded-xl border border-rose-200 bg-white px-3.5 py-2 text-xs font-semibold text-rose-700 hover:bg-rose-50 disabled:opacity-50 dark:border-rose-900 dark:bg-slate-800 dark:text-rose-300 dark:hover:bg-rose-950/60"
+          className="inline-flex items-center gap-1.5 rounded-xl border border-rose-200/80 bg-white/75 px-3.5 py-2 text-xs font-semibold text-rose-700 backdrop-blur-sm hover:bg-rose-50 disabled:opacity-50 dark:border-rose-400/25 dark:bg-rose-500/10 dark:text-rose-300 dark:hover:bg-rose-500/20"
         >
           <Trash2 className="h-3.5 w-3.5" />
           Delete
@@ -820,7 +820,7 @@ export function InvoiceReviewForm({
             type="button"
             disabled={saving}
             onClick={() => void handleSubmit(false)}
-            className="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 bg-white px-4 py-2 text-xs font-semibold text-slate-800 hover:bg-slate-50 disabled:opacity-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200/80 bg-white/75 px-4 py-2 text-xs font-semibold text-slate-800 backdrop-blur-sm hover:bg-white disabled:opacity-50 dark:border-white/12 dark:bg-white/8 dark:text-slate-100 dark:hover:bg-white/14"
           >
             {saving ? (
               <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -834,7 +834,7 @@ export function InvoiceReviewForm({
             type="button"
             disabled={saving}
             onClick={() => void handleSubmit(true)}
-            className="inline-flex items-center gap-1.5 rounded-xl bg-indigo-600 px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-indigo-700 disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-4 py-2 text-xs font-semibold text-white shadow-md shadow-indigo-500/25 hover:from-indigo-500 hover:to-violet-500 disabled:opacity-50"
           >
             {saving ? (
               <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -847,7 +847,7 @@ export function InvoiceReviewForm({
       </div>
 
       {/* Collapsible Raw OCR & Audit Metadata */}
-      <section className="rounded-2xl border border-slate-200 bg-white shadow-xs dark:border-slate-800 dark:bg-slate-900">
+      <section className="glass-surface rounded-2xl">
         <button
           type="button"
           onClick={() => setShowRawOcr((prev) => !prev)}
@@ -865,7 +865,7 @@ export function InvoiceReviewForm({
         </button>
 
         {showRawOcr ? (
-          <div className="space-y-3 border-t border-slate-100 px-4 py-3 text-xs dark:border-slate-800">
+          <div className="space-y-3 border-t border-slate-200/70 px-4 py-3 text-xs dark:border-white/10">
             <dl className="grid grid-cols-1 gap-2 sm:grid-cols-2">
               <div>
                 <dt className="text-slate-500 dark:text-slate-400">
@@ -898,7 +898,7 @@ export function InvoiceReviewForm({
               <p className="mb-1.5 font-medium text-slate-600 dark:text-slate-400">
                 Normalized OCR Text
               </p>
-              <pre className="max-h-56 overflow-auto rounded-xl border border-slate-200 bg-slate-50 p-3 font-mono text-[11px] leading-relaxed whitespace-pre-wrap text-slate-700 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-300">
+              <pre className="glass-subtle max-h-56 overflow-auto rounded-xl border border-slate-200/70 p-3 font-mono text-[11px] leading-relaxed whitespace-pre-wrap text-slate-700 dark:border-white/10 dark:text-slate-300">
                 {invoice.raw_ocr_markdown || "No raw OCR text captured."}
               </pre>
             </div>

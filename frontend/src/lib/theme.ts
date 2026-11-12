@@ -3,7 +3,12 @@ export type ThemeMode = "light" | "dark";
 export const THEME_STORAGE_KEY = "invproc_theme_v1";
 const THEME_EVENT = "invproc:theme-change";
 
-export const THEME_INIT_SCRIPT = `(function(){try{var s=localStorage.getItem("${THEME_STORAGE_KEY}");var d=s==="dark"||(s!=="light"&&window.matchMedia("(prefers-color-scheme: dark)").matches);if(d){document.documentElement.classList.add("dark");}else{document.documentElement.classList.remove("dark");}}catch(e){}})();`;
+export const THEME_INIT_SCRIPT = `(function(){try{var s=localStorage.getItem("${THEME_STORAGE_KEY}");var d=s==="dark"||(s!=="light"&&window.matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.classList.toggle("dark",d);document.documentElement.style.colorScheme=d?"dark":"light";}catch(e){}})();`;
+
+function applyThemeClass(isDark: boolean): void {
+  document.documentElement.classList.toggle("dark", isDark);
+  document.documentElement.style.colorScheme = isDark ? "dark" : "light";
+}
 
 export function subscribeTheme(callback: () => void): () => void {
   if (typeof window === "undefined") return () => {};
@@ -12,7 +17,7 @@ export function subscribeTheme(callback: () => void): () => void {
     try {
       const saved = window.localStorage.getItem(THEME_STORAGE_KEY);
       if (saved !== "light" && saved !== "dark") {
-        document.documentElement.classList.toggle("dark", media.matches);
+        applyThemeClass(media.matches);
         callback();
       }
     } catch {
@@ -21,8 +26,7 @@ export function subscribeTheme(callback: () => void): () => void {
   };
   const onStorage = (event: StorageEvent) => {
     if (event.key === THEME_STORAGE_KEY) {
-      const isDark = event.newValue === "dark";
-      document.documentElement.classList.toggle("dark", isDark);
+      applyThemeClass(event.newValue === "dark");
       callback();
     }
   };
@@ -50,7 +54,7 @@ export function getThemeServerSnapshot(): ThemeMode {
 
 export function setThemeMode(mode: ThemeMode): void {
   if (typeof document === "undefined") return;
-  document.documentElement.classList.toggle("dark", mode === "dark");
+  applyThemeClass(mode === "dark");
   try {
     window.localStorage.setItem(THEME_STORAGE_KEY, mode);
   } catch {
