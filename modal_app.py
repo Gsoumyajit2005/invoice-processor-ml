@@ -351,7 +351,7 @@ def seed_weights(
 
 
 @app.local_entrypoint()
-def main(action: str = "help", file: str = "eval/data/documents/001.pdf") -> None:
+def main(action: str = "help", file: str = "data/samples/sample_pdf_2.pdf") -> None:
     """CLI entrypoint for managing and testing Modal serverless deployment."""
     if action == "seed":
         print("Packaging local LoRA weights if present...")
