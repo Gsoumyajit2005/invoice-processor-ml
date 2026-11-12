@@ -240,9 +240,17 @@ class GPUExtractor:
         }
 
 
+def get_app_secrets() -> list[modal.Secret]:
+    """Load deployment secrets from modal secret 'invoice-secrets' or local .env file."""
+    if Path(".env").exists():
+        return [modal.Secret.from_dotenv(path=Path(".env"))]
+    return [modal.Secret.from_name("invoice-secrets")]
+
+
 @app.function(
     image=cpu_image,
     volumes={"/weights": weights_vol},
+    secrets=get_app_secrets(),
     timeout=300,
 )
 @modal.asgi_app()
