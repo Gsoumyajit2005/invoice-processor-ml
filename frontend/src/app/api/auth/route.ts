@@ -8,6 +8,7 @@ import {
 } from "@/lib/auth";
 
 export const runtime = "nodejs";
+export const maxDuration = 60;
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
   return NextResponse.json(

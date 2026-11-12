@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { isRequestAuthenticated } from "@/lib/auth";
 
 export const runtime = "nodejs";
+export const maxDuration = 60;
 
 const FORWARDED_REQUEST_HEADERS = [
   "accept",
