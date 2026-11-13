@@ -7,11 +7,11 @@ import { ThemeToggle } from "@/components/ui";
 
 const navLinks = [
   { name: "Features", href: "#features" },
-  { name: "How It Works", href: "#how-it-works" },
+  { name: "Workflow", href: "#how-it-works" },
   { name: "Architecture", href: "#architecture" },
-  { name: "Security", href: "#security" },
-  { name: "Developers", href: "#developers" },
-  { name: "Pricing", href: "#pricing" },
+  { name: "Benchmarks", href: "#benchmarks" },
+  { name: "Deployment", href: "#deployment" },
+  { name: "API", href: "#developers" },
 ];
 
 export function Navigation() {

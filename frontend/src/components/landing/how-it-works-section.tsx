@@ -9,15 +9,16 @@ const steps = [
     subtitle: "Multiformat Intake",
     description:
       "Upload invoices and receipts in PDF, PNG, JPG, or WebP. Automatic coordinate normalization and DPI scaling prepare high-resolution scans for OCR passes.",
-    code: `// Multi-page batch or single scan intake
-const result = await invoflow.extract({
-  file: invoiceFile,
-  mode: 'auto', // 'local' GPU first, 'cloud' fallback
-  options: {
-    generateBoundingBoxes: true,
-    reconcileTaxes: true
-  }
-});`,
+    code: `// Multi-page PDF or scan intake via FastAPI
+const formData = new FormData();
+formData.append("file", invoiceFile);
+formData.append("mode", "auto"); // "local" first, "cloud" fallback
+
+const res = await fetch("/api/v1/extract", {
+  method: "POST",
+  body: formData
+});
+const { invoice_id, extraction } = await res.json();`,
   },
   {
     number: "II",
@@ -25,14 +26,20 @@ const result = await invoflow.extract({
     subtitle: "Vision-Language Grounding",
     description:
       "Fine-tuned Qwen3.5-0.8B LoRA extracts semantic structures while Indra OCR 1.1 calculates exact bounding coordinates in normalized [0..1000] polygon space.",
-    code: `// Extracted structured DTO with coordinate grounding
+    code: `// Verified extraction DTO with [0..1000] provenance
 {
-  "vendor_name": "Acme Supplies Ltd",
-  "invoice_number": "INV-2026-894",
+  "vendor": "Acme Supplies Ltd",
+  "receipt_number": "INV-2026-894",
   "currency": "EUR",
   "total_amount": 1420.50,
-  "confidence": 0.985,
-  "bounding_box": [342, 110, 680, 220]
+  "items_match_subtotal": true,
+  "totals_reconcile": true,
+  "provenance": {
+    "total_amount": {
+      "bbox": { "page": 1, "x1": 680, "y1": 890, "x2": 920, "y2": 930 },
+      "source": "ocr_matched"
+    }
+  }
 }`,
   },
   {
@@ -41,12 +48,15 @@ const result = await invoflow.extract({
     subtitle: "Human-in-the-Loop Audit",
     description:
       "Operators inspect highlighted coordinates side-by-side with extracted values. Verified records persist to PostgreSQL with complete provenance and audit logs.",
-    code: `// Immediate persistence & export
-await invoflow.verify(invoiceId, {
-  status: 'verified',
-  auditedBy: 'finance-lead@corp.internal',
-  export: ['csv', 'json', 'quickbooks']
-});`,
+    code: `// Audit verification & structured ledger export
+await fetch(\`/api/v1/invoices/\${invoice_id}/review\`, {
+  method: "PATCH",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ status: "verified" })
+});
+
+// Download ledger export: CSV, raw JSON, or HTML
+window.open("/api/v1/invoices/export/csv");`,
   },
 ];
 

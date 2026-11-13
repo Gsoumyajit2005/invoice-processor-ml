@@ -14,8 +14,8 @@ const footerLinks = {
   Architecture: [
     { name: "Indra OCR 1.1 Grounding", href: "#features" },
     { name: "Qwen3.5-0.8B LoRA", href: "#features" },
-    { name: "LiteLLM Router Gateway", href: "#architecture" },
-    { name: "PostgreSQL Schema", href: "#architecture" },
+    { name: "Empirical Benchmarks", href: "#benchmarks" },
+    { name: "Deployment Topologies", href: "#deployment" },
   ],
   Governance: [
     { name: "Air-Gapped Privacy", href: "#security" },

@@ -13,10 +13,12 @@ files = {"file": open("invoice-scan.pdf", "rb")}
 data = {"mode": "auto"}  # "local" GPU first, cloud escalation fallback
 
 response = requests.post(url, files=files, data=data)
-extraction = response.json()
+result = response.json()
+extraction = result["extraction"]
 
-print(f"Vendor: {extraction['vendor_name']}")
+print(f"Vendor: {extraction['vendor']}")
 print(f"Total: {extraction['total_amount']} {extraction['currency']}")
+print(f"Reconciled: {result['totals_reconcile']}")
 for item in extraction['line_items']:
     print(f" - {item['description']}: {item['total_price']}")`,
   },
@@ -36,9 +38,11 @@ const formData = new FormData();
 formData.append("file", fileBlob, "receipt.jpg");
 formData.append("mode", "auto");
 
-const invoice = await extractSingle(formData);
-console.log("Extracted ID:", invoice.id);
-console.log("Tax Grounding:", invoice.tax_amount_bbox);`,
+const response = await extractSingle(formData);
+console.log("Invoice ID:", response.invoice_id);
+console.log("Vendor:", response.extraction.vendor);
+console.log("Reconciled:", response.totals_reconcile);
+console.log("Tax BBox:", response.extraction.provenance?.tax_amount?.bbox);`,
   },
 ];
 

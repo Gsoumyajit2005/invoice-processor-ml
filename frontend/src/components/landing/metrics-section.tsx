@@ -58,32 +58,32 @@ function AnimatedCounter({
 
 const metrics = [
   {
-    value: 124500,
-    suffix: "+",
+    value: 100,
+    suffix: "%",
     prefix: "",
-    label: "Invoices processed to date",
-    meta: "Continuous LoRA Fine-Tuning",
+    label: "CORD Total & Tax Accuracy",
+    meta: "79.3% → 100% with LoRA Adapter",
   },
   {
-    value: 99,
-    suffix: ".2%",
-    prefix: "",
-    label: "Indra coordinate alignment",
-    meta: "Polygon Precision [0..1000]",
+    value: 75,
+    suffix: "%",
+    prefix: "-",
+    label: "Extraction failure reduction",
+    meta: "16 failures down to 4 across 72 docs",
   },
   {
-    value: 840,
+    value: 240,
     suffix: "ms",
     prefix: "",
-    label: "Median local GPU inference",
-    meta: "Qwen3.5-0.8B LoRA weights",
+    label: "Indra OCR coordinate latency",
+    meta: "Normalized [0..1000] CPU Engine",
   },
   {
-    value: 32,
-    suffix: "",
+    value: 52,
+    suffix: " steps",
     prefix: "",
-    label: "ISO Currencies cleanly segregated",
-    meta: "Never mixed across sums",
+    label: "LoRA training convergence",
+    meta: "Loss: 0.168 → 0.0249 (RTX 3050 6GB)",
   },
 ];
 

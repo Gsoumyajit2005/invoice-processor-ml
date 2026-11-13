@@ -11,7 +11,7 @@ const stats = [
   { value: "99.2%", label: "coordinate precision", badge: "INDRA OCR 1.1" },
   { value: "< 840ms", label: "local VLM inference", badge: "QWEN3.5-0.8B" },
   { value: "100%", label: "private on-device", badge: "AIR-GAPPED GPU" },
-  { value: "32", label: "ISO currencies separated", badge: "NO MIXED TOTALS" },
+  { value: "ISO 4217", label: "strict currency isolation", badge: "NO MIXED TOTALS" },
   { value: "Zero", label: "cloud data retention", badge: "NON-CUSTODIAL" },
 ];
 

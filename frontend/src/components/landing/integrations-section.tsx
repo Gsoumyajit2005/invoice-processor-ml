@@ -3,21 +3,21 @@
 import { useEffect, useState, useRef } from "react";
 
 const integrationsRow1 = [
-  { name: "PostgreSQL", category: "ACID Database" },
+  { name: "PostgreSQL", category: "ACID Ledger" },
   { name: "Supabase", category: "Cloud Postgres" },
-  { name: "Qwen3.5 VLM", category: "Vision-Language" },
-  { name: "Indra OCR 1.1", category: "Coordinate Grounding" },
-  { name: "LiteLLM", category: "Provider Fallback" },
-  { name: "Hugging Face", category: "Model Weights" },
+  { name: "Qwen3.5 VLM", category: "0.8B Vision-Language" },
+  { name: "Indra OCR 1.1", category: "ONNX Grounding" },
+  { name: "LiteLLM", category: "Cloud Fallback Router" },
+  { name: "Hugging Face", category: "LoRA Weights" },
 ];
 
 const integrationsRow2 = [
-  { name: "QuickBooks", category: "Accounting Export" },
-  { name: "Xero", category: "Ledger Sync" },
-  { name: "SAP ERP", category: "Enterprise Connector" },
-  { name: "Stripe", category: "Payment Receipts" },
-  { name: "AWS S3 / R2", category: "Document Storage" },
-  { name: "Ollama", category: "Local LLM Runtime" },
+  { name: "pypdfium2", category: "Multi-Page PDF Intake" },
+  { name: "pdfplumber", category: "Native Text Layer" },
+  { name: "CSV Export", category: "Structured Ledger" },
+  { name: "Audited JSON", category: "Normalized DTOs" },
+  { name: "HTML Reports", category: "Reconciliation Audits" },
+  { name: "Cloudflare R2 / S3", category: "Document Vault" },
 ];
 
 export function IntegrationsSection() {
@@ -55,13 +55,13 @@ export function IntegrationsSection() {
             <span className="w-8 h-px bg-foreground/30" />
           </span>
           <h2 className="text-4xl lg:text-6xl font-display tracking-tight text-foreground mb-4">
-            Connects seamlessly with
+            Unified pipeline.
             <br />
-            your accounting stack.
+            Audited financial exports.
           </h2>
           <p className="text-base lg:text-lg text-muted-foreground">
-            From local open weights and relational ledgers to enterprise ERP
-            and accounting exports.
+            From multi-page PDF intake and ONNX coordinate grounding to ACID
+            persistence and structured CSV/JSON audit exports.
           </p>
         </div>
       </div>
