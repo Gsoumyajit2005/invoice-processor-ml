@@ -1,8 +1,15 @@
 @import "tailwindcss";
+@import "./landing.css";
 @custom-variant dark (&:where(.dark, .dark *));
 @theme inline {
   --color-background: var(--canvas); --color-foreground: var(--text);
+  --color-muted: var(--muted); --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border); --color-card: var(--card); --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover); --color-popover-foreground: var(--popover-foreground);
   --font-sans: var(--font-geist-sans); --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-instrument-serif), "Instrument Serif", Georgia, serif;
+  --font-landing-sans: var(--font-instrument), "Instrument Sans", system-ui, sans-serif;
+  --font-landing-mono: var(--font-jetbrains), "JetBrains Mono", monospace;
   --color-stone-50: #fffdf9; --color-stone-100: #f3f0ea; --color-stone-200: #e4ded5;
   --color-stone-300: #cfc6ba; --color-stone-400: var(--text-subtle); --color-stone-500: var(--text-subtle);
   --color-stone-600: #5e584f; --color-stone-700: #48433c; --color-stone-800: #302d28;

@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { ArrowLeft, Download, Loader2 } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ArrowLeft, Download, Loader2, Save, ShieldCheck, Trash2 } from "lucide-react";
 import {
   ApiError,
   deleteInvoice,
@@ -14,6 +14,7 @@ import {
 import { formatCurrency, formatLatency } from "@/lib/format";
 import type { InvoiceDetail, InvoicePatchPayload } from "@/lib/types";
 import { GlassButton } from "@/components/liquid-glass/GlassButton";
+import { GlassSurface } from "@/components/liquid-glass/GlassSurface";
 import { DocumentOverlayViewer } from "@/components/DocumentOverlayViewer";
 import { InvoiceReviewForm } from "@/components/InvoiceReviewForm";
 import {
@@ -41,6 +42,43 @@ export default function InvoiceDetailReviewPage() {
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const formSubmitRef = useRef<((markVerified: boolean) => Promise<void>) | null>(null);
+
+  const linkedAreasOnPage = useMemo(() => {
+    if (!invoice) return 0;
+    let count = 0;
+    for (const entry of Object.values(invoice.provenance ?? {})) {
+      if (entry?.bbox && entry.bbox.page === activePage) count++;
+    }
+    invoice.line_items.forEach((item) => {
+      if (item.bbox && item.bbox.page === activePage) count++;
+    });
+    return count;
+  }, [invoice, activePage]);
+
+  const targetLabel = useMemo(() => {
+    if (!activeTargetKey) return null;
+    const cleanKey = activeTargetKey.startsWith("field:") ? activeTargetKey.replace("field:", "") : activeTargetKey;
+    const labels: Record<string, string> = {
+      vendor: "Vendor",
+      vendor_address: "Vendor Address",
+      receipt_number: "Receipt #",
+      date: "Issue Date",
+      due_date: "Due Date",
+      currency: "Currency",
+      subtotal: "Subtotal",
+      tax_amount: "Tax Amount",
+      discount_amount: "Discount",
+      total_amount: "Total Amount",
+      bill_to: "Bill To",
+    };
+    if (labels[cleanKey]) return labels[cleanKey];
+    if (cleanKey.startsWith("item:")) {
+      const idx = parseInt(cleanKey.replace("item:", ""), 10);
+      return `Item #${idx + 1}`;
+    }
+    return cleanKey;
+  }, [activeTargetKey]);
 
   useEffect(() => {
     if (!invoiceId) return;
@@ -162,37 +200,42 @@ export default function InvoiceDetailReviewPage() {
   }
 
   return (
-    <div className="review-page">
+    <div className="review-page relative">
+      {/* Studio Ambient Illumination Backdrop */}
+      <div className="review-ambient-canvas" aria-hidden="true">
+        <div className="review-ambient-glow-left" />
+        <div className="review-ambient-glow-right" />
+      </div>
+
       {/* Breadcrumb & Summary Header */}
-      <div className="review-page-heading">
+      <div className="review-page-heading mb-6 pb-4 border-b border-border/60">
         <div className="min-w-0">
           <Link
             href="/invoices"
-            className="inline-flex items-center gap-1 text-xs font-medium text-stone-500 hover:text-stone-600 dark:text-stone-400 dark:hover:text-stone-400"
+            className="inline-flex items-center gap-1.5 font-mono text-xs text-muted-foreground hover:text-foreground transition-colors"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
-            Back to Invoice Ledger
+            BACK TO INVOICE LEDGER
           </Link>
-          <div className="mt-1 flex flex-wrap items-center gap-2.5">
-            <h1 className="review-page-title">
+          <div className="mt-2 flex flex-wrap items-center gap-3">
+            <h1 className="review-page-title font-display text-3xl sm:text-4xl font-semibold tracking-tight text-foreground">
               {invoice.document_type === "receipt" ? "Review receipt" : invoice.document_type === "credit_note" ? "Review credit note" : "Review invoice"}
             </h1>
             <StatusBadge status={invoice.status} />
-
           </div>
-          <p className="mt-0.5 text-xs text-stone-500 dark:text-stone-400">
+          <p className="mt-1 font-mono text-xs text-muted-foreground">
             {invoice.vendor || invoice.filename} · {invoice.receipt_number || "No reference"} · {invoice.page_count} page
             {invoice.page_count > 1 ? "s" : ""} ·{" "}
             {formatLatency(invoice.extraction_latency_ms)}
           </p>
         </div>
 
-        <div className="flex shrink-0 items-center gap-3">
+        <div className="flex shrink-0 items-center gap-4">
           <div className="text-right">
-            <span className="text-[11px] font-medium uppercase tracking-wider text-stone-400 dark:text-stone-500">
+            <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
               Document Total
             </span>
-            <p className="tabular-nums text-lg font-semibold text-stone-900 dark:text-stone-100">
+            <p className="tabular-nums font-display text-2xl font-semibold text-foreground">
               {formatCurrency(invoice.total_amount, invoice.currency)}
             </p>
           </div>
@@ -204,10 +247,10 @@ export default function InvoiceDetailReviewPage() {
                 format: "json",
               })
             }
-            className="inline-flex items-center gap-1.5 rounded-xl border border-stone-200/80 bg-white/75 px-3 py-2 text-xs font-medium text-stone-700 backdrop-blur-md hover:bg-white dark:border-white/12 dark:bg-white/8 dark:text-stone-200 dark:hover:bg-white/14"
+            className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card/80 px-3.5 py-2 font-mono text-xs font-medium text-foreground hover:bg-card hover:border-accent/40 transition-colors shadow-xs"
             title="Download single-invoice JSON"
           >
-            <Download className="h-3.5 w-3.5" />
+            <Download className="h-3.5 w-3.5 text-muted-foreground" />
             JSON
           </GlassButton>
         </div>
@@ -243,8 +286,89 @@ export default function InvoiceDetailReviewPage() {
             onFocusTarget={handleFormFocusTarget}
             onSave={handleSave}
             onRequestDelete={() => setDeleteModalOpen(true)}
+            onBindSubmit={(fn) => {
+              formSubmitRef.current = fn;
+            }}
           />
         </div>
+      </div>
+
+      {/* Master Studio Floating Dock */}
+      <div className="review-dock-wrapper pointer-events-auto">
+        <GlassSurface material="chrome" radius={999} className="review-studio-dock">
+          {/* Left: Active Grounding Target Pill */}
+          <div className="flex items-center gap-1.5">
+            {activeTargetKey ? (
+              <button
+                type="button"
+                onClick={() => setFocusRequestCounter((c) => c + 1)}
+                className="dock-target-pill flex items-center gap-1.5 rounded-full bg-accent/15 px-2.5 py-1 font-mono text-xs text-foreground hover:bg-accent/25 transition-colors cursor-pointer"
+                title="Click to center on document and focus field"
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse shrink-0" />
+                <span className="text-muted-foreground uppercase text-[10px] tracking-wider hidden sm:inline">Target:</span>
+                <span className="font-semibold truncate max-w-[130px] sm:max-w-[170px]">{targetLabel}</span>
+                <span className="text-muted-foreground text-[10px]">p.{activePage}</span>
+              </button>
+            ) : (
+              <div className="dock-target-pill flex items-center gap-1.5 rounded-full px-2.5 py-1 font-mono text-xs text-muted-foreground">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+                <span className="truncate max-w-[170px] sm:max-w-none">
+                  <span className="hidden sm:inline">{linkedAreasOnPage} linked targets · p.{activePage}</span>
+                  <span className="sm:hidden">{linkedAreasOnPage} targets</span>
+                </span>
+              </div>
+            )}
+          </div>
+
+          <div className="h-4 w-px bg-border/80 mx-1 hidden sm:block shrink-0" />
+
+          {/* Right: Studio Actions */}
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <GlassButton
+              type="button"
+              disabled={saving}
+              onClick={() => setDeleteModalOpen(true)}
+              tone="danger"
+              className="rounded-full p-2 sm:px-3 sm:py-1.5 text-xs font-mono"
+              title="Delete invoice"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Delete</span>
+            </GlassButton>
+
+            <GlassButton
+              type="button"
+              disabled={saving}
+              onClick={() => void formSubmitRef.current?.(false)}
+              className="rounded-full px-2.5 sm:px-3.5 py-1.5 text-xs font-mono font-medium text-foreground hover:border-accent/40"
+            >
+              {saving ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <Save className="h-3.5 w-3.5 text-muted-foreground" />
+              )}
+              <span className="hidden sm:inline">Save Draft</span>
+              <span className="sm:hidden">Draft</span>
+            </GlassButton>
+
+            <GlassButton
+              type="button"
+              disabled={saving}
+              onClick={() => void formSubmitRef.current?.(true)}
+              tone="primary"
+              className="rounded-full px-3 sm:px-4 py-1.5 text-xs font-mono font-semibold"
+            >
+              {saving ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <ShieldCheck className="h-3.5 w-3.5" />
+              )}
+              <span className="hidden sm:inline">Save &amp; Verify</span>
+              <span className="sm:hidden">Verify</span>
+            </GlassButton>
+          </div>
+        </GlassSurface>
       </div>
 
       <ConfirmModal

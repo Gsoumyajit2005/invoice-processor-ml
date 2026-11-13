@@ -1,22 +1,102 @@
-.document-viewer { display: flex; flex-direction: column; height: 100%; min-height: 480px; min-width: 0; border: 1px solid var(--hairline); border-radius: 24px; background: var(--stage); padding: 16px; }
+.document-viewer { display: flex; flex-direction: column; height: 100%; min-height: 520px; min-width: 0; border: 1px solid var(--border); border-radius: 24px; background: var(--card); padding: 16px; box-shadow: 0 4px 24px -2px rgba(0, 0, 0, 0.05); }
 .document-stage { position: relative; flex: 1; min-height: 0; }
-.document-scroll { height: 100%; min-height: 360px; overflow: auto; overscroll-behavior: contain; padding: 16px 16px 104px; background: var(--field); border: 1px solid var(--edge); border-radius: 14px; scroll-padding-bottom: 104px; scrollbar-width: thin; }
+.document-scroll { height: 100%; min-height: 380px; overflow: auto; overscroll-behavior: contain; padding: 64px 16px 104px; background: radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.8) 0%, rgba(238, 233, 222, 0.45) 100%); border: 1px solid var(--border); border-radius: 18px; scroll-padding-bottom: 104px; scrollbar-width: thin; }
+.dark .document-scroll { background: radial-gradient(circle at 50% 30%, rgba(45, 40, 35, 0.6) 0%, rgba(20, 18, 16, 0.85) 100%); }
 .document-scroll > div { min-width: 0; }
 .document-scroll:focus-visible { outline: 3px solid var(--lg-focus); outline-offset: -3px; }
-.document-float { position: absolute; bottom: 16px; left: 50%; translate: -50% 0; width: max-content; max-width: calc(100% - 16px); z-index: 20; }
-.document-toolbar { padding: 6px; max-width: 100%; }
-.document-toolbar > .lg-body { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 4px; border-radius: 999px; background: var(--glass-plane); padding: 0; font-size: 12px; }
-.document-toolbar .lg-control { border-radius: 999px; padding: 6px 10px; min-width: 44px; background-color: transparent; border-color: transparent; box-shadow: none; }
-.document-toolbar .lg-control[aria-pressed="true"] { background: var(--primary); color: var(--on-primary); }
-.document-toolbar .lg-control:hover:not(:disabled):not([aria-pressed="true"]) { background-color: var(--recess); }
-.document-toolbar .lg-body > div { display: flex; align-items: center; gap: 2px; }
+.document-float { position: absolute; top: 12px; left: 50%; translate: -50% 0; width: max-content; max-width: calc(100% - 24px); z-index: 25; }
+.document-toolbar { padding: 3px 6px; max-width: 100%; border: none; box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.08), 0 2px 6px -1px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(0, 0, 0, 0.08); }
+.dark .document-toolbar { box-shadow: 0 12px 30px -4px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.12); }
+.document-toolbar > .lg-body { display: flex; align-items: center; justify-content: center; flex-wrap: nowrap !important; gap: 4px; border-radius: 999px; background: transparent !important; padding: 0; font-size: 12px; }
+
+/* Seamless borderless controls inside the glass pill */
+.document-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  box-shadow: none !important;
+  color: var(--text);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 11.5px;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background-color 150ms ease, color 150ms ease, transform 150ms ease;
+}
+.document-btn:hover:not(:disabled):not(.document-btn-active) {
+  background-color: rgba(0, 0, 0, 0.06) !important;
+  border-color: transparent !important;
+}
+.dark .document-btn:hover:not(:disabled):not(.document-btn-active) {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border-color: transparent !important;
+}
+.document-btn:active:not(:disabled) {
+  transform: scale(0.95);
+}
+.document-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.document-btn.document-btn-active {
+  background-color: var(--foreground) !important;
+  color: var(--background) !important;
+  border-color: transparent !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12) !important;
+}
+
+.document-page-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  box-shadow: none !important;
+  color: var(--text-subtle);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+.document-page-btn:hover:not(.is-active) {
+  background-color: rgba(0, 0, 0, 0.06) !important;
+  color: var(--text);
+}
+.dark .document-page-btn:hover:not(.is-active) {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  color: var(--text);
+}
+.document-page-btn.is-active {
+  background-color: var(--foreground) !important;
+  color: var(--background) !important;
+  border-color: transparent !important;
+}
+
 .document-zoom { display: inline-flex; align-items: center; }
 .document-pages { display: flex; max-width: 90px; overflow-x: auto; gap: 2px; }
 .document-legend { background: transparent; padding: 12px 4px 0; font-size: 12px; }
 .document-scroll rect:focus-visible { outline: 2px solid var(--lg-focus); outline-offset: 2px; }
-.document-viewer-meta { display: flex; justify-content: space-between; gap: 12px; padding: 4px 6px 16px; font-size: 12px; color: var(--text-subtle); }
+.document-viewer-meta { display: flex; justify-content: space-between; gap: 12px; padding: 4px 6px 14px; font-size: 12px; color: var(--text-subtle); }
 @media (max-width: 1199px) { .document-viewer { height: 680px; } }
-@media (max-width: 600px) { .document-toolbar .lg-body { max-width: 100%; } .document-toolbar .lg-control { min-width: 44px; padding: 5px 7px; } .document-viewer { height: 560px; padding: 12px; } .document-pages { max-width: 70px; } .document-scroll { padding: 12px 12px 128px; } }
+@media (max-width: 600px) {
+  .document-float { top: 8px; width: max-content; max-width: calc(100% - 16px); }
+  .document-toolbar { padding: 2px 4px; }
+  .document-toolbar > .lg-body { gap: 2px; padding: 1px 2px; flex-wrap: nowrap !important; }
+  .document-btn { min-width: 26px; height: 26px; padding: 0 5px; font-size: 11px; }
+  .document-viewer { height: 560px; padding: 12px; }
+  .document-pages { max-width: 60px; }
+  .document-scroll { padding: 48px 8px 110px; }
+}
 
 .document-viewer-meta > span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .document-viewer-meta > span:last-child { flex-shrink: 0; }

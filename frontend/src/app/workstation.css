@@ -2,7 +2,7 @@
 .workspace-main { width: 100%; max-width: 1520px; margin: 0 auto; padding: 32px 40px 80px; min-width: 0; }
 .workspace-main > :not(.review-page) { max-width: 1228px; margin-inline: auto; }
 .workspace-main :is(h1,h2,h3,p) { overflow-wrap: anywhere; }
-.workspace-main h1 { font-size: 40px; line-height: 1.12; letter-spacing: -.055em; font-weight: 650; color: var(--text); }
+.workspace-main h1 { font-family: var(--font-instrument-serif), Georgia, serif; font-size: 38px; line-height: 1.15; letter-spacing: -.02em; font-weight: 500; color: var(--text); }
 .workspace-main h2 { font-size: 17px; line-height: 1.3; letter-spacing: -.025em; font-weight: 650; }
 .workspace-main :is(input,textarea,select) { color: var(--text); background-color: var(--field); border-color: var(--hairline); font-size: 14px; line-height: 1.45; min-height: 44px; border-radius: 12px; }
 .workspace-main input::placeholder, .workspace-main textarea::placeholder { color: var(--text-subtle); opacity: 1; }
@@ -62,18 +62,23 @@
 .recent-list li:hover { background: var(--field); }
 .recent-empty { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 12px; padding: 32px; font-size: 13px; color: var(--text-subtle); }
 .recent-empty a { text-decoration: underline; }
-.review-page-heading { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-bottom: 24px; }
-.workspace-main h1.review-page-title { font-size: 34px; line-height: 1.15; letter-spacing: -.05em; }
+.review-page-heading { position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-bottom: 24px; }
+.workspace-main h1.review-page-title { font-family: var(--font-instrument-serif), Georgia, serif; font-size: 34px; line-height: 1.15; letter-spacing: -.02em; font-weight: 500; }
 .review-page-heading > div:last-child > div { display: none; }
 .review-page-heading > div:first-child > p { margin-top: 8px; font-size: 13px; color: var(--text-subtle); }
-.review-workspace { display: grid; grid-template-columns: minmax(440px,.98fr) minmax(500px,1.02fr); align-items: start; gap: 20px; }
+.review-ambient-canvas { position: absolute; inset: -40px -20px; pointer-events: none; z-index: 0; overflow: hidden; opacity: 0.85; }
+.review-ambient-glow-left { position: absolute; top: 12%; left: 8%; width: 560px; height: 560px; border-radius: 50%; background: radial-gradient(circle, rgba(217, 119, 87, 0.09) 0%, rgba(217, 119, 87, 0.02) 50%, transparent 70%); filter: blur(60px); }
+.review-ambient-glow-right { position: absolute; top: 35%; right: 5%; width: 520px; height: 520px; border-radius: 50%; background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, rgba(240, 235, 224, 0.45) 50%, transparent 70%); filter: blur(60px); }
+.dark .review-ambient-glow-left { background: radial-gradient(circle, rgba(217, 119, 87, 0.12) 0%, transparent 70%); }
+.dark .review-ambient-glow-right { background: radial-gradient(circle, rgba(90, 80, 140, 0.12) 0%, transparent 70%); }
+.review-workspace { position: relative; z-index: 1; display: grid; grid-template-columns: minmax(440px, 1.05fr) minmax(480px, 0.95fr); align-items: start; gap: 24px; padding-bottom: 80px; }
 .review-viewer-pane { position: sticky; top: calc(var(--workspace-top) + 12px); height: calc(100dvh - var(--workspace-top) - 40px); min-height: 520px; min-width: 0; }
 .review-editor-pane { min-width: 0; }
-.review-form { position: relative; padding: 28px 28px 120px; border: 1px solid var(--hairline); border-radius: 24px; background: var(--surface); }
+.review-form { position: relative; padding: 28px 28px 120px; border: 1px solid var(--border); border-radius: 24px; background: var(--surface); box-shadow: 0 4px 24px -2px rgba(0, 0, 0, 0.05); }
 .review-details-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-bottom: 20px; border-bottom: 1px solid var(--hairline); }
 .review-details-heading span { font-size: 12px; color: var(--text-subtle); white-space: nowrap; }
 .source-help { color: var(--text-subtle); font-size: 12px; margin-top: 12px; line-height: 1.5; }
-.review-group-title { font-size: 12px; color: var(--text-subtle); font-weight: 650; margin: 28px 0 16px; padding-top: 24px; border-top: 1px solid var(--hairline); }
+.review-group-title { font-family: var(--font-geist-mono), monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-subtle); font-weight: 600; margin: 28px 0 16px; padding-top: 24px; border-top: 1px solid var(--hairline); }
 .review-group-title:first-of-type { border: 0; padding-top: 0; }
 .review-field-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; }
 .grounded-field { min-width: 0; padding: 0; border-radius: 12px; }
@@ -89,7 +94,7 @@
 .amount-field .lg-inspect-trigger { min-width: 32px; padding: 2px; }
 .amount-field .review-field-meta { max-width: 32px; }
 .amount-field > div:first-child > label { font-size: 11px; }
-.amount-field input { background: transparent; border: 0; padding: 0; min-height: 32px; font-size: 18px; font-weight: 600; text-align: left; }
+.amount-field input { background: transparent; border: 0; padding: 0; min-height: 32px; font-size: 18px; font-weight: 600; text-align: left; font-family: var(--font-geist-mono), monospace; font-variant-numeric: tabular-nums; }
 .amount-total { background: var(--recess); border-color: var(--edge); }
 .review-notices, .reconciliation-details { margin-top: 16px; font-size: 13px; border-bottom: 1px solid var(--hairline); }
 .review-notices > summary, .reconciliation-details > summary { cursor: pointer; padding: 12px 0; min-height: 44px; color: var(--text-subtle); font-weight: 600; }

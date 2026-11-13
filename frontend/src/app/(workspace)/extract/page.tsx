@@ -50,6 +50,7 @@ import type {
   HealthResponse,
 } from "@/lib/types";
 import { RecentDocuments } from "@/components/RecentDocuments";
+import { WorkspaceHeader } from "@/components/WorkspaceHeader";
 import { GlassButton } from "@/components/liquid-glass/GlassButton";
 import { GlassSurface } from "@/components/liquid-glass/GlassSurface";
 import "@/components/liquid-glass/overlays.css";
@@ -235,10 +236,19 @@ export default function UploadExtractPage() {
 
   return (
     <div className="extract-page">
-      <div className="page-heading">
-        <div><h1>Extract documents</h1><p>Drop invoices and receipts into one place. Verify every field against its source.</p></div>
-        <a href="#recent-documents" className="outline-pill">View recent documents</a>
-      </div>
+      <WorkspaceHeader
+        eyebrow="DOCUMENT INTAKE // WORKSTATION"
+        title="Extract documents"
+        description="Drop invoices and receipts into one place. Verify every field against its source."
+        actions={
+          <a
+            href="#recent-documents"
+            className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-4 py-2 text-xs font-mono text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+          >
+            Recent Documents ↓
+          </a>
+        }
+      />
       <div className="extract-grid">
         {/* Left Column: Dropzone + Controls */}
         <div className="extract-upload">
@@ -280,17 +290,21 @@ export default function UploadExtractPage() {
                   }
                 }}
               />
-              <div className="drop-icon flex h-12 w-12 items-center justify-center rounded-xl bg-white/85 text-stone-600 shadow-sm ring-1 ring-stone-200/80 dark:bg-white/10 dark:text-stone-300 dark:ring-white/15">
-                <UploadCloud className="h-6 w-6" />
+              <div className="drop-icon flex h-12 w-12 items-center justify-center rounded-2xl bg-card text-foreground shadow-xs ring-1 ring-border">
+                <UploadCloud className="h-6 w-6 text-accent" />
               </div>
-              <p className="mt-3 text-sm font-semibold text-stone-900 dark:text-stone-100">
+              <p className="mt-3 text-sm font-semibold text-foreground">
                 Your documents go here
               </p>
-              <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">
+              <p className="mt-1 text-xs text-muted-foreground">
                 Drag files into this space, or choose them from your computer.
               </p>
-              <span className="outline-pill choose-files" aria-hidden="true">Choose files</span>
-              <div className="upload-limits"><span>JPG · PNG · WEBP · PDF</span><span>Up to {MAX_BATCH_FILES} documents</span><span>{maxUploadMb} MB / file · {maxPdfPages} PDF pages</span></div>
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-4 py-2 text-xs font-semibold text-foreground shadow-2xs hover:bg-muted transition-colors mt-4" aria-hidden="true">Choose files</span>
+              <div className="flex flex-wrap justify-center gap-2 mt-4 text-[11px] font-mono text-muted-foreground">
+                <span className="px-2.5 py-0.5 rounded-full border border-border bg-muted/60">JPG · PNG · WEBP · PDF</span>
+                <span className="px-2.5 py-0.5 rounded-full border border-border bg-muted/60">Up to {MAX_BATCH_FILES} documents</span>
+                <span className="px-2.5 py-0.5 rounded-full border border-border bg-muted/60">{maxUploadMb} MB / file · {maxPdfPages} PDF pages</span>
+              </div>
             </div>
 
             {/* Queued Files */}
@@ -769,16 +783,38 @@ export default function UploadExtractPage() {
               </div>
             </div>
           ) : (
-            <aside className="glass-surface pipeline-card">
-              <h2>From document to data</h2>
-              <p className="pipeline-intro">Review the original evidence alongside structured fields, dates and amounts.</p>
-              <ol className="pipeline-steps">
-                <li><span>1</span><div><h3>Read the document</h3><p>Prepare pages and locate text without altering the source.</p></div></li>
-                <li><span>2</span><div><h3>Structure the information</h3><p>Identify parties, dates, line items and financial amounts.</p></div></li>
-                <li><span>3</span><div><h3>Verify with evidence</h3><p>Inspect source-linked values and reconcile totals before saving.</p></div></li>
+            <aside className="glass-surface pipeline-card rounded-2xl border border-border p-6 lg:p-7 shadow-xs">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-accent" />
+                <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+                  MULTIMODAL PIPELINE
+                </span>
+              </div>
+              <h2 className="font-display text-xl font-semibold text-foreground">From document to data</h2>
+              <p className="pipeline-intro text-xs text-muted-foreground mt-1">Review the original evidence alongside structured fields, dates and amounts.</p>
+              <ol className="pipeline-steps my-6 space-y-4">
+                <li className="flex gap-3">
+                  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-muted font-mono text-xs font-bold text-accent shrink-0">1</span>
+                  <div><h3 className="text-xs font-semibold text-foreground mb-0.5">Read the document</h3><p className="text-xs text-muted-foreground">Prepare pages and locate text without altering the source.</p></div>
+                </li>
+                <li className="flex gap-3">
+                  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-muted font-mono text-xs font-bold text-accent shrink-0">2</span>
+                  <div><h3 className="text-xs font-semibold text-foreground mb-0.5">Structure the information</h3><p className="text-xs text-muted-foreground">Identify parties, dates, line items and financial amounts.</p></div>
+                </li>
+                <li className="flex gap-3">
+                  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-muted font-mono text-xs font-bold text-accent shrink-0">3</span>
+                  <div><h3 className="text-xs font-semibold text-foreground mb-0.5">Verify with evidence</h3><p className="text-xs text-muted-foreground">Inspect source-linked values and reconcile totals before saving.</p></div>
+                </li>
               </ol>
-              <details className="pipeline-details"><summary>How processing works</summary><p>Uploads are hashed for duplicates. Indra OCR 1.1 grounds text in normalized coordinates, then Qwen3.5-0.8B LoRA or the configured cloud model extracts structured values. Math checks flag discrepancies for review.</p><p>{health?.local_vlm.weights_present ? "Local model weights are available." : "Local model readiness is reported by the processing engine."} Cloud settings remain optional and are held for this session.</p></details>
-              <div className="pipeline-footer"><button type="button" onClick={() => setShowKeyDrawer(true)}>Advanced settings</button><Link href="/batch">Batch exports</Link></div>
+              <details className="pipeline-details border-t border-border/70 pt-3 text-xs text-muted-foreground">
+                <summary className="font-mono text-xs cursor-pointer hover:text-foreground transition-colors mb-2">How processing works</summary>
+                <p className="leading-relaxed">Uploads are hashed for duplicates. Indra OCR 1.1 grounds text in normalized coordinates, then Qwen3.5-0.8B LoRA or the configured cloud model extracts structured values. Math checks flag discrepancies for review.</p>
+                <p className="leading-relaxed mt-2">{health?.local_vlm.weights_present ? "Local model weights are available." : "Local model readiness is reported by the processing engine."} Cloud settings remain optional and are held for this session.</p>
+              </details>
+              <div className="pipeline-footer flex items-center justify-between border-t border-border/70 pt-4 mt-4 text-xs font-mono">
+                <button type="button" onClick={() => setShowKeyDrawer(true)} className="text-muted-foreground hover:text-foreground cursor-pointer">Advanced settings</button>
+                <Link href="/batch" className="text-accent hover:underline">Batch exports →</Link>
+              </div>
             </aside>
           )}
         </div>

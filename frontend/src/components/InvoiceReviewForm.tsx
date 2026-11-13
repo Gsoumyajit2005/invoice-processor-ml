@@ -9,11 +9,8 @@ import {
   ChevronUp,
   Code2,
   Copy,
-  Loader2,
   MapPin,
   Plus,
-  Save,
-  ShieldCheck,
   Trash2,
 } from "lucide-react";
 import {
@@ -31,8 +28,6 @@ import type {
   InvoicePatchPayload,
   LineItem,
 } from "@/lib/types";
-import { GlassButton } from "@/components/liquid-glass/GlassButton";
-import { GlassSurface } from "@/components/liquid-glass/GlassSurface";
 import { OcrInspectorControl } from "@/components/liquid-glass/OcrInspectorControl";
 import { AlertBanner } from "@/components/ui";
 
@@ -183,22 +178,22 @@ export function InvoiceReviewForm({
   invoice,
   activeTargetKey,
   focusRequestCounter,
-  saving,
   saveError,
   saveSuccess,
   onFocusTarget,
   onSave,
-  onRequestDelete,
+  onBindSubmit,
 }: {
   invoice: InvoiceDetail;
   activeTargetKey: string | null;
   focusRequestCounter: number;
-  saving: boolean;
+  saving?: boolean;
   saveError: string | null;
   saveSuccess: string | null;
   onFocusTarget: (targetKey: string | null, bboxPage?: number) => void;
   onSave: (payload: InvoicePatchPayload, markVerified: boolean) => Promise<void>;
-  onRequestDelete: () => void;
+  onRequestDelete?: () => void;
+  onBindSubmit?: (fn: (markVerified: boolean) => Promise<void>) => void;
 }) {
   const [form, setForm] = useState<ReviewFormState>(() =>
     buildInitialState(invoice),
@@ -381,6 +376,15 @@ export function InvoiceReviewForm({
     await onSave(payload, markVerified);
     setDirty(false);
   };
+
+  const submitRef = useRef(handleSubmit);
+  useEffect(() => {
+    submitRef.current = handleSubmit;
+  });
+
+  useEffect(() => {
+    onBindSubmit?.((markVerified) => submitRef.current(markVerified));
+  }, [onBindSubmit]);
 
   const currencyCode = cleanOptionalText(form.currency) ?? invoice.currency;
 
@@ -866,47 +870,6 @@ export function InvoiceReviewForm({
           </div>
         ) : null}
       </section>
-      {/* Action Bar */}
-      <GlassSurface material="chrome" radius={999} className="review-actions">
-        <GlassButton
-          type="button"
-          disabled={saving}
-          onClick={onRequestDelete}
-          tone="danger"
-        >
-          <Trash2 className="h-3.5 w-3.5" />
-          Delete
-        </GlassButton>
-
-        <div className="flex flex-wrap items-center gap-2.5">
-          <GlassButton
-            type="button"
-            disabled={saving}
-            onClick={() => void handleSubmit(false)}
-          >
-            {saving ? (
-              <Loader2 className="h-3.5 w-3.5 animate-spin" />
-            ) : (
-              <Save className="h-3.5 w-3.5" />
-            )}
-            Save Draft
-          </GlassButton>
-
-          <GlassButton
-            type="button"
-            disabled={saving}
-            onClick={() => void handleSubmit(true)}
-            tone="primary"
-          >
-            {saving ? (
-              <Loader2 className="h-3.5 w-3.5 animate-spin" />
-            ) : (
-              <ShieldCheck className="h-3.5 w-3.5" />
-            )}
-            Save & Verify
-          </GlassButton>
-        </div>
-      </GlassSurface>
 
     </div>
   );

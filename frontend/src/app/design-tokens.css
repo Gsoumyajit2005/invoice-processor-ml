@@ -7,6 +7,9 @@
   --material-shadow: 0 8px 25px rgb(46 41 34 / .12), 0 1px 1px rgb(32 25 20 / .1);
   --panel-shadow: 0 10px 30px rgb(36 30 20 / .035);
   --background: var(--canvas); --foreground: var(--text); --reading-surface: var(--surface);
+  --muted: var(--recess); --muted-foreground: var(--text-subtle);
+  --border: var(--hairline); --card: var(--surface); --card-foreground: var(--text);
+  --popover: var(--surface); --popover-foreground: var(--text);
   --lg-ink: var(--text); --lg-tint: var(--glass-fill); --lg-solid: var(--recess);
   --lg-control: var(--glass-plane); --lg-hover: var(--surface); --lg-focus: var(--accent-focus);
   --lg-panel: var(--surface); --lg-shadow: var(--material-shadow);
@@ -22,5 +25,8 @@
   --glass-fill: rgb(41 39 34 / .24); --glass-plane: rgb(41 39 34 / .97);
   --material-shadow: 0 10px 35px rgb(0 0 0 / .31), 0 1px 2px rgb(0 0 0 / .26);
   --panel-shadow: 0 10px 30px rgb(0 0 0 / .1);
+  --muted: var(--recess); --muted-foreground: var(--text-subtle);
+  --border: var(--hairline); --card: var(--surface); --card-foreground: var(--text);
+  --popover: var(--surface); --popover-foreground: var(--text);
   color-scheme: dark;
 }

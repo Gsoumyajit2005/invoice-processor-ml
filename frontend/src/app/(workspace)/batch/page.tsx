@@ -1,7 +1,7 @@
 "use client";
 
 import { GlassButton } from "@/components/liquid-glass/GlassButton";
-
+import { WorkspaceHeader } from "@/components/WorkspaceHeader";
 import Link from "next/link";
 import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import {
@@ -148,24 +148,20 @@ export default function BatchSummaryPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-stone-900 dark:text-stone-100">
-            Batch Summary & Bulk Exports
-          </h1>
-          <p className="mt-1 text-sm text-stone-600 dark:text-stone-400">
-            Totals are strictly grouped by ISO currency code (never mixed) and
-            exportable as CSV, JSON, or standalone HTML reports.
-          </p>
-        </div>
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 rounded-xl action-primary px-4 py-2 text-sm font-semibold text-white shadow-md transition"
-        >
-          <Layers className="h-4 w-4" />
-          Upload New Batch
-        </Link>
-      </div>
+      <WorkspaceHeader
+        eyebrow="FINANCIAL RECONCILIATION // ISO 4217"
+        title="Batch Summary & Bulk Exports"
+        description="Totals are strictly grouped by ISO currency code (never mixed) and exportable as CSV, JSON, or standalone HTML reports."
+        actions={
+          <Link
+            href="/extract"
+            className="inline-flex items-center gap-2 rounded-full action-primary px-4 py-2 font-mono text-xs font-semibold text-white shadow-sm hover:shadow transition-all"
+          >
+            <Layers className="h-3.5 w-3.5" />
+            Upload New Batch
+          </Link>
+        }
+      />
 
       {errorMsg ? <AlertBanner variant="error">{errorMsg}</AlertBanner> : null}
       {exportSuccess ? (
@@ -174,31 +170,31 @@ export default function BatchSummaryPage() {
 
       {/* Latest Batch Session Card (if present) */}
       {latestRun ? (
-        <section className="glass-surface rounded-2xl border-stone-300/60 p-5 dark:border-stone-400/25">
-          <div className="flex flex-col justify-between gap-3 border-b border-stone-200/70 pb-4 dark:border-white/10 sm:flex-row sm:items-center">
+        <section className="glass-surface rounded-2xl border border-border p-5">
+          <div className="flex flex-col justify-between gap-3 border-b border-border pb-4 sm:flex-row sm:items-center">
             <div>
               <div className="flex items-center gap-2">
-                <span className="rounded-full bg-stone-500/12 px-2.5 py-0.5 text-xs font-semibold text-stone-700 ring-1 ring-stone-500/20 dark:bg-stone-400/15 dark:text-stone-300 dark:ring-stone-400/25">
+                <span className="rounded-full bg-accent/15 px-2.5 py-0.5 font-mono text-xs font-semibold text-accent ring-1 ring-accent/30">
                   Latest Upload Run
                 </span>
-                <span className="text-xs text-stone-500 dark:text-stone-400">
+                <span className="font-mono text-xs text-muted-foreground">
                   {formatDateTime(latestRun.savedAt)}
                 </span>
               </div>
-              <p className="mt-1.5 text-sm text-stone-700 dark:text-stone-300">
+              <p className="mt-1.5 text-sm text-foreground">
                 Processed{" "}
-                <span className="font-semibold text-stone-900 dark:text-stone-100">
+                <span className="font-mono font-semibold text-foreground">
                   {latestRun.batch.total}
                 </span>{" "}
                 files:{" "}
-                <span className="font-semibold text-emerald-700 dark:text-emerald-400">
+                <span className="font-mono font-semibold text-emerald-600 dark:text-emerald-400">
                   {latestRun.batch.succeeded} succeeded
                 </span>
                 {latestRun.batch.failed > 0 ? (
                   <>
                     {" "}
                     ·{" "}
-                    <span className="font-semibold text-rose-700 dark:text-rose-400">
+                    <span className="font-mono font-semibold text-rose-600 dark:text-rose-400">
                       {latestRun.batch.failed} failed
                     </span>
                   </>
@@ -215,9 +211,9 @@ export default function BatchSummaryPage() {
                     onClick={() =>
                       void handleBulkExport("csv", latestSuccessIds, "latest")
                     }
-                    className="inline-flex items-center gap-1.5 rounded-lg border border-stone-200/80 bg-white/70 px-3 py-1.5 text-xs font-medium text-stone-700 hover:bg-white disabled:opacity-50 dark:border-white/12 dark:bg-white/8 dark:text-stone-200 dark:hover:bg-white/14"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card/80 px-3 py-1.5 font-mono text-xs font-medium text-foreground hover:bg-card hover:border-accent/40 disabled:opacity-50 transition-colors"
                   >
-                    <Download className="h-3.5 w-3.5" />
+                    <Download className="h-3.5 w-3.5 text-muted-foreground" />
                     Batch CSV
                   </GlassButton>
                   <GlassButton
@@ -226,9 +222,9 @@ export default function BatchSummaryPage() {
                     onClick={() =>
                       void handleBulkExport("json", latestSuccessIds, "latest")
                     }
-                    className="inline-flex items-center gap-1.5 rounded-lg border border-stone-200/80 bg-white/70 px-3 py-1.5 text-xs font-medium text-stone-700 hover:bg-white disabled:opacity-50 dark:border-white/12 dark:bg-white/8 dark:text-stone-200 dark:hover:bg-white/14"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card/80 px-3 py-1.5 font-mono text-xs font-medium text-foreground hover:bg-card hover:border-accent/40 disabled:opacity-50 transition-colors"
                   >
-                    <Download className="h-3.5 w-3.5" />
+                    <Download className="h-3.5 w-3.5 text-muted-foreground" />
                     Batch JSON
                   </GlassButton>
                   <GlassButton
@@ -237,9 +233,9 @@ export default function BatchSummaryPage() {
                     onClick={() =>
                       void handleBulkExport("html", latestSuccessIds, "latest")
                     }
-                    className="inline-flex items-center gap-1.5 rounded-lg border border-stone-200/80 bg-white/70 px-3 py-1.5 text-xs font-medium text-stone-700 hover:bg-white disabled:opacity-50 dark:border-white/12 dark:bg-white/8 dark:text-stone-200 dark:hover:bg-white/14"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card/80 px-3 py-1.5 font-mono text-xs font-medium text-foreground hover:bg-card hover:border-accent/40 disabled:opacity-50 transition-colors"
                   >
-                    <Download className="h-3.5 w-3.5" />
+                    <Download className="h-3.5 w-3.5 text-muted-foreground" />
                     Batch HTML
                   </GlassButton>
                 </>
@@ -247,7 +243,7 @@ export default function BatchSummaryPage() {
               <GlassButton
                 type="button"
                 onClick={() => clearLatestBatch()}
-                className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs text-stone-500 hover:bg-stone-200/60 hover:text-rose-600 dark:text-stone-400 dark:hover:bg-white/10 dark:hover:text-rose-400"
+                className="inline-flex items-center gap-1 rounded-full px-2.5 py-1.5 font-mono text-xs text-muted-foreground hover:bg-rose-500/15 hover:text-rose-600 dark:hover:text-rose-400 transition-colors"
               >
                 <Trash2 className="h-3.5 w-3.5" />
                 Dismiss
@@ -260,13 +256,13 @@ export default function BatchSummaryPage() {
               {latestCurrencyBuckets.map((bucket) => (
                 <div
                   key={bucket.currency}
-                  className="glass-subtle rounded-xl border border-stone-200/70 px-3.5 py-2.5 dark:border-white/10"
+                  className="glass-subtle rounded-xl border border-border px-3.5 py-2.5"
                 >
-                  <span className="text-[11px] font-semibold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+                  <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                     {bucket.currency} ({bucket.count} doc
                     {bucket.count > 1 ? "s" : ""})
                   </span>
-                  <p className="tabular-nums mt-0.5 text-base font-semibold text-stone-900 dark:text-stone-100">
+                  <p className="tabular-nums mt-0.5 font-mono text-base font-semibold text-foreground">
                     {bucket.amountCount > 0
                       ? formatCurrency(
                           bucket.total,
@@ -281,7 +277,7 @@ export default function BatchSummaryPage() {
             </div>
           ) : null}
 
-          <div className="mt-4 divide-y divide-stone-200/70 rounded-xl border border-stone-200/75 bg-white/45 dark:divide-white/10 dark:border-white/10 dark:bg-stone-950/35">
+          <div className="mt-4 divide-y divide-border/60 rounded-xl border border-border bg-card/50">
             {latestRun.batch.items.map((item, idx) => (
               <div
                 key={`${idx}-${item.filename}`}
@@ -294,12 +290,12 @@ export default function BatchSummaryPage() {
                     <AlertCircle className="h-4 w-4 shrink-0 text-rose-600 dark:text-rose-400" />
                   )}
                   <div className="min-w-0">
-                    <p className="truncate font-medium text-stone-900 dark:text-stone-100">
+                    <p className="truncate font-medium text-foreground">
                       {item.ok && item.result
                         ? item.result.extraction.vendor || item.filename
                         : item.filename}
                     </p>
-                    <p className="truncate text-xs text-stone-500 dark:text-stone-400">
+                    <p className="truncate font-mono text-xs text-muted-foreground">
                       {item.ok && item.result
                         ? `${item.filename} · ${formatLatency(item.result.latency_ms)}`
                         : item.error || "Extraction failed"}
@@ -311,7 +307,7 @@ export default function BatchSummaryPage() {
                   <div className="flex shrink-0 items-center gap-3">
                     <ExtractorBadge extractor={item.result.extractor_used} />
                     <StatusBadge status={item.result.status} />
-                    <span className="tabular-nums font-semibold text-stone-900 dark:text-stone-100">
+                    <span className="tabular-nums font-mono font-semibold text-foreground">
                       {formatCurrency(
                         item.result.extraction.total_amount,
                         item.result.extraction.currency,
@@ -319,7 +315,7 @@ export default function BatchSummaryPage() {
                     </span>
                     <Link
                       href={`/invoices/${item.result.invoice_id}`}
-                      className="rounded-lg border border-stone-200/80 bg-white/75 px-2.5 py-1 text-xs font-medium text-stone-600 hover:bg-stone-50 dark:border-white/12 dark:bg-white/8 dark:text-stone-300 dark:hover:bg-stone-500/20"
+                      className="rounded-full border border-border bg-card/80 px-2.5 py-1 font-mono text-xs font-medium text-foreground hover:bg-card hover:border-accent/40 transition-colors"
                     >
                       Review
                     </Link>
@@ -334,13 +330,13 @@ export default function BatchSummaryPage() {
       ) : null}
 
       {/* Ledger Aggregate & Export Section */}
-      <section className="glass-surface rounded-2xl p-5">
-        <div className="flex flex-col justify-between gap-4 border-b border-stone-200/70 pb-4 dark:border-white/10 md:flex-row md:items-center">
+      <section className="glass-surface rounded-2xl border border-border p-5">
+        <div className="flex flex-col justify-between gap-4 border-b border-border pb-4 md:flex-row md:items-center">
           <div>
-            <h2 className="text-base font-semibold text-stone-900 dark:text-stone-100">
+            <h2 className="font-display text-xl font-semibold text-foreground">
               Ledger Summary & Export Controls
             </h2>
-            <p className="text-xs text-stone-500 dark:text-stone-400">
+            <p className="font-mono text-xs text-muted-foreground mt-0.5">
               Showing {ledgerItems.length} of {ledgerTotal} stored records
               {ledgerTotal > ledgerItems.length ? " (top 100 loaded)" : ""}.
             </p>
@@ -367,11 +363,11 @@ export default function BatchSummaryPage() {
               type="button"
               onClick={triggerReload}
               disabled={loading}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-stone-200/80 bg-white/75 px-3 py-1.5 text-xs font-medium text-stone-700 hover:bg-white dark:border-white/12 dark:bg-white/8 dark:text-stone-200 dark:hover:bg-white/14"
+              className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card/80 px-3.5 py-1.5 font-mono text-xs font-medium text-foreground hover:bg-card disabled:opacity-40 transition-colors"
             >
               <RefreshCw
                 className={
-                  loading ? "h-3.5 w-3.5 animate-spin" : "h-3.5 w-3.5"
+                  loading ? "h-3.5 w-3.5 animate-spin text-accent" : "h-3.5 w-3.5 text-muted-foreground"
                 }
               />
               Refresh
@@ -381,27 +377,27 @@ export default function BatchSummaryPage() {
 
         {/* Currency-grouped KPI cards */}
         <div className="mt-5">
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+          <h3 className="font-mono text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
             Totals by Currency
           </h3>
           {loading ? (
-            <div className="mt-2 h-20 animate-pulse rounded-xl bg-stone-200/60 dark:bg-white/10" />
+            <div className="mt-2 h-20 animate-pulse rounded-xl bg-muted/60" />
           ) : ledgerCurrencyBuckets.length > 0 ? (
             <div className="mt-2 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {ledgerCurrencyBuckets.map((bucket) => (
                 <div
                   key={bucket.currency}
-                  className="glass-subtle rounded-xl border border-stone-200/70 p-4 dark:border-white/10"
+                  className="glass-subtle rounded-xl border border-border p-4"
                 >
-                  <div className="flex items-center justify-between text-xs text-stone-500 dark:text-stone-400">
-                    <span className="font-semibold uppercase tracking-wider text-stone-700 dark:text-stone-300">
+                  <div className="flex items-center justify-between font-mono text-xs text-muted-foreground">
+                    <span className="rounded-full bg-accent/15 px-2 py-0.5 font-mono text-[11px] font-semibold uppercase tracking-wider text-accent ring-1 ring-accent/25">
                       {bucket.currency}
                     </span>
                     <span>
                       {bucket.count} doc{bucket.count > 1 ? "s" : ""}
                     </span>
                   </div>
-                  <p className="tabular-nums mt-2 text-xl font-semibold text-stone-900 dark:text-stone-100">
+                  <p className="tabular-nums mt-3 font-display text-2xl lg:text-3xl font-semibold text-foreground">
                     {bucket.amountCount > 0
                       ? formatCurrency(
                           bucket.total,
@@ -415,7 +411,7 @@ export default function BatchSummaryPage() {
               ))}
             </div>
           ) : (
-            <p className="glass-subtle mt-2 rounded-xl border border-stone-200/70 px-4 py-3 text-sm text-stone-500 dark:border-white/10 dark:text-stone-400">
+            <p className="glass-subtle mt-2 rounded-xl border border-border px-4 py-3 text-sm text-muted-foreground">
               No invoices match the current filter.
             </p>
           )}
@@ -423,43 +419,43 @@ export default function BatchSummaryPage() {
 
         {/* Status breakdown & reconciliation health */}
         <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-5">
-          <div className="glass-subtle rounded-xl border border-stone-200/70 p-3.5 dark:border-white/10">
-            <span className="text-xs text-stone-500 dark:text-stone-400">
+          <div className="glass-subtle rounded-xl border border-border p-3.5">
+            <span className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
               Verified
             </span>
-            <p className="tabular-nums mt-1 text-lg font-semibold text-emerald-700 dark:text-emerald-400">
+            <p className="tabular-nums mt-1 font-mono text-xl font-bold text-emerald-600 dark:text-emerald-400">
               {statusCounts.verified ?? 0}
             </p>
           </div>
-          <div className="glass-subtle rounded-xl border border-stone-200/70 p-3.5 dark:border-white/10">
-            <span className="text-xs text-stone-500 dark:text-stone-400">
+          <div className="glass-subtle rounded-xl border border-border p-3.5">
+            <span className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
               Needs Review
             </span>
-            <p className="tabular-nums mt-1 text-lg font-semibold text-amber-700 dark:text-amber-400">
+            <p className="tabular-nums mt-1 font-mono text-xl font-bold text-amber-600 dark:text-amber-400">
               {statusCounts.needs_review ?? 0}
             </p>
           </div>
-          <div className="glass-subtle rounded-xl border border-stone-200/70 p-3.5 dark:border-white/10">
-            <span className="text-xs text-stone-500 dark:text-stone-400">
+          <div className="glass-subtle rounded-xl border border-border p-3.5">
+            <span className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
               Extracted
             </span>
-            <p className="tabular-nums mt-1 text-lg font-semibold text-stone-700 dark:text-stone-400">
+            <p className="tabular-nums mt-1 font-mono text-xl font-bold text-foreground">
               {statusCounts.extracted ?? 0}
             </p>
           </div>
-          <div className="glass-subtle rounded-xl border border-stone-200/70 p-3.5 dark:border-white/10">
-            <span className="text-xs text-stone-500 dark:text-stone-400">
+          <div className="glass-subtle rounded-xl border border-border p-3.5">
+            <span className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
               Failed
             </span>
-            <p className="tabular-nums mt-1 text-lg font-semibold text-rose-700 dark:text-rose-400">
+            <p className="tabular-nums mt-1 font-mono text-xl font-bold text-rose-600 dark:text-rose-400">
               {statusCounts.failed ?? 0}
             </p>
           </div>
-          <div className="glass-subtle rounded-xl border border-stone-200/70 p-3.5 dark:border-white/10">
-            <span className="text-xs text-stone-500 dark:text-stone-400">
+          <div className="glass-subtle rounded-xl border border-border p-3.5">
+            <span className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
               Math Balanced
             </span>
-            <p className="tabular-nums mt-1 text-lg font-semibold text-stone-900 dark:text-stone-100">
+            <p className="tabular-nums mt-1 font-mono text-xl font-bold text-foreground">
               {ledgerItems.length
                 ? `${reconciledCount}/${ledgerItems.length}`
                 : "0"}
@@ -468,9 +464,9 @@ export default function BatchSummaryPage() {
         </div>
 
         {/* Bulk Export Action Bar */}
-        <div className="glass-subtle mt-6 flex flex-col justify-between gap-3 rounded-xl border border-stone-200/70 px-4 py-3.5 dark:border-white/10 sm:flex-row sm:items-center">
-          <div className="text-xs text-stone-600 dark:text-stone-400">
-            <span className="font-semibold text-stone-900 dark:text-stone-100">
+        <div className="glass-subtle mt-6 flex flex-col justify-between gap-3 rounded-2xl border border-border px-4 py-3.5 sm:flex-row sm:items-center">
+          <div className="font-mono text-xs text-muted-foreground">
+            <span className="font-semibold text-foreground">
               Bulk Report Download
             </span>{" "}
             — exports{" "}
@@ -484,7 +480,7 @@ export default function BatchSummaryPage() {
               type="button"
               disabled={!ledgerItems.length || exporting !== null}
               onClick={() => void handleBulkExport("csv")}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-stone-200/80 bg-white/75 px-3.5 py-2 text-xs font-semibold text-stone-800 shadow-2xs hover:bg-white disabled:opacity-50 dark:border-white/12 dark:bg-white/8 dark:text-stone-200 dark:hover:bg-white/14"
+              className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card/80 px-3.5 py-2 font-mono text-xs font-semibold text-foreground hover:bg-card hover:border-accent/40 disabled:opacity-50 transition-colors"
             >
               <FileSpreadsheet className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
               Export CSV
@@ -493,16 +489,16 @@ export default function BatchSummaryPage() {
               type="button"
               disabled={!ledgerItems.length || exporting !== null}
               onClick={() => void handleBulkExport("json")}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-stone-200/80 bg-white/75 px-3.5 py-2 text-xs font-semibold text-stone-800 shadow-2xs hover:bg-white disabled:opacity-50 dark:border-white/12 dark:bg-white/8 dark:text-stone-200 dark:hover:bg-white/14"
+              className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card/80 px-3.5 py-2 font-mono text-xs font-semibold text-foreground hover:bg-card hover:border-accent/40 disabled:opacity-50 transition-colors"
             >
-              <FileCode2 className="h-4 w-4 text-stone-600 dark:text-stone-400" />
+              <FileCode2 className="h-4 w-4 text-muted-foreground" />
               Export JSON
             </GlassButton>
             <GlassButton
               type="button"
               disabled={!ledgerItems.length || exporting !== null}
               onClick={() => void handleBulkExport("html")}
-              className="inline-flex items-center gap-1.5 rounded-lg action-primary px-3.5 py-2 text-xs font-semibold text-white shadow-md disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 rounded-full action-primary px-4 py-2 font-mono text-xs font-semibold text-white shadow-sm hover:shadow disabled:opacity-50 transition-all"
             >
               <FileText className="h-4 w-4" />
               Export HTML Report

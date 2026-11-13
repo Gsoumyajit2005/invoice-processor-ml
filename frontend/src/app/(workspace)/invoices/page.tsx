@@ -1,7 +1,7 @@
 "use client";
 
 import { GlassButton } from "@/components/liquid-glass/GlassButton";
-
+import { WorkspaceHeader } from "@/components/WorkspaceHeader";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
@@ -180,45 +180,41 @@ export default function InvoicesLedgerPage() {
   return (
     <div className="space-y-5">
       {/* Header */}
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-stone-900 dark:text-stone-100">
-            Invoices
-          </h1>
-          <p className="mt-1 text-sm text-stone-600 dark:text-stone-400">
-            Search extracted documents, inspect reconciliation flags, open HITL
-            review, or export filtered sets.
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Link
-            href="/batch"
-            className="inline-flex items-center gap-1.5 rounded-xl border border-stone-200/80 bg-white/75 px-3.5 py-2 text-sm font-medium text-stone-700 hover:bg-white dark:border-white/12 dark:bg-white/8 dark:text-stone-200 dark:hover:bg-white/14"
-          >
-            <FileSpreadsheet className="h-4 w-4" />
-            Batch Summary
-          </Link>
-          <Link
-            href="/"
-            className="inline-flex items-center gap-1.5 rounded-xl action-primary px-3.5 py-2 text-sm font-semibold text-white shadow-md"
-          >
-            <Plus className="h-4 w-4" />
-            New Extraction
-          </Link>
-        </div>
-      </div>
+      <WorkspaceHeader
+        eyebrow="RELATIONAL LEDGER // AUDIT TRAILS"
+        title="Invoices"
+        description="Search extracted documents, inspect reconciliation flags, open HITL review, or export filtered sets."
+        actions={
+          <>
+            <Link
+              href="/batch"
+              className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card/80 px-3.5 py-2 font-mono text-xs font-medium text-foreground hover:bg-card hover:border-accent/40 transition-colors shadow-xs"
+            >
+              <FileSpreadsheet className="h-3.5 w-3.5 text-muted-foreground" />
+              Batch Summary
+            </Link>
+            <Link
+              href="/extract"
+              className="inline-flex items-center gap-1.5 rounded-full action-primary px-4 py-2 font-mono text-xs font-semibold text-white shadow-sm hover:shadow transition-all"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              New Extraction
+            </Link>
+          </>
+        }
+      />
 
       {/* Filters Card */}
-      <div className="glass-surface invoice-filters rounded-2xl p-4">
+      <div className="glass-surface invoice-filters rounded-2xl p-4 border border-border">
         <div className="grid grid-cols-1 gap-3 md:grid-cols-12">
           <div className="relative md:col-span-5">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400 dark:text-stone-500" />
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <input
               type="text"
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               placeholder="Search vendor, receipt #, or filename..."
-              className="w-full rounded-xl border border-stone-200/80 bg-white/75 py-2 pl-9 pr-3 text-sm text-stone-900 placeholder:text-stone-400 focus:border-stone-500 focus:outline-none focus:ring-2 focus:ring-stone-500/20 dark:border-white/12 dark:bg-stone-950/55 dark:text-stone-100 dark:placeholder:text-stone-500"
+              className="w-full rounded-xl border border-border bg-card/90 py-2 pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
             />
           </div>
 
@@ -251,9 +247,9 @@ export default function InvoicesLedgerPage() {
                 setDateFrom(e.target.value);
               }}
               aria-label="Issue date from"
-              className="w-full rounded-xl border border-stone-200/80 bg-white/75 px-2.5 py-2 text-xs text-stone-800 focus:border-stone-500 focus:outline-none dark:border-white/12 dark:bg-stone-950/55 dark:text-stone-100"
+              className="w-full rounded-xl border border-border bg-card/90 px-2.5 py-2 text-xs font-mono text-foreground focus:border-accent focus:outline-none"
             />
-            <span className="text-xs text-stone-400 dark:text-stone-500">
+            <span className="text-xs font-mono text-muted-foreground">
               to
             </span>
             <input
@@ -265,14 +261,14 @@ export default function InvoicesLedgerPage() {
                 setDateTo(e.target.value);
               }}
               aria-label="Issue date to"
-              className="w-full rounded-xl border border-stone-200/80 bg-white/75 px-2.5 py-2 text-xs text-stone-800 focus:border-stone-500 focus:outline-none dark:border-white/12 dark:bg-stone-950/55 dark:text-stone-100"
+              className="w-full rounded-xl border border-border bg-card/90 px-2.5 py-2 text-xs font-mono text-foreground focus:border-accent focus:outline-none"
             />
             {hasFilters ? (
               <GlassButton
                 type="button"
                 onClick={resetFilters}
                 title="Clear all filters"
-                className="shrink-0 rounded-xl border border-stone-200/80 bg-white/70 p-2 text-stone-600 hover:bg-white dark:border-white/12 dark:bg-white/8 dark:text-stone-300 dark:hover:bg-white/14"
+                className="shrink-0 rounded-xl border border-border bg-card/80 p-2 text-muted-foreground hover:text-foreground hover:bg-card"
               >
                 <FilterX className="h-4 w-4" />
               </GlassButton>
@@ -282,8 +278,8 @@ export default function InvoicesLedgerPage() {
 
         {/* Multi-select Contextual Bar */}
         {selectedIds.size > 0 ? (
-          <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-stone-200/80 bg-stone-500/10 px-3.5 py-2 text-xs dark:border-stone-400/25 dark:bg-stone-500/15">
-            <span className="font-semibold text-stone-950 dark:text-stone-200">
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border bg-accent/10 px-3.5 py-2 text-xs">
+            <span className="font-mono font-medium text-foreground">
               {selectedIds.size} invoice{selectedIds.size > 1 ? "s" : ""}{" "}
               selected
             </span>
@@ -292,25 +288,25 @@ export default function InvoicesLedgerPage() {
                 type="button"
                 disabled={exporting}
                 onClick={() => void handleExportSelected("csv")}
-                className="inline-flex items-center gap-1 rounded-lg bg-white/85 px-2.5 py-1 font-medium text-stone-800 ring-1 ring-stone-200/80 hover:bg-white disabled:opacity-50 dark:bg-white/10 dark:text-stone-200 dark:ring-white/15 dark:hover:bg-white/15"
+                className="inline-flex items-center gap-1 rounded-full border border-border bg-card/90 px-2.5 py-1 font-mono text-xs font-medium text-foreground hover:bg-card disabled:opacity-50"
               >
-                <Download className="h-3.5 w-3.5" />
+                <Download className="h-3.5 w-3.5 text-muted-foreground" />
                 CSV
               </GlassButton>
               <GlassButton
                 type="button"
                 disabled={exporting}
                 onClick={() => void handleExportSelected("json")}
-                className="inline-flex items-center gap-1 rounded-lg bg-white/85 px-2.5 py-1 font-medium text-stone-800 ring-1 ring-stone-200/80 hover:bg-white disabled:opacity-50 dark:bg-white/10 dark:text-stone-200 dark:ring-white/15 dark:hover:bg-white/15"
+                className="inline-flex items-center gap-1 rounded-full border border-border bg-card/90 px-2.5 py-1 font-mono text-xs font-medium text-foreground hover:bg-card disabled:opacity-50"
               >
-                <Download className="h-3.5 w-3.5" />
+                <Download className="h-3.5 w-3.5 text-muted-foreground" />
                 JSON
               </GlassButton>
               <GlassButton
                 type="button"
                 disabled={exporting}
                 onClick={() => void handleExportSelected("html")}
-                className="inline-flex items-center gap-1 rounded-lg  px-2.5 py-1 font-medium   disabled:opacity-50 action-primary"
+                className="inline-flex items-center gap-1 rounded-full action-primary px-3 py-1 font-mono text-xs font-medium disabled:opacity-50 text-white"
               >
                 <Download className="h-3.5 w-3.5" />
                 HTML Report
@@ -326,10 +322,10 @@ export default function InvoicesLedgerPage() {
       ) : null}
 
       {/* Ledger Table */}
-      <div className="glass-surface overflow-hidden rounded-2xl">
+      <div className="glass-surface overflow-hidden rounded-2xl border border-border">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-stone-200/75 text-sm dark:divide-white/10">
-            <thead className="bg-stone-100/60 text-left text-xs font-semibold uppercase tracking-wider text-stone-500 dark:bg-white/[0.04] dark:text-stone-400">
+          <table className="min-w-full divide-y divide-border text-sm">
+            <thead className="bg-muted/40 text-left font-mono text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
               <tr>
                 <th className="w-10 px-3 py-3">
                   <input
@@ -339,7 +335,7 @@ export default function InvoicesLedgerPage() {
                     }
                     onChange={toggleAllVisible}
                     aria-label="Select all visible invoices"
-                    className="h-4 w-4 rounded border-stone-300 text-stone-600 focus:ring-stone-500 dark:border-stone-600 dark:bg-stone-900"
+                    className="h-4 w-4 rounded border-border text-accent focus:ring-accent"
                   />
                 </th>
                 <th className="px-3 py-3">Vendor / Document</th>
@@ -352,12 +348,12 @@ export default function InvoicesLedgerPage() {
                 <th className="px-3 py-3 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-stone-200/60 dark:divide-white/[0.07]">
+            <tbody className="divide-y divide-border/60">
               {loading ? (
                 Array.from({ length: 5 }).map((_, idx) => (
                   <tr key={idx}>
                     <td colSpan={9} className="px-4 py-4">
-                      <div className="h-5 animate-pulse rounded bg-stone-100 dark:bg-stone-800" />
+                      <div className="h-5 animate-pulse rounded bg-muted/60" />
                     </td>
                   </tr>
                 ))
@@ -365,7 +361,7 @@ export default function InvoicesLedgerPage() {
                 <tr>
                   <td
                     colSpan={9}
-                    className="px-4 py-12 text-center text-sm text-stone-500 dark:text-stone-400"
+                    className="px-4 py-12 text-center text-sm text-muted-foreground"
                   >
                     {hasFilters
                       ? "No invoices match these filters."
@@ -385,9 +381,9 @@ export default function InvoicesLedgerPage() {
                     <tr
                       key={inv.id}
                       className={cn(
-                        "transition hover:bg-white/60 dark:hover:bg-white/[0.05]",
+                        "transition-colors hover:bg-muted/30",
                         selectedIds.has(inv.id) &&
-                          "bg-stone-500/10 dark:bg-stone-500/15",
+                          "bg-accent/10 hover:bg-accent/15",
                       )}
                     >
                       <td className="px-3 py-3">
@@ -396,7 +392,7 @@ export default function InvoicesLedgerPage() {
                           checked={selectedIds.has(inv.id)}
                           onChange={() => toggleOne(inv.id)}
                           aria-label={`Select ${inv.vendor || inv.filename}`}
-                          className="h-4 w-4 rounded border-stone-300 text-stone-600 focus:ring-stone-500 dark:border-stone-600 dark:bg-stone-900"
+                          className="h-4 w-4 rounded border-border text-accent focus:ring-accent"
                         />
                       </td>
                       <td className="max-w-[230px] px-3 py-3">
@@ -404,11 +400,11 @@ export default function InvoicesLedgerPage() {
                           <div className="min-w-0">
                             <Link
                               href={`/invoices/${inv.id}`}
-                              className="block truncate font-semibold text-stone-900 hover:text-stone-600 dark:text-stone-100 dark:hover:text-stone-400"
+                              className="block truncate font-medium text-foreground hover:text-accent transition-colors"
                             >
                               {inv.vendor || "Unknown Vendor"}
                             </Link>
-                            <div className="mt-0.5 flex flex-wrap items-center gap-1.5 text-xs text-stone-500 dark:text-stone-400">
+                            <div className="mt-0.5 flex flex-wrap items-center gap-1.5 font-mono text-xs text-muted-foreground">
                               <span className="max-w-[165px] truncate">
                                 {inv.filename}
                               </span>
@@ -417,7 +413,7 @@ export default function InvoicesLedgerPage() {
                                 <Link
                                   href={`/invoices/${inv.duplicate_of_id}`}
                                   title="Duplicate detected — view original"
-                                  className="inline-flex items-center gap-1 rounded bg-amber-50/80 px-1.5 py-0.5 text-[10px] font-semibold text-amber-800 ring-1 ring-amber-600/15 hover:bg-amber-100 dark:bg-amber-500/15 dark:text-amber-300 dark:ring-amber-400/25 dark:hover:bg-amber-500/25"
+                                  className="inline-flex items-center gap-1 rounded bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-mono font-semibold text-amber-700 dark:text-amber-300 ring-1 ring-amber-500/25 hover:bg-amber-500/25"
                                 >
                                   <Copy className="h-2.5 w-2.5" />
                                   Duplicate
@@ -427,23 +423,23 @@ export default function InvoicesLedgerPage() {
                           </div>
                         </div>
                       </td>
-                      <td className="whitespace-nowrap px-3 py-3 font-mono text-xs text-stone-700 dark:text-stone-300">
+                      <td className="whitespace-nowrap px-3 py-3 font-mono text-xs text-muted-foreground">
                         {inv.receipt_number || "—"}
                       </td>
-                      <td className="whitespace-nowrap px-3 py-3 tabular-nums text-xs text-stone-700 dark:text-stone-300">
+                      <td className="whitespace-nowrap px-3 py-3 font-mono text-xs text-muted-foreground">
                         {inv.date || "—"}
                       </td>
-                      <td className="whitespace-nowrap px-3 py-3 text-right tabular-nums font-semibold text-stone-900 dark:text-stone-100">
+                      <td className="whitespace-nowrap px-3 py-3 text-right font-mono font-semibold text-foreground">
                         {formatCurrency(inv.total_amount, inv.currency)}
                       </td>
                       <td className="whitespace-nowrap px-3 py-3">
                         {!mathChecked ? (
-                          <span className="text-xs text-stone-400 dark:text-stone-500">
+                          <span className="font-mono text-xs text-muted-foreground">
                             —
                           </span>
                         ) : mathOk ? (
                           <span
-                            className="inline-flex items-center gap-1 text-xs font-medium text-emerald-700 dark:text-emerald-400"
+                            className="inline-flex items-center gap-1 font-mono text-xs font-medium text-emerald-600 dark:text-emerald-400"
                             title="Line items & totals reconcile"
                           >
                             <CheckCircle2 className="h-3.5 w-3.5" />
@@ -451,7 +447,7 @@ export default function InvoicesLedgerPage() {
                           </span>
                         ) : (
                           <span
-                            className="inline-flex items-center gap-1 text-xs font-medium text-amber-700 dark:text-amber-400"
+                            className="inline-flex items-center gap-1 font-mono text-xs font-medium text-amber-600 dark:text-amber-400"
                             title="Discrepancy detected in subtotal/totals"
                           >
                             <AlertTriangle className="h-3.5 w-3.5" />
@@ -469,18 +465,18 @@ export default function InvoicesLedgerPage() {
                         <div className="inline-flex items-center gap-1">
                           <Link
                             href={`/invoices/${inv.id}`}
-                            className="inline-flex items-center gap-1 rounded-lg border border-stone-200/80 bg-white/75 px-2.5 py-1 text-xs font-medium text-stone-700 hover:border-stone-300 hover:text-stone-700 dark:border-white/12 dark:bg-white/8 dark:text-stone-200 dark:hover:border-stone-400/50 dark:hover:text-stone-300"
+                            className="inline-flex items-center gap-1 rounded-full border border-border bg-card/80 px-2.5 py-1 font-mono text-xs font-medium text-foreground hover:border-accent/40 hover:bg-card transition-colors"
                           >
                             Review
-                            <ExternalLink className="h-3 w-3" />
+                            <ExternalLink className="h-3 w-3 text-muted-foreground" />
                           </Link>
                           <GlassButton
                             type="button"
                             onClick={() => setDeleteTarget(inv)}
-                            className="rounded-lg p-1.5 text-stone-400 hover:bg-rose-50/80 hover:text-rose-600 dark:text-stone-500 dark:hover:bg-rose-500/15 dark:hover:text-rose-400"
+                            className="rounded-full p-1.5 text-muted-foreground hover:bg-rose-500/15 hover:text-rose-600 dark:hover:text-rose-400 transition-colors"
                             aria-label={`Delete ${inv.vendor || inv.filename}`}
                           >
-                            <Trash2 className="h-4 w-4" />
+                            <Trash2 className="h-3.5 w-3.5" />
                           </GlassButton>
                         </div>
                       </td>
@@ -493,11 +489,11 @@ export default function InvoicesLedgerPage() {
         </div>
 
         {/* Pagination Footer */}
-        <div className="flex flex-col items-center justify-between gap-3 border-t border-stone-200/70 bg-stone-50/55 px-4 py-3 text-xs text-stone-600 dark:border-white/10 dark:bg-white/[0.03] dark:text-stone-400 sm:flex-row">
+        <div className="flex flex-col items-center justify-between gap-3 border-t border-border bg-muted/20 px-4 py-3 font-mono text-xs text-muted-foreground sm:flex-row">
           <span>
-            Showing <span className="font-semibold">{startRow}</span>–
-            <span className="font-semibold">{endRow}</span> of{" "}
-            <span className="font-semibold">{total}</span> invoices
+            Showing <span className="font-semibold text-foreground">{startRow}</span>–
+            <span className="font-semibold text-foreground">{endRow}</span> of{" "}
+            <span className="font-semibold text-foreground">{total}</span> invoices
           </span>
           <div className="flex items-center gap-2">
             <GlassButton
@@ -507,7 +503,7 @@ export default function InvoicesLedgerPage() {
                 setLoading(true);
                 setOffset((prev) => Math.max(0, prev - PAGE_SIZE));
               }}
-              className="inline-flex items-center gap-1 rounded-lg border border-stone-200/80 bg-white/75 px-3 py-1.5 font-medium text-stone-700 hover:bg-white disabled:opacity-40 dark:border-white/12 dark:bg-white/8 dark:text-stone-200 dark:hover:bg-white/14"
+              className="inline-flex items-center gap-1 rounded-full border border-border bg-card/80 px-3 py-1.5 text-xs font-medium text-foreground hover:bg-card disabled:opacity-40 transition-colors"
             >
               <ChevronLeft className="h-3.5 w-3.5" />
               Previous
@@ -519,7 +515,7 @@ export default function InvoicesLedgerPage() {
                 setLoading(true);
                 setOffset((prev) => prev + PAGE_SIZE);
               }}
-              className="inline-flex items-center gap-1 rounded-lg border border-stone-200/80 bg-white/75 px-3 py-1.5 font-medium text-stone-700 hover:bg-white disabled:opacity-40 dark:border-white/12 dark:bg-white/8 dark:text-stone-200 dark:hover:bg-white/14"
+              className="inline-flex items-center gap-1 rounded-full border border-border bg-card/80 px-3 py-1.5 text-xs font-medium text-foreground hover:bg-card disabled:opacity-40 transition-colors"
             >
               Next
               <ChevronRight className="h-3.5 w-3.5" />
