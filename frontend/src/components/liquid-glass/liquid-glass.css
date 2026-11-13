@@ -1,0 +1,58 @@
+/* The existing displacement pipeline remains in GlassSurface/useDisplacementMap.
+   Only this sibling pane samples the backdrop; text stays on a calm control plane. */
+.lg-surface { --light-x: 110px; --light-y: 0px; --light-angle: -35deg; position: relative; min-width: 0; border-radius: var(--lg-radius, 28px); color: var(--lg-ink); box-shadow: var(--lg-shadow); }
+.lg-body { position: relative; height: 100%; min-width: 0; }
+.optical-defs { position: absolute; pointer-events: none; }
+.optical-pane, .optical-rim, .optical-sheen { position: absolute; inset: 0; border-radius: inherit; pointer-events: none; }
+.optical-pane { background: var(--lg-tint); -webkit-backdrop-filter: blur(10px) saturate(1.12); backdrop-filter: blur(10px) saturate(1.12); box-shadow: inset 0 1px 1px rgb(255 255 255 / .7), inset 0 -2px 3px rgb(41 39 35 / .24); }
+.optical-rim { padding: 1.5px; background: conic-gradient(from var(--light-angle), rgb(255 255 255 / .9), rgb(255 255 255 / .08) 18%, rgb(41 39 35 / .36) 31%, rgb(255 255 255 / .8) 52%, rgb(255 255 255 / .1) 68%, rgb(41 39 35 / .32) 84%, white); mask: linear-gradient(white 0 0) content-box, linear-gradient(white 0 0); mask-composite: exclude; }
+.optical-sheen { background: radial-gradient(ellipse 145px 58px at var(--light-x) var(--light-y), rgb(255 255 255 / .35), transparent 80%); box-shadow: inset 0 4px 6px -4px white, inset 0 -5px 7px -6px rgb(41 39 35 / .7); }
+.dark .optical-pane { box-shadow: inset 0 1px 1px rgb(255 253 249 / .22), inset 0 -2px 3px rgb(0 0 0 / .36); }
+.dark .optical-rim { opacity: .58; }
+.dark .optical-sheen { opacity: .55; }
+.lg-surface[data-material="panel"] { box-shadow: var(--panel-shadow); }
+.lg-surface[data-material="panel"] > .optical-pane { background: var(--lg-panel); backdrop-filter: none; -webkit-backdrop-filter: none; }
+.lg-surface[data-material="panel"] > .optical-rim { opacity: .2; }
+.lg-surface[data-material="panel"] > .optical-sheen { display: none; }
+.lg-surface[data-engine="plain"] > .optical-pane { backdrop-filter: blur(.45px) saturate(1.12); -webkit-backdrop-filter: blur(.45px) saturate(1.12); }
+.lg-surface[data-engine="solid"] > .optical-pane { background: var(--lg-solid); backdrop-filter: none !important; -webkit-backdrop-filter: none; }
+.lg-control, .lg-button {
+  position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 44px; min-width: 44px; padding: 9px 18px; border: 1px solid var(--edge); border-radius: 999px;
+  color: var(--text); background-color: var(--lg-control); font-size: 13px; line-height: 1.3; font-weight: 600;
+  touch-action: manipulation; cursor: pointer; backdrop-filter: none; -webkit-backdrop-filter: none;
+  transition: background-color 150ms, border-color 150ms, box-shadow 150ms;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .12);
+}
+.lg-control:hover:not(:disabled), .lg-button:hover:not(:disabled) { background-color: var(--recess); background-image: radial-gradient(circle 40px at var(--control-x, 50%) var(--control-y, 0%), rgb(255 255 255 / .16), transparent); }
+.lg-control[data-pressed="true"], .lg-button[data-pressed="true"] { box-shadow: inset 0 2px 4px rgb(41 39 35 / .16); }
+.lg-control:focus-visible, .lg-button:focus-visible { outline: 3px solid var(--lg-focus); outline-offset: 3px; }
+.lg-control:disabled, .lg-button:disabled { opacity: .5; cursor: not-allowed; }
+.lg-control[aria-pressed="true"], .lg-control[aria-current="page"], .lg-button[data-tone="primary"] { background: var(--primary); color: var(--on-primary); border-color: var(--primary); }
+.lg-control[aria-pressed="true"]:hover, .lg-control[aria-current="page"]:hover, .lg-button[data-tone="primary"]:hover:not(:disabled) { background: var(--primary); color: var(--on-primary); box-shadow: inset 0 0 0 99px rgb(127 120 110 / .12); }
+.lg-button[data-tone="danger"] { color: #a23235; }
+.dark .lg-button[data-tone="danger"] { color: #f1aaa3; }
+.lg-select { color: var(--text); background: var(--field); border: 1px solid var(--edge); border-radius: 999px; min-height: 44px; padding: 8px 16px; font-size: 13px; }
+.lg-select:focus-visible { outline: 3px solid var(--lg-focus); outline-offset: 2px; }
+/* Preserve the isolated lab's geometry and comparison labels. */
+.optical-toolbar { width: 440px; max-width: calc(100vw - 64px); height: 76px; }
+.optical-controls { position: absolute; inset: 13px 17px; display: flex; align-items: center; justify-content: center; gap: 4px; border-radius: 23px; background: var(--glass-plane); box-shadow: inset 0 1px 3px rgb(41 39 35 / .1); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.optical-controls button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-width: 44px; min-height: 44px; padding: 0 10px; color: inherit; border-radius: 999px; background: transparent; border: 1px solid transparent; touch-action: manipulation; cursor: pointer; }
+.optical-controls button:hover:not(:disabled) { background: var(--recess); border-color: var(--edge); }
+.optical-controls button[data-pressed="true"] { background: var(--recess); }
+.optical-controls button:disabled { color: var(--text-subtle); }
+.optical-controls button:focus-visible { outline: 3px solid var(--lg-focus); outline-offset: 1px; }
+.optical-page { padding: 0 8px; white-space: nowrap; }
+.optical-zoom { min-width: 43px; text-align: center; }
+.optical-divider { height: 20px; width: 1px; margin: 0 5px; background: var(--edge); }
+.optical-engine { position: absolute; top: calc(100% + 25px); left: 50%; transform: translateX(-50%); white-space: nowrap; padding: 5px 10px; border-radius: 999px; font-size: 12px; color: var(--text-subtle); background: var(--surface); }
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) { .optical-pane { background: var(--lg-solid); } }
+@media (max-width: 480px) { .optical-toolbar { height: 72px; } .optical-controls { inset: 12px 10px; gap: 0; font-size: 12px; } .optical-page { padding: 0 5px; } .optical-divider { margin: 0 3px; } .optical-fit { display: none; } .optical-controls button { padding: 0 8px; } }
+@media (prefers-reduced-motion: reduce) { .lg-control, .lg-button, .optical-controls button { scale: none !important; transform: none !important; transition: none; background-image: none !important; } .optical-sheen { background: none; } .optical-rim { background: linear-gradient(140deg, white, #90887d, white); } }
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) { .lg-surface > .optical-pane { background: var(--lg-solid); backdrop-filter: none !important; -webkit-backdrop-filter: none; } .optical-controls, .lg-control, .lg-button, .lg-select { background-color: var(--lg-solid); } .lg-button[data-tone="primary"] { background: var(--primary); } .optical-sheen { display: none; } }
+@media (forced-colors: active) {
+  .lg-surface > .optical-pane, .optical-controls { background: Canvas !important; color: CanvasText; backdrop-filter: none !important; -webkit-backdrop-filter: none; border: 1px solid ButtonText; }
+  .optical-rim, .optical-sheen { display: none; }
+  .lg-control, .lg-button, .lg-select { background: ButtonFace !important; color: ButtonText !important; border: 1px solid ButtonText; }
+  .lg-control:focus-visible, .lg-button:focus-visible, .optical-controls button:focus-visible { outline-color: Highlight; }
+}

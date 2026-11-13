@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useSyncExternalStore } from "react";
+import { useEffect, useId, useRef, useSyncExternalStore } from "react";
 import {
   AlertCircle,
   AlertTriangle,
@@ -22,6 +22,9 @@ import {
   subscribeTheme,
   toggleThemeMode,
 } from "@/lib/theme";
+import { GlassButton } from "@/components/liquid-glass/GlassButton";
+import { GlassSurface } from "@/components/liquid-glass/GlassSurface";
+import "@/components/liquid-glass/overlays.css";
 import type { InvoiceStatus } from "@/lib/types";
 
 export function ThemeToggle({ className }: { className?: string }) {
@@ -33,15 +36,12 @@ export function ThemeToggle({ className }: { className?: string }) {
   const isDark = theme === "dark";
 
   return (
-    <button
+    <GlassButton
       type="button"
       onClick={() => toggleThemeMode()}
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
       title={isDark ? "Switch to light mode" : "Switch to dark mode"}
-      className={cn(
-        "inline-flex items-center gap-1.5 rounded-full border border-slate-200/80 bg-white/70 px-2.5 py-1.5 text-xs font-medium text-slate-700 backdrop-blur-md shadow-xs transition hover:bg-white/95 hover:text-slate-900 dark:border-white/14 dark:bg-white/8 dark:text-slate-200 dark:hover:bg-white/14 dark:hover:text-white",
-        className,
-      )}
+      className={className}
     >
       {isDark ? (
         <>
@@ -50,11 +50,11 @@ export function ThemeToggle({ className }: { className?: string }) {
         </>
       ) : (
         <>
-          <Moon className="h-3.5 w-3.5 text-indigo-600" />
+          <Moon className="h-3.5 w-3.5 text-stone-600" />
           <span className="hidden sm:inline">Dark</span>
         </>
       )}
-    </button>
+    </GlassButton>
   );
 }
 
@@ -67,13 +67,13 @@ export function StatusBadge({
 }) {
   const styles: Record<string, string> = {
     verified:
-      "border-emerald-200/80 bg-emerald-50/80 text-emerald-800 ring-1 ring-inset ring-emerald-600/10 backdrop-blur-sm dark:border-emerald-400/25 dark:bg-emerald-500/12 dark:text-emerald-300 dark:ring-emerald-400/15",
+      "border-emerald-200/80 bg-emerald-50/80 text-emerald-800 ring-1 ring-inset ring-emerald-600/10 dark:border-emerald-400/25 dark:bg-emerald-500/12 dark:text-emerald-300 dark:ring-emerald-400/15",
     extracted:
-      "border-sky-200/80 bg-sky-50/80 text-sky-800 ring-1 ring-inset ring-sky-600/10 backdrop-blur-sm dark:border-sky-400/25 dark:bg-sky-500/12 dark:text-sky-300 dark:ring-sky-400/15",
+      "border-stone-200/80 bg-stone-50/80 text-stone-800 ring-1 ring-inset ring-stone-600/10 dark:border-stone-400/25 dark:bg-stone-500/12 dark:text-stone-300 dark:ring-stone-400/15",
     needs_review:
-      "border-amber-200/80 bg-amber-50/80 text-amber-800 ring-1 ring-inset ring-amber-600/10 backdrop-blur-sm dark:border-amber-400/25 dark:bg-amber-500/12 dark:text-amber-300 dark:ring-amber-400/15",
+      "border-amber-200/80 bg-amber-50/80 text-amber-800 ring-1 ring-inset ring-amber-600/10 dark:border-amber-400/25 dark:bg-amber-500/12 dark:text-amber-300 dark:ring-amber-400/15",
     failed:
-      "border-rose-200/80 bg-rose-50/80 text-rose-800 ring-1 ring-inset ring-rose-600/10 backdrop-blur-sm dark:border-rose-400/25 dark:bg-rose-500/12 dark:text-rose-300 dark:ring-rose-400/15",
+      "border-rose-200/80 bg-rose-50/80 text-rose-800 ring-1 ring-inset ring-rose-600/10 dark:border-rose-400/25 dark:bg-rose-500/12 dark:text-rose-300 dark:ring-rose-400/15",
   };
 
   return (
@@ -81,7 +81,7 @@ export function StatusBadge({
       className={cn(
         "inline-flex items-center gap-1 whitespace-nowrap rounded-full border px-2.5 py-0.5 text-xs font-medium",
         styles[status] ??
-          "border-slate-200/80 bg-slate-100/80 text-slate-700 backdrop-blur-sm dark:border-white/12 dark:bg-white/8 dark:text-slate-300",
+          "border-stone-200/80 bg-stone-100/80 text-stone-700 dark:border-white/12 dark:bg-white/8 dark:text-stone-300",
         className,
       )}
     >
@@ -113,10 +113,10 @@ export function ExtractorBadge({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1 rounded-md border px-2 py-0.5 font-mono text-[11px] font-medium backdrop-blur-sm",
+        "inline-flex items-center gap-1 rounded-md border px-2 py-0.5 font-mono text-[11px] font-medium",
         isCloud
-          ? "border-violet-200/80 bg-violet-50/80 text-violet-800 dark:border-violet-400/25 dark:bg-violet-500/12 dark:text-violet-300"
-          : "border-indigo-200/80 bg-indigo-50/80 text-indigo-800 dark:border-indigo-400/25 dark:bg-indigo-500/12 dark:text-indigo-300",
+          ? "border-stone-200/80 bg-stone-50/80 text-stone-800 dark:border-stone-400/25 dark:bg-stone-500/12 dark:text-stone-300"
+          : "border-stone-200/80 bg-stone-50/80 text-stone-800 dark:border-stone-400/25 dark:bg-stone-500/12 dark:text-stone-300",
         compact && "max-w-[210px]",
         className,
       )}
@@ -143,7 +143,7 @@ export function ProvenancePill({
   if (source === "ocr_matched") {
     return (
       <span
-        className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded bg-emerald-50/80 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/15 backdrop-blur-sm dark:bg-emerald-500/14 dark:text-emerald-300 dark:ring-emerald-400/25"
+        className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded bg-emerald-50/80 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/15 dark:bg-emerald-500/14 dark:text-emerald-300 dark:ring-emerald-400/25"
         title={hasBbox ? "Matched to OCR bounding box" : "Matched in OCR text"}
       >
         <CheckCircle2 className="h-2.5 w-2.5" />
@@ -153,14 +153,14 @@ export function ProvenancePill({
   }
   if (source === "user_edited") {
     return (
-      <span className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded bg-sky-50/80 px-1.5 py-0.5 text-[10px] font-medium text-sky-700 ring-1 ring-inset ring-sky-600/15 backdrop-blur-sm dark:bg-sky-500/14 dark:text-sky-300 dark:ring-sky-400/25">
+      <span className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded bg-stone-50/80 px-1.5 py-0.5 text-[10px] font-medium text-stone-700 ring-1 ring-inset ring-stone-600/15 dark:bg-stone-500/14 dark:text-stone-300 dark:ring-stone-400/25">
         <UserPen className="h-2.5 w-2.5" />
         Edited
       </span>
     );
   }
   return (
-    <span className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded bg-slate-100/80 px-1.5 py-0.5 text-[10px] font-medium text-slate-600 ring-1 ring-inset ring-slate-500/10 backdrop-blur-sm dark:bg-white/8 dark:text-slate-300 dark:ring-white/15">
+    <span className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded bg-stone-100/80 px-1.5 py-0.5 text-[10px] font-medium text-stone-600 ring-1 ring-inset ring-stone-500/10 dark:bg-white/8 dark:text-stone-300 dark:ring-white/15">
       <Sparkles className="h-2.5 w-2.5" />
       VLM
     </span>
@@ -180,12 +180,12 @@ export function AlertBanner({
 }) {
   const palette = {
     error:
-      "border-rose-200/80 bg-rose-50/75 text-rose-900 backdrop-blur-md dark:border-rose-400/25 dark:bg-rose-500/12 dark:text-rose-200",
+      "border-rose-200/80 bg-rose-50/75 text-rose-900 dark:border-rose-400/25 dark:bg-rose-500/12 dark:text-rose-200",
     warning:
-      "border-amber-200/80 bg-amber-50/75 text-amber-900 backdrop-blur-md dark:border-amber-400/25 dark:bg-amber-500/12 dark:text-amber-200",
-    info: "border-sky-200/80 bg-sky-50/75 text-sky-900 backdrop-blur-md dark:border-sky-400/25 dark:bg-sky-500/12 dark:text-sky-200",
+      "border-amber-200/80 bg-amber-50/75 text-amber-900 dark:border-amber-400/25 dark:bg-amber-500/12 dark:text-amber-200",
+    info: "border-stone-200/80 bg-stone-50/75 text-stone-900 dark:border-stone-400/25 dark:bg-stone-500/12 dark:text-stone-200",
     success:
-      "border-emerald-200/80 bg-emerald-50/75 text-emerald-900 backdrop-blur-md dark:border-emerald-400/25 dark:bg-emerald-500/12 dark:text-emerald-200",
+      "border-emerald-200/80 bg-emerald-50/75 text-emerald-900 dark:border-emerald-400/25 dark:bg-emerald-500/12 dark:text-emerald-200",
   }[variant];
 
   const Icon = {
@@ -239,75 +239,31 @@ export function ConfirmModal({
   onConfirm: () => void;
   onCancel: () => void;
 }) {
+  const dialog = useRef<HTMLDialogElement>(null);
+  const titleId = useId();
+  const cancelButton = useRef<HTMLButtonElement>(null);
   useEffect(() => {
-    if (!open) return;
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && !busy) {
-        onCancel();
-      }
-    };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [open, busy, onCancel]);
+    const node = dialog.current;
+    if (!node) return;
+    if (open && !node.open) { node.showModal(); cancelButton.current?.focus(); }
+    if (!open && node.open) node.close();
+  }, [open]);
 
-  if (!open) return null;
-
-  return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 p-4 backdrop-blur-sm dark:bg-black/65"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="confirm-modal-title"
-      onClick={() => !busy && onCancel()}
-    >
-      <div
-        className="glass-surface-elevated w-full max-w-md rounded-2xl p-6"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex items-start justify-between gap-3">
-          <h3
-            id="confirm-modal-title"
-            className="text-base font-semibold text-slate-900 dark:text-slate-100"
-          >
-            {title}
-          </h3>
-          <button
-            type="button"
-            onClick={onCancel}
-            disabled={busy}
-            className="rounded-lg p-1 text-slate-400 hover:bg-slate-200/60 hover:text-slate-600 disabled:opacity-50 dark:hover:bg-white/10 dark:hover:text-slate-200"
-            aria-label="Close modal"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        </div>
-        <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
-          {description}
-        </p>
-        <div className="mt-6 flex items-center justify-end gap-2.5">
-          <button
-            type="button"
-            onClick={onCancel}
-            disabled={busy}
-            className="rounded-lg border border-slate-200/80 bg-white/75 px-3.5 py-2 text-sm font-medium text-slate-700 backdrop-blur-sm hover:bg-white disabled:opacity-50 dark:border-white/12 dark:bg-white/8 dark:text-slate-200 dark:hover:bg-white/14"
-          >
-            Cancel
-          </button>
-          <button
-            type="button"
-            onClick={onConfirm}
-            disabled={busy}
-            className={cn(
-              "rounded-lg px-3.5 py-2 text-sm font-semibold text-white shadow-xs disabled:opacity-60",
-              confirmVariant === "danger"
-                ? "bg-rose-600 hover:bg-rose-700"
-                : "bg-indigo-600 hover:bg-indigo-700",
-            )}
-          >
-            {busy ? "Working..." : confirmLabel}
-          </button>
-        </div>
+  return <dialog ref={dialog} className="lg-dialog" aria-labelledby={titleId}
+    onCancel={event => { event.preventDefault(); if (!busy) onCancel(); }}
+    onClick={event => { if (event.target === event.currentTarget && !busy) onCancel(); }}>
+    <GlassSurface material="panel" radius={24} className="lg-dialog-surface">
+      <div className="flex items-start justify-between gap-3">
+        <h2 id={titleId} className="text-base font-semibold">{title}</h2>
+        <GlassButton onClick={onCancel} disabled={busy} aria-label="Close modal"><X aria-hidden="true" className="h-4 w-4" /></GlassButton>
       </div>
-    </div>
-  );
+      <p className="mt-2 text-sm leading-relaxed text-stone-600 dark:text-stone-300">{description}</p>
+      <div className="mt-6 flex items-center justify-end gap-2.5">
+        <GlassButton ref={cancelButton} onClick={onCancel} disabled={busy}>Cancel</GlassButton>
+        <GlassButton onClick={onConfirm} disabled={busy} tone={confirmVariant === "danger" ? "danger" : "primary"}>
+          {busy ? "Working…" : confirmLabel}
+        </GlassButton>
+      </div>
+    </GlassSurface>
+  </dialog>;
 }

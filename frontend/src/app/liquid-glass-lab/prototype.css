@@ -1,0 +1,28 @@
+.lens-lab-lab { --lab-ink: var(--text); --lab-muted: var(--text-subtle); color: var(--lab-ink); }
+.lens-lab-heading { display: flex; align-items: start; justify-content: space-between; gap: 20px; margin: 10px 0 26px; }
+.lens-lab-heading h1 { font-size: clamp(26px, 3vw, 38px); line-height: 1.15; font-weight: 600; letter-spacing: -.045em; margin: 0 0 10px; text-wrap: balance; }
+.lens-lab-heading p { font-size: 14px; color: var(--lab-muted); max-width: 65ch; }
+.lens-lab-badge { font-size: 11px; padding: 7px 10px; border: 1px solid var(--edge); border-radius: 5px; white-space: nowrap; }
+.lens-lab-settings { display: flex; align-items: center; gap: 30px; flex-wrap: wrap; padding: 18px 0; border-top: 1px solid var(--edge); font-size: 12px; }
+.lens-lab-settings label { display: flex; gap: 8px; align-items: center; font-weight: 600; }
+.lens-lab-settings select { padding: 9px; border: 1px solid var(--edge); border-radius: 6px; color: var(--text); background: var(--field); max-width: 100%; }
+.lens-lab-settings p { color: var(--lab-muted); }
+.lens-lab-range { flex: 1; flex-wrap: wrap; }
+.lens-lab-range input { min-width: 100px; flex: 1; accent-color: var(--text); height: 30px; }
+.lens-lab-stage { height: 600px; position: relative; border: 1px solid var(--edge); border-radius: 12px; background: var(--field); }
+.lens-lab-document { height: 100%; overflow: auto; padding: 28px 40px 180px; overscroll-behavior: contain; border-radius: inherit; }
+.lens-lab-paper { min-width: 450px; max-width: none; margin: 0 auto; box-shadow: 0 2px 6px rgb(41 39 35 / .12); background: white; }
+.lens-lab-paper img { display: block; width: 100%; height: auto; }
+.lens-lab-floating { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+.lens-lab-notes { display: flex; justify-content: space-between; gap: 30px; color: var(--lab-muted); font-size: 11px; line-height: 1.65; margin-top: 18px; }
+.lens-lab-notes p { max-width: 65ch; }
+.lens-lab-lab :is(select, input, .lens-lab-document):focus-visible { outline: 3px solid var(--edge); outline-offset: 3px; }
+.lens-lab-skip { position: absolute; top: 0; left: 0; transform: translateY(-200%); background: white; color: var(--text); padding: 10px; z-index: 50; }
+.lens-lab-skip:focus { transform: none; }
+.dark .lens-lab-lab { --lab-ink: var(--text); --lab-muted: var(--text-subtle); }
+.dark .lens-lab-stage { background: var(--field); border-color: var(--text); }
+.dark .lens-lab-settings { border-color: var(--text); }
+.dark .lens-lab-settings select { background: var(--field); color: var(--text); border-color: var(--text); }
+.dark .lens-lab-badge { border-color: var(--text); }
+@media (max-width: 767px) { .lens-lab-heading { flex-direction: column; gap: 12px; } .lens-lab-settings { gap: 12px; align-items: stretch; flex-direction: column; } .lens-lab-stage { height: 520px; } .lens-lab-document { padding: 16px 16px 160px; } .lens-lab-notes { flex-direction: column; gap: 8px; } }
+@media (forced-colors: active) { .lens-lab-stage { border: 1px solid CanvasText; } }

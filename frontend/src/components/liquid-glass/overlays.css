@@ -1,0 +1,27 @@
+.lg-popover { display: none; position: fixed; inset: auto; width: min(320px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); overflow: auto; padding: 0; margin: 0; border: 0; background: transparent; color: var(--lg-ink); z-index: 60; }
+.lg-popover:popover-open { display: block; }
+.lg-popover[data-open="true"] { display: block; }
+.lg-popover-surface { padding: 16px; margin: 2px; }
+.lg-popover-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 13px; }
+.lg-popover-heading strong { overflow-wrap: anywhere; }
+.lg-inspector-data { padding: 12px 0; font-size: 12px; line-height: 1.5; }
+.lg-inspector-data dt { color: var(--text-subtle); margin-top: 8px; }
+.dark .lg-inspector-data dt { color: var(--text-subtle); }
+.lg-inspector-data dd { color: var(--lg-ink); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.lg-inspect-trigger { padding: 4px; border-radius: 999px; }
+.lg-dialog { max-width: min(448px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); width: 100%; padding: 0; margin: auto; overflow: auto; border: 0; border-radius: 24px; background: transparent; color: var(--lg-ink); }
+.lg-dialog::backdrop { background: rgb(23 22 20 / .6); }
+.lg-dialog-surface { padding: 24px; }
+.review-actions { position: sticky; bottom: 16px; z-index: 20; padding: 6px; width: max-content; max-width: 100%; margin: 24px 0 0 auto; }
+.review-actions > .lg-body { display: flex; align-items: center; justify-content: end; gap: 6px; flex-wrap: wrap; padding: 0; border-radius: 999px; background: var(--glass-plane); }
+.review-actions .lg-button { font-size: 12px; padding: 8px 15px; }
+.review-actions .lg-button[data-tone="danger"] { border-color: transparent; background: transparent; color: var(--text-subtle); }
+.extraction-modes { box-shadow: none; border: 1px solid var(--hairline); }
+.extraction-modes > .lg-body { display: flex; padding: 4px; gap: 4px; background: var(--recess); border-radius: 999px; }
+.extraction-modes .lg-control { min-height: 36px; padding: 8px 14px; border-color: transparent; font-size: 12px; white-space: nowrap; }
+.extraction-modes .lg-control svg { display: none; }
+.extraction-modes > .optical-rim, .extraction-modes > .optical-pane { display: none; }
+@media (forced-colors: active) { .lg-dialog::backdrop { background: Canvas; opacity: .8; } .lg-popover-surface { border: 1px solid CanvasText; } }
+
+.review-field-meta { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 6px; min-width: 0; max-width: 100%; }
+.review-field-meta > span { white-space: normal; min-width: 0; flex-shrink: 1; }

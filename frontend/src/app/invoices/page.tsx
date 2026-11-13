@@ -1,5 +1,7 @@
 "use client";
 
+import { GlassButton } from "@/components/liquid-glass/GlassButton";
+
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
@@ -180,10 +182,10 @@ export default function InvoicesLedgerPage() {
       {/* Header */}
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
-            Invoice Ledger
+          <h1 className="text-2xl font-semibold tracking-tight text-stone-900 dark:text-stone-100">
+            Invoices
           </h1>
-          <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+          <p className="mt-1 text-sm text-stone-600 dark:text-stone-400">
             Search extracted documents, inspect reconciliation flags, open HITL
             review, or export filtered sets.
           </p>
@@ -191,14 +193,14 @@ export default function InvoicesLedgerPage() {
         <div className="flex items-center gap-2">
           <Link
             href="/batch"
-            className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200/80 bg-white/75 px-3.5 py-2 text-sm font-medium text-slate-700 backdrop-blur-md hover:bg-white dark:border-white/12 dark:bg-white/8 dark:text-slate-200 dark:hover:bg-white/14"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-stone-200/80 bg-white/75 px-3.5 py-2 text-sm font-medium text-stone-700 hover:bg-white dark:border-white/12 dark:bg-white/8 dark:text-stone-200 dark:hover:bg-white/14"
           >
             <FileSpreadsheet className="h-4 w-4" />
             Batch Summary
           </Link>
           <Link
             href="/"
-            className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-3.5 py-2 text-sm font-semibold text-white shadow-md shadow-indigo-500/25 hover:from-indigo-500 hover:to-violet-500"
+            className="inline-flex items-center gap-1.5 rounded-xl action-primary px-3.5 py-2 text-sm font-semibold text-white shadow-md"
           >
             <Plus className="h-4 w-4" />
             New Extraction
@@ -207,16 +209,16 @@ export default function InvoicesLedgerPage() {
       </div>
 
       {/* Filters Card */}
-      <div className="glass-surface rounded-2xl p-4">
+      <div className="glass-surface invoice-filters rounded-2xl p-4">
         <div className="grid grid-cols-1 gap-3 md:grid-cols-12">
           <div className="relative md:col-span-5">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400 dark:text-stone-500" />
             <input
               type="text"
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               placeholder="Search vendor, receipt #, or filename..."
-              className="w-full rounded-xl border border-slate-200/80 bg-white/75 py-2 pl-9 pr-3 text-sm text-slate-900 backdrop-blur-md placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-white/12 dark:bg-slate-950/55 dark:text-slate-100 dark:placeholder:text-slate-500"
+              className="w-full rounded-xl border border-stone-200/80 bg-white/75 py-2 pl-9 pr-3 text-sm text-stone-900 placeholder:text-stone-400 focus:border-stone-500 focus:outline-none focus:ring-2 focus:ring-stone-500/20 dark:border-white/12 dark:bg-stone-950/55 dark:text-stone-100 dark:placeholder:text-stone-500"
             />
           </div>
 
@@ -229,7 +231,7 @@ export default function InvoicesLedgerPage() {
                 setStatus(e.target.value as InvoiceStatus | "");
               }}
               aria-label="Filter by status"
-              className="w-full rounded-xl border border-slate-200/80 bg-white/75 px-3 py-2 text-sm text-slate-800 backdrop-blur-md focus:border-indigo-500 focus:outline-none dark:border-white/12 dark:bg-slate-950/55 dark:text-slate-100"
+              className="lg-select w-full"
             >
               <option value="">All Statuses</option>
               <option value="needs_review">Needs Review</option>
@@ -239,7 +241,7 @@ export default function InvoicesLedgerPage() {
             </select>
           </div>
 
-          <div className="flex items-center gap-2 md:col-span-4">
+          <div className="invoice-date-range flex items-center gap-2 md:col-span-4">
             <input
               type="date"
               value={dateFrom}
@@ -249,9 +251,9 @@ export default function InvoicesLedgerPage() {
                 setDateFrom(e.target.value);
               }}
               aria-label="Issue date from"
-              className="w-full rounded-xl border border-slate-200/80 bg-white/75 px-2.5 py-2 text-xs text-slate-800 backdrop-blur-md focus:border-indigo-500 focus:outline-none dark:border-white/12 dark:bg-slate-950/55 dark:text-slate-100"
+              className="w-full rounded-xl border border-stone-200/80 bg-white/75 px-2.5 py-2 text-xs text-stone-800 focus:border-stone-500 focus:outline-none dark:border-white/12 dark:bg-stone-950/55 dark:text-stone-100"
             />
-            <span className="text-xs text-slate-400 dark:text-slate-500">
+            <span className="text-xs text-stone-400 dark:text-stone-500">
               to
             </span>
             <input
@@ -263,56 +265,56 @@ export default function InvoicesLedgerPage() {
                 setDateTo(e.target.value);
               }}
               aria-label="Issue date to"
-              className="w-full rounded-xl border border-slate-200/80 bg-white/75 px-2.5 py-2 text-xs text-slate-800 backdrop-blur-md focus:border-indigo-500 focus:outline-none dark:border-white/12 dark:bg-slate-950/55 dark:text-slate-100"
+              className="w-full rounded-xl border border-stone-200/80 bg-white/75 px-2.5 py-2 text-xs text-stone-800 focus:border-stone-500 focus:outline-none dark:border-white/12 dark:bg-stone-950/55 dark:text-stone-100"
             />
             {hasFilters ? (
-              <button
+              <GlassButton
                 type="button"
                 onClick={resetFilters}
                 title="Clear all filters"
-                className="shrink-0 rounded-xl border border-slate-200/80 bg-white/70 p-2 text-slate-600 backdrop-blur-md hover:bg-white dark:border-white/12 dark:bg-white/8 dark:text-slate-300 dark:hover:bg-white/14"
+                className="shrink-0 rounded-xl border border-stone-200/80 bg-white/70 p-2 text-stone-600 hover:bg-white dark:border-white/12 dark:bg-white/8 dark:text-stone-300 dark:hover:bg-white/14"
               >
                 <FilterX className="h-4 w-4" />
-              </button>
+              </GlassButton>
             ) : null}
           </div>
         </div>
 
         {/* Multi-select Contextual Bar */}
         {selectedIds.size > 0 ? (
-          <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-indigo-200/80 bg-indigo-500/10 px-3.5 py-2 text-xs backdrop-blur-md dark:border-indigo-400/25 dark:bg-indigo-500/15">
-            <span className="font-semibold text-indigo-950 dark:text-indigo-200">
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-stone-200/80 bg-stone-500/10 px-3.5 py-2 text-xs dark:border-stone-400/25 dark:bg-stone-500/15">
+            <span className="font-semibold text-stone-950 dark:text-stone-200">
               {selectedIds.size} invoice{selectedIds.size > 1 ? "s" : ""}{" "}
               selected
             </span>
             <div className="flex flex-wrap items-center gap-2">
-              <button
+              <GlassButton
                 type="button"
                 disabled={exporting}
                 onClick={() => void handleExportSelected("csv")}
-                className="inline-flex items-center gap-1 rounded-lg bg-white/85 px-2.5 py-1 font-medium text-slate-800 ring-1 ring-slate-200/80 hover:bg-white disabled:opacity-50 dark:bg-white/10 dark:text-slate-200 dark:ring-white/15 dark:hover:bg-white/15"
+                className="inline-flex items-center gap-1 rounded-lg bg-white/85 px-2.5 py-1 font-medium text-stone-800 ring-1 ring-stone-200/80 hover:bg-white disabled:opacity-50 dark:bg-white/10 dark:text-stone-200 dark:ring-white/15 dark:hover:bg-white/15"
               >
                 <Download className="h-3.5 w-3.5" />
                 CSV
-              </button>
-              <button
+              </GlassButton>
+              <GlassButton
                 type="button"
                 disabled={exporting}
                 onClick={() => void handleExportSelected("json")}
-                className="inline-flex items-center gap-1 rounded-lg bg-white/85 px-2.5 py-1 font-medium text-slate-800 ring-1 ring-slate-200/80 hover:bg-white disabled:opacity-50 dark:bg-white/10 dark:text-slate-200 dark:ring-white/15 dark:hover:bg-white/15"
+                className="inline-flex items-center gap-1 rounded-lg bg-white/85 px-2.5 py-1 font-medium text-stone-800 ring-1 ring-stone-200/80 hover:bg-white disabled:opacity-50 dark:bg-white/10 dark:text-stone-200 dark:ring-white/15 dark:hover:bg-white/15"
               >
                 <Download className="h-3.5 w-3.5" />
                 JSON
-              </button>
-              <button
+              </GlassButton>
+              <GlassButton
                 type="button"
                 disabled={exporting}
                 onClick={() => void handleExportSelected("html")}
-                className="inline-flex items-center gap-1 rounded-lg bg-indigo-600 px-2.5 py-1 font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
+                className="inline-flex items-center gap-1 rounded-lg  px-2.5 py-1 font-medium   disabled:opacity-50 action-primary"
               >
                 <Download className="h-3.5 w-3.5" />
                 HTML Report
-              </button>
+              </GlassButton>
             </div>
           </div>
         ) : null}
@@ -326,8 +328,8 @@ export default function InvoicesLedgerPage() {
       {/* Ledger Table */}
       <div className="glass-surface overflow-hidden rounded-2xl">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-slate-200/75 text-sm dark:divide-white/10">
-            <thead className="bg-slate-100/60 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 backdrop-blur-md dark:bg-white/[0.04] dark:text-slate-400">
+          <table className="min-w-full divide-y divide-stone-200/75 text-sm dark:divide-white/10">
+            <thead className="bg-stone-100/60 text-left text-xs font-semibold uppercase tracking-wider text-stone-500 dark:bg-white/[0.04] dark:text-stone-400">
               <tr>
                 <th className="w-10 px-3 py-3">
                   <input
@@ -337,7 +339,7 @@ export default function InvoicesLedgerPage() {
                     }
                     onChange={toggleAllVisible}
                     aria-label="Select all visible invoices"
-                    className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:border-slate-600 dark:bg-slate-900"
+                    className="h-4 w-4 rounded border-stone-300 text-stone-600 focus:ring-stone-500 dark:border-stone-600 dark:bg-stone-900"
                   />
                 </th>
                 <th className="px-3 py-3">Vendor / Document</th>
@@ -350,12 +352,12 @@ export default function InvoicesLedgerPage() {
                 <th className="px-3 py-3 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-200/60 dark:divide-white/[0.07]">
+            <tbody className="divide-y divide-stone-200/60 dark:divide-white/[0.07]">
               {loading ? (
                 Array.from({ length: 5 }).map((_, idx) => (
                   <tr key={idx}>
                     <td colSpan={9} className="px-4 py-4">
-                      <div className="h-5 animate-pulse rounded bg-slate-100 dark:bg-slate-800" />
+                      <div className="h-5 animate-pulse rounded bg-stone-100 dark:bg-stone-800" />
                     </td>
                   </tr>
                 ))
@@ -363,7 +365,7 @@ export default function InvoicesLedgerPage() {
                 <tr>
                   <td
                     colSpan={9}
-                    className="px-4 py-12 text-center text-sm text-slate-500 dark:text-slate-400"
+                    className="px-4 py-12 text-center text-sm text-stone-500 dark:text-stone-400"
                   >
                     {hasFilters
                       ? "No invoices match these filters."
@@ -385,7 +387,7 @@ export default function InvoicesLedgerPage() {
                       className={cn(
                         "transition hover:bg-white/60 dark:hover:bg-white/[0.05]",
                         selectedIds.has(inv.id) &&
-                          "bg-indigo-500/10 dark:bg-indigo-500/15",
+                          "bg-stone-500/10 dark:bg-stone-500/15",
                       )}
                     >
                       <td className="px-3 py-3">
@@ -394,7 +396,7 @@ export default function InvoicesLedgerPage() {
                           checked={selectedIds.has(inv.id)}
                           onChange={() => toggleOne(inv.id)}
                           aria-label={`Select ${inv.vendor || inv.filename}`}
-                          className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 dark:border-slate-600 dark:bg-slate-900"
+                          className="h-4 w-4 rounded border-stone-300 text-stone-600 focus:ring-stone-500 dark:border-stone-600 dark:bg-stone-900"
                         />
                       </td>
                       <td className="max-w-[230px] px-3 py-3">
@@ -402,11 +404,11 @@ export default function InvoicesLedgerPage() {
                           <div className="min-w-0">
                             <Link
                               href={`/invoices/${inv.id}`}
-                              className="block truncate font-semibold text-slate-900 hover:text-indigo-600 dark:text-slate-100 dark:hover:text-indigo-400"
+                              className="block truncate font-semibold text-stone-900 hover:text-stone-600 dark:text-stone-100 dark:hover:text-stone-400"
                             >
                               {inv.vendor || "Unknown Vendor"}
                             </Link>
-                            <div className="mt-0.5 flex flex-wrap items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+                            <div className="mt-0.5 flex flex-wrap items-center gap-1.5 text-xs text-stone-500 dark:text-stone-400">
                               <span className="max-w-[165px] truncate">
                                 {inv.filename}
                               </span>
@@ -425,18 +427,18 @@ export default function InvoicesLedgerPage() {
                           </div>
                         </div>
                       </td>
-                      <td className="whitespace-nowrap px-3 py-3 font-mono text-xs text-slate-700 dark:text-slate-300">
+                      <td className="whitespace-nowrap px-3 py-3 font-mono text-xs text-stone-700 dark:text-stone-300">
                         {inv.receipt_number || "—"}
                       </td>
-                      <td className="whitespace-nowrap px-3 py-3 tabular-nums text-xs text-slate-700 dark:text-slate-300">
+                      <td className="whitespace-nowrap px-3 py-3 tabular-nums text-xs text-stone-700 dark:text-stone-300">
                         {inv.date || "—"}
                       </td>
-                      <td className="whitespace-nowrap px-3 py-3 text-right tabular-nums font-semibold text-slate-900 dark:text-slate-100">
+                      <td className="whitespace-nowrap px-3 py-3 text-right tabular-nums font-semibold text-stone-900 dark:text-stone-100">
                         {formatCurrency(inv.total_amount, inv.currency)}
                       </td>
                       <td className="whitespace-nowrap px-3 py-3">
                         {!mathChecked ? (
-                          <span className="text-xs text-slate-400 dark:text-slate-500">
+                          <span className="text-xs text-stone-400 dark:text-stone-500">
                             —
                           </span>
                         ) : mathOk ? (
@@ -467,19 +469,19 @@ export default function InvoicesLedgerPage() {
                         <div className="inline-flex items-center gap-1">
                           <Link
                             href={`/invoices/${inv.id}`}
-                            className="inline-flex items-center gap-1 rounded-lg border border-slate-200/80 bg-white/75 px-2.5 py-1 text-xs font-medium text-slate-700 backdrop-blur-sm hover:border-indigo-300 hover:text-indigo-700 dark:border-white/12 dark:bg-white/8 dark:text-slate-200 dark:hover:border-indigo-400/50 dark:hover:text-indigo-300"
+                            className="inline-flex items-center gap-1 rounded-lg border border-stone-200/80 bg-white/75 px-2.5 py-1 text-xs font-medium text-stone-700 hover:border-stone-300 hover:text-stone-700 dark:border-white/12 dark:bg-white/8 dark:text-stone-200 dark:hover:border-stone-400/50 dark:hover:text-stone-300"
                           >
                             Review
                             <ExternalLink className="h-3 w-3" />
                           </Link>
-                          <button
+                          <GlassButton
                             type="button"
                             onClick={() => setDeleteTarget(inv)}
-                            className="rounded-lg p-1.5 text-slate-400 hover:bg-rose-50/80 hover:text-rose-600 dark:text-slate-500 dark:hover:bg-rose-500/15 dark:hover:text-rose-400"
+                            className="rounded-lg p-1.5 text-stone-400 hover:bg-rose-50/80 hover:text-rose-600 dark:text-stone-500 dark:hover:bg-rose-500/15 dark:hover:text-rose-400"
                             aria-label={`Delete ${inv.vendor || inv.filename}`}
                           >
                             <Trash2 className="h-4 w-4" />
-                          </button>
+                          </GlassButton>
                         </div>
                       </td>
                     </tr>
@@ -491,37 +493,37 @@ export default function InvoicesLedgerPage() {
         </div>
 
         {/* Pagination Footer */}
-        <div className="flex flex-col items-center justify-between gap-3 border-t border-slate-200/70 bg-slate-50/55 px-4 py-3 text-xs text-slate-600 backdrop-blur-md dark:border-white/10 dark:bg-white/[0.03] dark:text-slate-400 sm:flex-row">
+        <div className="flex flex-col items-center justify-between gap-3 border-t border-stone-200/70 bg-stone-50/55 px-4 py-3 text-xs text-stone-600 dark:border-white/10 dark:bg-white/[0.03] dark:text-stone-400 sm:flex-row">
           <span>
             Showing <span className="font-semibold">{startRow}</span>–
             <span className="font-semibold">{endRow}</span> of{" "}
             <span className="font-semibold">{total}</span> invoices
           </span>
           <div className="flex items-center gap-2">
-            <button
+            <GlassButton
               type="button"
               disabled={offset === 0 || loading}
               onClick={() => {
                 setLoading(true);
                 setOffset((prev) => Math.max(0, prev - PAGE_SIZE));
               }}
-              className="inline-flex items-center gap-1 rounded-lg border border-slate-200/80 bg-white/75 px-3 py-1.5 font-medium text-slate-700 backdrop-blur-sm hover:bg-white disabled:opacity-40 dark:border-white/12 dark:bg-white/8 dark:text-slate-200 dark:hover:bg-white/14"
+              className="inline-flex items-center gap-1 rounded-lg border border-stone-200/80 bg-white/75 px-3 py-1.5 font-medium text-stone-700 hover:bg-white disabled:opacity-40 dark:border-white/12 dark:bg-white/8 dark:text-stone-200 dark:hover:bg-white/14"
             >
               <ChevronLeft className="h-3.5 w-3.5" />
               Previous
-            </button>
-            <button
+            </GlassButton>
+            <GlassButton
               type="button"
               disabled={offset + PAGE_SIZE >= total || loading}
               onClick={() => {
                 setLoading(true);
                 setOffset((prev) => prev + PAGE_SIZE);
               }}
-              className="inline-flex items-center gap-1 rounded-lg border border-slate-200/80 bg-white/75 px-3 py-1.5 font-medium text-slate-700 backdrop-blur-sm hover:bg-white disabled:opacity-40 dark:border-white/12 dark:bg-white/8 dark:text-slate-200 dark:hover:bg-white/14"
+              className="inline-flex items-center gap-1 rounded-lg border border-stone-200/80 bg-white/75 px-3 py-1.5 font-medium text-stone-700 hover:bg-white disabled:opacity-40 dark:border-white/12 dark:bg-white/8 dark:text-stone-200 dark:hover:bg-white/14"
             >
               Next
               <ChevronRight className="h-3.5 w-3.5" />
-            </button>
+            </GlassButton>
           </div>
         </div>
       </div>

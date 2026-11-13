@@ -1,0 +1,32 @@
+.workspace-header { position: sticky; top: 0; z-index: 40; padding: 24px 40px 16px; background: var(--canvas); }
+.workspace-header-inner { display: grid; grid-template-columns: minmax(180px, 1fr) auto minmax(180px, 1fr); align-items: center; gap: 24px; max-width: 1480px; margin: auto; min-width: 0; }
+.workspace-brand { display: flex; width: fit-content; min-width: 0; align-items: center; gap: 11px; color: var(--text); }
+.workspace-mark { display: grid; place-items: center; width: 38px; height: 38px; flex-shrink: 0; background: var(--primary); color: var(--on-primary); border-radius: 13px; font: 700 25px Georgia, serif; letter-spacing: -.08em; }
+.workspace-subtitle { display: block; font-size: 11px; color: var(--text-subtle); margin-top: 3px; }
+.workspace-navigation { padding: 6px; }
+.workspace-navigation nav { display: flex; align-items: center; gap: 4px; border-radius: 999px; background: var(--glass-plane); }
+.workspace-navigation .workspace-nav-link { border-radius: 999px; min-height: 44px; padding: 0 18px; white-space: nowrap; background-color: transparent; color: var(--text-subtle); box-shadow: none; border-color: transparent; }
+.workspace-navigation .workspace-nav-link[aria-current="page"] { background: var(--primary); color: var(--on-primary); border-color: var(--primary); }
+.workspace-account { display: flex; align-items: center; justify-content: end; gap: 10px; min-width: 0; }
+.workspace-health { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; font-size: 12px; color: var(--text); background: var(--surface); border: 1px solid var(--hairline); border-radius: 999px; min-height: 42px; padding: 8px 14px; }
+.workspace-brand:focus-visible { outline: 3px solid var(--lg-focus); outline-offset: 4px; }
+@media (max-width: 1250px) { .workspace-health { display: none; } }
+@media (max-width: 1100px) {
+  :root { --workspace-top: 156px; }
+  .workspace-header { padding: 20px 24px 16px; }
+  .workspace-header-inner { grid-template-columns: minmax(0, 1fr) auto; gap: 16px; }
+  .workspace-navigation { grid-row: 2; grid-column: 1 / -1; justify-self: center; }
+  .workspace-account { grid-column: 2; grid-row: 1; }
+}
+@media (max-width: 600px) {
+  .workspace-header { padding: 16px 16px 12px; }
+  .workspace-header-inner { gap: 12px; }
+  .workspace-navigation { width: 100%; padding: 6px; }
+  .workspace-navigation nav { width: 100%; }
+  .workspace-navigation .workspace-nav-link { flex: 1; padding: 0 9px; font-size: 12px; }
+  .workspace-nav-link svg { display: none; }
+}
+/* Keep the optical island's live backdrop available at the intentional scroll
+   edge. The layout row reserves clearance; brand text has its own quiet fill. */
+.workspace-header { background: transparent; }
+.workspace-brand { background: var(--canvas); border-radius: 999px; padding: 2px 6px; margin-left: -6px; }

@@ -49,6 +49,10 @@ import type {
   ExtractionResponse,
   HealthResponse,
 } from "@/lib/types";
+import { RecentDocuments } from "@/components/RecentDocuments";
+import { GlassButton } from "@/components/liquid-glass/GlassButton";
+import { GlassSurface } from "@/components/liquid-glass/GlassSurface";
+import "@/components/liquid-glass/overlays.css";
 import { AlertBanner, ExtractorBadge, StatusBadge } from "@/components/ui";
 
 const ALLOWED_EXTENSIONS = new Set([".jpg", ".jpeg", ".png", ".webp", ".pdf"]);
@@ -62,19 +66,19 @@ const MODE_OPTIONS: Array<{
 }> = [
   {
     value: "auto",
-    title: "Auto Hybrid",
+    title: "Automatic",
     subtitle: "Local GPU first, cloud escalation on failure",
     icon: Sparkles,
   },
   {
     value: "local",
-    title: "Local GPU Only",
+    title: "Local GPU",
     subtitle: "Private Indra OCR 1.1 + Qwen3.5-0.8B LoRA",
     icon: Cpu,
   },
   {
     value: "cloud",
-    title: "Cloud VLM",
+    title: "Cloud",
     subtitle: "LiteLLM Gemini / OpenAI / OpenRouter",
     icon: Globe,
   },
@@ -230,32 +234,15 @@ export default function UploadExtractPage() {
     !health.cloud_default_configured;
 
   return (
-    <div className="space-y-6">
-      {/* Page Header */}
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
-            Extract Invoices & Receipts
-          </h1>
-          <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
-            Upload single documents for immediate grounded extraction, or drop up
-            to {MAX_BATCH_FILES} files for batch processing.
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center gap-2 text-xs text-slate-600 dark:text-slate-300">
-          <span className="glass-subtle rounded-full border border-white/80 px-2.5 py-1 dark:border-white/10">
-            JPG · PNG · WEBP · PDF
-          </span>
-          <span className="glass-subtle rounded-full border border-white/80 px-2.5 py-1 dark:border-white/10">
-            Max {maxUploadMb} MB / file · {maxPdfPages} PDF pages
-          </span>
-        </div>
+    <div className="extract-page">
+      <div className="page-heading">
+        <div><h1>Extract documents</h1><p>Drop invoices and receipts into one place. Verify every field against its source.</p></div>
+        <a href="#recent-documents" className="outline-pill">View recent documents</a>
       </div>
-
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+      <div className="extract-grid">
         {/* Left Column: Dropzone + Controls */}
-        <div className="space-y-5 lg:col-span-7">
-          <div className="glass-surface rounded-2xl p-5">
+        <div className="extract-upload">
+          <div className="glass-surface upload-card">
             {/* Dropzone */}
             <div
               onDragOver={(e) => {
@@ -274,10 +261,10 @@ export default function UploadExtractPage() {
                 }
               }}
               className={cn(
-                "flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed px-6 py-10 text-center backdrop-blur-sm transition",
+                "extract-dropzone",
                 dragging
-                  ? "border-indigo-500 bg-indigo-500/10 dark:border-indigo-400 dark:bg-indigo-500/15"
-                  : "border-slate-300/80 bg-white/40 hover:border-indigo-400 hover:bg-indigo-500/5 dark:border-white/15 dark:bg-white/[0.03] dark:hover:border-indigo-400/60 dark:hover:bg-indigo-500/10",
+                  ? "border-stone-500 bg-stone-500/10 dark:border-stone-400 dark:bg-stone-500/15"
+                  : "border-stone-300/80 bg-white/40 hover:border-stone-400 hover:bg-stone-500/5 dark:border-white/15 dark:bg-white/[0.03] dark:hover:border-stone-400/60 dark:hover:bg-stone-500/10",
               )}
             >
               <input
@@ -293,48 +280,49 @@ export default function UploadExtractPage() {
                   }
                 }}
               />
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/85 text-indigo-600 shadow-sm ring-1 ring-slate-200/80 backdrop-blur-md dark:bg-white/10 dark:text-indigo-300 dark:ring-white/15">
+              <div className="drop-icon flex h-12 w-12 items-center justify-center rounded-xl bg-white/85 text-stone-600 shadow-sm ring-1 ring-stone-200/80 dark:bg-white/10 dark:text-stone-300 dark:ring-white/15">
                 <UploadCloud className="h-6 w-6" />
               </div>
-              <p className="mt-3 text-sm font-semibold text-slate-900 dark:text-slate-100">
-                Drop invoice images or PDFs here, or click to browse
+              <p className="mt-3 text-sm font-semibold text-stone-900 dark:text-stone-100">
+                Your documents go here
               </p>
-              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                1 file extracts & shows preview here · 2–{MAX_BATCH_FILES} files
-                run in batch mode
+              <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">
+                Drag files into this space, or choose them from your computer.
               </p>
+              <span className="outline-pill choose-files" aria-hidden="true">Choose files</span>
+              <div className="upload-limits"><span>JPG · PNG · WEBP · PDF</span><span>Up to {MAX_BATCH_FILES} documents</span><span>{maxUploadMb} MB / file · {maxPdfPages} PDF pages</span></div>
             </div>
 
             {/* Queued Files */}
             {files.length > 0 ? (
               <div className="mt-4 space-y-2">
-                <div className="flex items-center justify-between text-xs font-medium text-slate-600 dark:text-slate-400">
+                <div className="flex items-center justify-between text-xs font-medium text-stone-600 dark:text-stone-400">
                   <span>
                     {files.length} file{files.length > 1 ? "s" : ""} queued
                   </span>
                   <button
                     type="button"
                     onClick={() => setFiles([])}
-                    className="inline-flex items-center gap-1 text-slate-500 hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-400"
+                    className="inline-flex items-center gap-1 text-stone-500 hover:text-rose-600 dark:text-stone-400 dark:hover:text-rose-400"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                     Clear all
                   </button>
                 </div>
-                <ul className="max-h-52 divide-y divide-slate-200/70 overflow-y-auto rounded-xl border border-slate-200/75 bg-white/55 backdrop-blur-md dark:divide-white/10 dark:border-white/10 dark:bg-slate-950/45">
+                <ul className="max-h-52 divide-y divide-stone-200/70 overflow-y-auto rounded-xl border border-stone-200/75 bg-white/55 dark:divide-white/10 dark:border-white/10 dark:bg-stone-950/45">
                   {files.map((file, index) => (
                     <li
                       key={`${file.name}-${file.size}-${index}`}
                       className="flex items-center justify-between gap-3 px-3 py-2 text-sm"
                     >
                       <div className="flex min-w-0 items-center gap-2.5">
-                        <FileText className="h-4 w-4 shrink-0 text-slate-400 dark:text-slate-500" />
-                        <span className="truncate font-medium text-slate-800 dark:text-slate-200">
+                        <FileText className="h-4 w-4 shrink-0 text-stone-400 dark:text-stone-500" />
+                        <span className="truncate font-medium text-stone-800 dark:text-stone-200">
                           {file.name}
                         </span>
                       </div>
                       <div className="flex shrink-0 items-center gap-2">
-                        <span className="tabular-nums text-xs text-slate-500 dark:text-slate-400">
+                        <span className="tabular-nums text-xs text-stone-500 dark:text-stone-400">
                           {formatFileSize(file.size)}
                         </span>
                         <button
@@ -344,7 +332,7 @@ export default function UploadExtractPage() {
                               prev.filter((_, i) => i !== index),
                             )
                           }
-                          className="rounded p-1 text-slate-400 hover:bg-slate-200/60 hover:text-slate-700 dark:text-slate-500 dark:hover:bg-white/10 dark:hover:text-slate-200"
+                          className="rounded p-1 text-stone-400 hover:bg-stone-200/60 hover:text-stone-700 dark:text-stone-500 dark:hover:bg-white/10 dark:hover:text-stone-200"
                           aria-label={`Remove ${file.name}`}
                         >
                           <X className="h-3.5 w-3.5" />
@@ -357,65 +345,58 @@ export default function UploadExtractPage() {
             ) : null}
 
             {/* Extraction Mode Selector */}
-            <div className="mt-5">
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                Extraction Pipeline Mode
-              </label>
-              <div className="mt-2 grid grid-cols-1 gap-2.5 sm:grid-cols-3">
+            <div className="processing-method">
+              <p className="text-xs font-semibold text-stone-500 dark:text-stone-400">
+                Processing method
+              </p>
+              <GlassSurface material="panel" radius={20} className="extraction-modes mt-2" role="group" aria-label="Extraction pipeline mode">
                 {MODE_OPTIONS.map((opt) => {
                   const Icon = opt.icon;
                   const active = mode === opt.value;
                   return (
-                    <button
+                    <GlassButton
                       key={opt.value}
                       type="button"
+                      aria-pressed={active}
+                      title={opt.subtitle}
                       onClick={() => setMode(opt.value)}
-                      className={cn(
-                        "flex flex-col items-start rounded-xl border p-3 text-left backdrop-blur-md transition",
-                        active
-                          ? "border-indigo-500/75 bg-indigo-500/10 ring-1 ring-indigo-500/25 shadow-sm shadow-indigo-500/10 dark:border-indigo-400/60 dark:bg-indigo-500/15 dark:ring-indigo-400/25"
-                          : "border-slate-200/75 bg-white/55 hover:border-slate-300 hover:bg-white/80 dark:border-white/10 dark:bg-white/[0.04] dark:hover:border-white/20 dark:hover:bg-white/[0.08]",
-                      )}
                     >
                       <div className="flex items-center gap-1.5">
                         <Icon
                           className={cn(
                             "h-4 w-4",
                             active
-                              ? "text-indigo-600 dark:text-indigo-400"
-                              : "text-slate-500 dark:text-slate-400",
+                              ? "text-stone-600 dark:text-stone-400"
+                              : "text-stone-500 dark:text-stone-400",
                           )}
                         />
                         <span
                           className={cn(
                             "text-sm font-semibold",
                             active
-                              ? "text-indigo-950 dark:text-indigo-200"
-                              : "text-slate-900 dark:text-slate-100",
+                              ? "text-stone-950 dark:text-stone-200"
+                              : "text-stone-900 dark:text-stone-100",
                           )}
                         >
                           {opt.title}
                         </span>
                       </div>
-                      <span className="mt-1 text-[11px] leading-snug text-slate-600 dark:text-slate-400">
-                        {opt.subtitle}
-                      </span>
-                    </button>
+                    </GlassButton>
                   );
                 })}
-              </div>
+              </GlassSurface>
             </div>
 
             {/* Ephemeral BYO Cloud Key Drawer */}
-            <div className="glass-subtle mt-4 rounded-xl border border-slate-200/75 dark:border-white/10">
+            <div className="cloud-settings" id="cloud-settings">
               <button
                 type="button"
                 onClick={() => setShowKeyDrawer((prev) => !prev)}
-                className="flex w-full items-center justify-between px-3.5 py-2.5 text-left text-xs font-medium text-slate-700 dark:text-slate-300"
+                className="flex w-full items-center justify-between px-3.5 py-2.5 text-left text-xs font-medium text-stone-700 dark:text-stone-300"
               >
                 <span className="flex items-center gap-2">
-                  <KeyRound className="h-3.5 w-3.5 text-slate-500 dark:text-slate-400" />
-                  BYO Cloud VLM Key (optional · sessionStorage only)
+                  <KeyRound className="h-3.5 w-3.5 text-stone-500 dark:text-stone-400" />
+                  Advanced cloud settings (optional session key)
                   {cloudConfig.apiKey.trim() ? (
                     <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-300">
                       Key Active ({cloudConfig.provider})
@@ -423,28 +404,28 @@ export default function UploadExtractPage() {
                   ) : null}
                 </span>
                 {showKeyDrawer ? (
-                  <ChevronUp className="h-4 w-4 text-slate-400 dark:text-slate-500" />
+                  <ChevronUp className="h-4 w-4 text-stone-400 dark:text-stone-500" />
                 ) : (
-                  <ChevronDown className="h-4 w-4 text-slate-400 dark:text-slate-500" />
+                  <ChevronDown className="h-4 w-4 text-stone-400 dark:text-stone-500" />
                 )}
               </button>
 
               {showKeyDrawer ? (
-                <div className="space-y-3 border-t border-slate-200/70 px-3.5 py-3 text-xs dark:border-white/10">
-                  <p className="text-slate-600 dark:text-slate-400">
+                <div className="space-y-3 border-t border-stone-200/70 px-3.5 py-3 text-xs dark:border-white/10">
+                  <p className="text-stone-600 dark:text-stone-400">
                     Sent per-request via{" "}
-                    <code className="rounded bg-white/80 px-1 py-0.5 font-mono text-[11px] ring-1 ring-slate-200/80 dark:bg-white/10 dark:text-slate-200 dark:ring-white/15">
+                    <code className="rounded bg-white/80 px-1 py-0.5 font-mono text-[11px] ring-1 ring-stone-200/80 dark:bg-white/10 dark:text-stone-200 dark:ring-white/15">
                       X-LLM-*
                     </code>{" "}
                     headers through our server proxy. Held in browser{" "}
-                    <span className="font-semibold text-slate-800 dark:text-slate-200">
+                    <span className="font-semibold text-stone-800 dark:text-stone-200">
                       sessionStorage
                     </span>{" "}
                     only (never saved to database or localStorage).
                   </p>
                   <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     <div>
-                      <label className="block font-medium text-slate-700 dark:text-slate-300">
+                      <label className="block font-medium text-stone-700 dark:text-stone-300">
                         Provider
                       </label>
                       <select
@@ -452,7 +433,7 @@ export default function UploadExtractPage() {
                         onChange={(e) =>
                           handleProviderChange(e.target.value as CloudProvider)
                         }
-                        className="mt-1 w-full rounded-lg border border-slate-200/80 bg-white/80 px-2.5 py-1.5 text-xs text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-white/15 dark:bg-slate-950/65 dark:text-slate-100"
+                        className="lg-select w-full"
                       >
                         {(
                           Object.keys(
@@ -466,7 +447,7 @@ export default function UploadExtractPage() {
                       </select>
                     </div>
                     <div>
-                      <label className="block font-medium text-slate-700 dark:text-slate-300">
+                      <label className="block font-medium text-stone-700 dark:text-stone-300">
                         LiteLLM Model
                       </label>
                       <input
@@ -479,13 +460,13 @@ export default function UploadExtractPage() {
                           CLOUD_PROVIDER_DEFAULTS[cloudConfig.provider]
                             .defaultModel
                         }
-                        className="mt-1 w-full rounded-lg border border-slate-200/80 bg-white/80 px-2.5 py-1.5 font-mono text-xs text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-white/15 dark:bg-slate-950/65 dark:text-slate-100"
+                        className="mt-1 w-full rounded-lg border border-stone-200/80 bg-white/80 px-2.5 py-1.5 font-mono text-xs text-stone-900 focus:border-stone-500 focus:outline-none dark:border-white/15 dark:bg-stone-950/65 dark:text-stone-100"
                       />
                     </div>
                   </div>
                   <div>
                     <div className="flex items-center justify-between">
-                      <label className="font-medium text-slate-700 dark:text-slate-300">
+                      <label className="font-medium text-stone-700 dark:text-stone-300">
                         API Key
                       </label>
                       {cloudConfig.apiKey ? (
@@ -510,12 +491,12 @@ export default function UploadExtractPage() {
                             .placeholder
                         }
                         autoComplete="off"
-                        className="w-full rounded-lg border border-slate-200/80 bg-white/80 py-1.5 pl-2.5 pr-8 font-mono text-xs text-slate-900 focus:border-indigo-500 focus:outline-none dark:border-white/15 dark:bg-slate-950/65 dark:text-slate-100"
+                        className="w-full rounded-lg border border-stone-200/80 bg-white/80 py-1.5 pl-2.5 pr-8 font-mono text-xs text-stone-900 focus:border-stone-500 focus:outline-none dark:border-white/15 dark:bg-stone-950/65 dark:text-stone-100"
                       />
                       <button
                         type="button"
                         onClick={() => setShowApiKeyValue((prev) => !prev)}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 dark:text-stone-500 dark:hover:text-stone-300"
                         aria-label={
                           showApiKeyValue ? "Hide API key" : "Show API key"
                         }
@@ -553,17 +534,17 @@ export default function UploadExtractPage() {
             ) : null}
 
             {/* Primary Submit Button */}
-            <div className="mt-5 flex items-center justify-between gap-3">
-              <p className="text-xs text-slate-500 dark:text-slate-400">
+            <div className="upload-bottom">
+              <p className="text-xs text-stone-500 dark:text-stone-400">
                 {files.length <= 1
                   ? "Single document mode: shows grounded preview immediately."
                   : `Batch mode: processes all ${files.length} files & opens Batch Summary.`}
               </p>
-              <button
+              <GlassButton tone="primary"
                 type="button"
                 disabled={!files.length || submitting}
                 onClick={() => void handleSubmit()}
-                className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-indigo-500/25 transition hover:from-indigo-500 hover:to-violet-500 disabled:cursor-not-allowed disabled:opacity-50"
+                className="shrink-0"
               >
                 {submitting ? (
                   <>
@@ -581,13 +562,13 @@ export default function UploadExtractPage() {
                     <ArrowRight className="h-4 w-4" />
                   </>
                 )}
-              </button>
+              </GlassButton>
             </div>
           </div>
         </div>
 
         {/* Right Column: Instant Extraction Result or Pipeline Overview */}
-        <div className="lg:col-span-5">
+        <div className="extract-evidence">
           {result ? (
             <div className="glass-surface rounded-2xl p-5">
               <div className="flex items-start justify-between gap-3">
@@ -596,20 +577,20 @@ export default function UploadExtractPage() {
                     <StatusBadge status={result.status} />
                     <ExtractorBadge extractor={result.extractor_used} />
                   </div>
-                  <h2 className="mt-2.5 text-lg font-semibold text-slate-900 dark:text-slate-100">
+                  <h2 className="mt-2.5 text-lg font-semibold text-stone-900 dark:text-stone-100">
                     {result.extraction.vendor || "Unknown Vendor"}
                   </h2>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                  <p className="text-xs text-stone-500 dark:text-stone-400">
                     {result.filename} · {result.page_count} page
                     {result.page_count > 1 ? "s" : ""} ·{" "}
                     {formatLatency(result.latency_ms)}
                   </p>
                 </div>
                 <div className="text-right">
-                  <span className="text-[11px] font-medium uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                  <span className="text-[11px] font-medium uppercase tracking-wider text-stone-400 dark:text-stone-500">
                     Total
                   </span>
-                  <p className="tabular-nums text-xl font-semibold text-slate-900 dark:text-slate-100">
+                  <p className="tabular-nums text-xl font-semibold text-stone-900 dark:text-stone-100">
                     {formatCurrency(
                       result.extraction.total_amount,
                       result.extraction.currency,
@@ -648,28 +629,28 @@ export default function UploadExtractPage() {
               ) : null}
 
               {/* Key Fields Summary */}
-              <dl className="glass-subtle mt-4 grid grid-cols-2 gap-3 rounded-xl border border-slate-200/70 p-3.5 text-xs dark:border-white/10">
+              <dl className="glass-subtle mt-4 grid grid-cols-2 gap-3 rounded-xl border border-stone-200/70 p-3.5 text-xs dark:border-white/10">
                 <div>
-                  <dt className="text-slate-500 dark:text-slate-400">
+                  <dt className="text-stone-500 dark:text-stone-400">
                     Document No.
                   </dt>
-                  <dd className="mt-0.5 font-medium text-slate-900 dark:text-slate-100">
+                  <dd className="mt-0.5 font-medium text-stone-900 dark:text-stone-100">
                     {result.extraction.receipt_number || "—"}
                   </dd>
                 </div>
                 <div>
-                  <dt className="text-slate-500 dark:text-slate-400">
+                  <dt className="text-stone-500 dark:text-stone-400">
                     Issue Date
                   </dt>
-                  <dd className="mt-0.5 font-medium text-slate-900 dark:text-slate-100">
+                  <dd className="mt-0.5 font-medium text-stone-900 dark:text-stone-100">
                     {result.extraction.date || "—"}
                   </dd>
                 </div>
                 <div>
-                  <dt className="text-slate-500 dark:text-slate-400">
+                  <dt className="text-stone-500 dark:text-stone-400">
                     Subtotal
                   </dt>
-                  <dd className="tabular-nums mt-0.5 font-medium text-slate-900 dark:text-slate-100">
+                  <dd className="tabular-nums mt-0.5 font-medium text-stone-900 dark:text-stone-100">
                     {formatCurrency(
                       result.extraction.subtotal,
                       result.extraction.currency,
@@ -677,8 +658,8 @@ export default function UploadExtractPage() {
                   </dd>
                 </div>
                 <div>
-                  <dt className="text-slate-500 dark:text-slate-400">Tax</dt>
-                  <dd className="tabular-nums mt-0.5 font-medium text-slate-900 dark:text-slate-100">
+                  <dt className="text-stone-500 dark:text-stone-400">Tax</dt>
+                  <dd className="tabular-nums mt-0.5 font-medium text-stone-900 dark:text-stone-100">
                     {formatCurrency(
                       result.extraction.tax_amount,
                       result.extraction.currency,
@@ -696,7 +677,7 @@ export default function UploadExtractPage() {
                       ? "bg-amber-50 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300"
                       : result.items_match_subtotal === true
                         ? "bg-emerald-50 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300"
-                        : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300",
+                        : "bg-stone-100 text-stone-600 dark:bg-stone-800 dark:text-stone-300",
                   )}
                 >
                   {result.items_match_subtotal === false ? (
@@ -718,7 +699,7 @@ export default function UploadExtractPage() {
                       ? "bg-amber-50 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300"
                       : result.totals_reconcile === true
                         ? "bg-emerald-50 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300"
-                        : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300",
+                        : "bg-stone-100 text-stone-600 dark:bg-stone-800 dark:text-stone-300",
                   )}
                 >
                   {result.totals_reconcile === false ? (
@@ -737,20 +718,20 @@ export default function UploadExtractPage() {
 
               {/* Line Items Preview */}
               <div className="mt-4">
-                <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                <p className="text-xs font-semibold uppercase tracking-wider text-stone-500 dark:text-stone-400">
                   Extracted Line Items ({result.extraction.line_items.length})
                 </p>
                 {result.extraction.line_items.length > 0 ? (
-                  <ul className="mt-2 max-h-44 divide-y divide-slate-200/70 overflow-y-auto rounded-xl border border-slate-200/75 bg-white/55 text-xs backdrop-blur-sm dark:divide-white/10 dark:border-white/10 dark:bg-slate-950/40">
+                  <ul className="mt-2 max-h-44 divide-y divide-stone-200/70 overflow-y-auto rounded-xl border border-stone-200/75 bg-white/55 text-xs dark:divide-white/10 dark:border-white/10 dark:bg-stone-950/40">
                     {result.extraction.line_items.map((item, idx) => (
                       <li
                         key={`${idx}-${item.description}`}
                         className="flex items-center justify-between gap-2 px-3 py-2"
                       >
-                        <span className="truncate font-medium text-slate-800 dark:text-slate-200">
+                        <span className="truncate font-medium text-stone-800 dark:text-stone-200">
                           {item.description}
                         </span>
-                        <span className="tabular-nums shrink-0 text-slate-600 dark:text-slate-400">
+                        <span className="tabular-nums shrink-0 text-stone-600 dark:text-stone-400">
                           {formatCurrency(
                             item.total_price,
                             result.extraction.currency,
@@ -760,7 +741,7 @@ export default function UploadExtractPage() {
                     ))}
                   </ul>
                 ) : (
-                  <p className="glass-subtle mt-2 rounded-xl border border-slate-200/70 px-3 py-2 text-xs text-slate-500 dark:border-white/10 dark:text-slate-400">
+                  <p className="glass-subtle mt-2 rounded-xl border border-stone-200/70 px-3 py-2 text-xs text-stone-500 dark:border-white/10 dark:text-stone-400">
                     No individual line items extracted.
                   </p>
                 )}
@@ -770,7 +751,7 @@ export default function UploadExtractPage() {
               <div className="mt-5 flex items-center gap-2.5">
                 <Link
                   href={`/invoices/${result.invoice_id}`}
-                  className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-indigo-500/25 transition hover:from-indigo-500 hover:to-violet-500"
+                  className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl action-primary px-4 py-2.5 text-sm font-semibold text-white shadow-md transition"
                 >
                   Open Review Studio
                   <ArrowRight className="h-4 w-4" />
@@ -781,87 +762,28 @@ export default function UploadExtractPage() {
                     setResult(null);
                     setFiles([]);
                   }}
-                  className="rounded-xl border border-slate-200/80 bg-white/75 px-3.5 py-2.5 text-sm font-medium text-slate-700 backdrop-blur-md hover:bg-white dark:border-white/12 dark:bg-white/8 dark:text-slate-200 dark:hover:bg-white/14"
+                  className="rounded-xl border border-stone-200/80 bg-white/75 px-3.5 py-2.5 text-sm font-medium text-stone-700 hover:bg-white dark:border-white/12 dark:bg-white/8 dark:text-stone-200 dark:hover:bg-white/14"
                 >
                   New
                 </button>
               </div>
             </div>
           ) : (
-            <div className="glass-surface rounded-2xl p-6">
-              <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">
-                Hybrid Extraction Pipeline
-              </h2>
-              <p className="mt-1 text-xs leading-relaxed text-slate-600 dark:text-slate-400">
-                Every upload runs through deterministic preprocessing, OCR word
-                grounding, and schema-validated VLM parsing before persistence.
-              </p>
-
-              <ol className="mt-5 space-y-4 text-xs">
-                <li className="flex gap-3">
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-indigo-500/12 font-semibold text-indigo-700 ring-1 ring-indigo-500/20 dark:bg-indigo-400/15 dark:text-indigo-300 dark:ring-indigo-400/25">
-                    1
-                  </span>
-                  <div>
-                    <p className="font-semibold text-slate-900 dark:text-slate-100">
-                      Ingest & Deduplication Hash
-                    </p>
-                    <p className="mt-0.5 text-slate-600 dark:text-slate-400">
-                      Computes SHA-256 content hash, renders PDFs into PNG
-                      pages, and flags duplicate uploads automatically.
-                    </p>
-                  </div>
-                </li>
-                <li className="flex gap-3">
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-indigo-500/12 font-semibold text-indigo-700 ring-1 ring-indigo-500/20 dark:bg-indigo-400/15 dark:text-indigo-300 dark:ring-indigo-400/25">
-                    2
-                  </span>
-                  <div>
-                    <p className="font-semibold text-slate-900 dark:text-slate-100">
-                      Indra OCR 1.1 + Coordinate Grounding
-                    </p>
-                    <p className="mt-0.5 text-slate-600 dark:text-slate-400">
-                      Normalizes text tokens into a{" "}
-                      <code className="font-mono">[0..1000]</code> canvas so
-                      extracted fields and line items highlight back onto the
-                      original scan.
-                    </p>
-                  </div>
-                </li>
-                <li className="flex gap-3">
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-indigo-500/12 font-semibold text-indigo-700 ring-1 ring-indigo-500/20 dark:bg-indigo-400/15 dark:text-indigo-300 dark:ring-indigo-400/25">
-                    3
-                  </span>
-                  <div>
-                    <p className="font-semibold text-slate-900 dark:text-slate-100">
-                      Qwen3.5-0.8B LoRA + Math Verification
-                    </p>
-                    <p className="mt-0.5 text-slate-600 dark:text-slate-400">
-                      Reconciles line items against subtotal/tax/total and
-                      routes discrepancies to Human-in-the-Loop review.
-                    </p>
-                  </div>
-                </li>
+            <aside className="glass-surface pipeline-card">
+              <h2>From document to data</h2>
+              <p className="pipeline-intro">Review the original evidence alongside structured fields, dates and amounts.</p>
+              <ol className="pipeline-steps">
+                <li><span>1</span><div><h3>Read the document</h3><p>Prepare pages and locate text without altering the source.</p></div></li>
+                <li><span>2</span><div><h3>Structure the information</h3><p>Identify parties, dates, line items and financial amounts.</p></div></li>
+                <li><span>3</span><div><h3>Verify with evidence</h3><p>Inspect source-linked values and reconcile totals before saving.</p></div></li>
               </ol>
-
-              <div className="mt-6 flex items-center justify-between border-t border-slate-200/70 pt-4 text-xs dark:border-white/10">
-                <Link
-                  href="/invoices"
-                  className="font-medium text-indigo-600 hover:underline dark:text-indigo-400"
-                >
-                  Browse existing ledger →
-                </Link>
-                <Link
-                  href="/batch"
-                  className="font-medium text-slate-600 hover:text-slate-900 hover:underline dark:text-slate-400 dark:hover:text-slate-200"
-                >
-                  Batch exports →
-                </Link>
-              </div>
-            </div>
+              <details className="pipeline-details"><summary>How processing works</summary><p>Uploads are hashed for duplicates. Indra OCR 1.1 grounds text in normalized coordinates, then Qwen3.5-0.8B LoRA or the configured cloud model extracts structured values. Math checks flag discrepancies for review.</p><p>{health?.local_vlm.weights_present ? "Local model weights are available." : "Local model readiness is reported by the processing engine."} Cloud settings remain optional and are held for this session.</p></details>
+              <div className="pipeline-footer"><button type="button" onClick={() => setShowKeyDrawer(true)}>Advanced settings</button><Link href="/batch">Batch exports</Link></div>
+            </aside>
           )}
         </div>
       </div>
+      <RecentDocuments />
     </div>
   );
 }

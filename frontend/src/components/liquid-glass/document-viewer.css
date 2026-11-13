@@ -1,0 +1,22 @@
+.document-viewer { display: flex; flex-direction: column; height: 100%; min-height: 480px; min-width: 0; border: 1px solid var(--hairline); border-radius: 24px; background: var(--stage); padding: 16px; }
+.document-stage { position: relative; flex: 1; min-height: 0; }
+.document-scroll { height: 100%; min-height: 360px; overflow: auto; overscroll-behavior: contain; padding: 16px 16px 104px; background: var(--field); border: 1px solid var(--edge); border-radius: 14px; scroll-padding-bottom: 104px; scrollbar-width: thin; }
+.document-scroll > div { min-width: 0; }
+.document-scroll:focus-visible { outline: 3px solid var(--lg-focus); outline-offset: -3px; }
+.document-float { position: absolute; bottom: 16px; left: 50%; translate: -50% 0; width: max-content; max-width: calc(100% - 16px); z-index: 20; }
+.document-toolbar { padding: 6px; max-width: 100%; }
+.document-toolbar > .lg-body { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 4px; border-radius: 999px; background: var(--glass-plane); padding: 0; font-size: 12px; }
+.document-toolbar .lg-control { border-radius: 999px; padding: 6px 10px; min-width: 44px; background-color: transparent; border-color: transparent; box-shadow: none; }
+.document-toolbar .lg-control[aria-pressed="true"] { background: var(--primary); color: var(--on-primary); }
+.document-toolbar .lg-control:hover:not(:disabled):not([aria-pressed="true"]) { background-color: var(--recess); }
+.document-toolbar .lg-body > div { display: flex; align-items: center; gap: 2px; }
+.document-zoom { display: inline-flex; align-items: center; }
+.document-pages { display: flex; max-width: 90px; overflow-x: auto; gap: 2px; }
+.document-legend { background: transparent; padding: 12px 4px 0; font-size: 12px; }
+.document-scroll rect:focus-visible { outline: 2px solid var(--lg-focus); outline-offset: 2px; }
+.document-viewer-meta { display: flex; justify-content: space-between; gap: 12px; padding: 4px 6px 16px; font-size: 12px; color: var(--text-subtle); }
+@media (max-width: 1199px) { .document-viewer { height: 680px; } }
+@media (max-width: 600px) { .document-toolbar .lg-body { max-width: 100%; } .document-toolbar .lg-control { min-width: 44px; padding: 5px 7px; } .document-viewer { height: 560px; padding: 12px; } .document-pages { max-width: 70px; } .document-scroll { padding: 12px 12px 128px; } }
+
+.document-viewer-meta > span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.document-viewer-meta > span:last-child { flex-shrink: 0; }

@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { AppShell } from "@/components/AppShell";
 import { THEME_INIT_SCRIPT } from "@/lib/theme";
 import "./globals.css";
+import "./design-tokens.css";
+import "./workstation.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Invoice Studio — Hybrid Document AI & HITL Workbench",
+  title: "InvoFlow — Document workstation",
   description:
     "Structured invoice & receipt extraction powered by fine-tuned Qwen3.5-0.8B VLM, Indra OCR 1.1 coordinate grounding, and PostgreSQL human-in-the-loop review.",
 };
@@ -34,15 +36,7 @@ export default function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
       </head>
-      <body className="relative min-h-full bg-[#eef2f7] text-slate-900 transition-colors duration-200 dark:bg-[#030712] dark:text-slate-100">
-        <div
-          aria-hidden="true"
-          className="pointer-events-none fixed inset-0 z-0 overflow-hidden"
-        >
-          <div className="absolute -left-32 -top-28 h-[34rem] w-[34rem] rounded-full bg-indigo-400/25 blur-[110px] dark:bg-indigo-600/25" />
-          <div className="absolute -right-24 top-10 h-[30rem] w-[30rem] rounded-full bg-sky-300/35 blur-[110px] dark:bg-cyan-500/15" />
-          <div className="absolute -bottom-36 left-1/3 h-[34rem] w-[34rem] rounded-full bg-violet-300/25 blur-[120px] dark:bg-fuchsia-600/15" />
-        </div>
+      <body className="app-canvas">
         <div className="relative z-10 min-h-full">
           <AppShell>{children}</AppShell>
         </div>
