@@ -21,11 +21,11 @@ const features = [
   },
   {
     number: "03",
-    title: "Dual-Engine Architecture",
-    tagline: "Local GPU First, Cloud Fallback",
+    title: "HITL Review Studio",
+    tagline: "Side-by-Side Audit Studio",
     description:
-      "Process sensitive invoices completely air-gapped on your private GPU. Escalate to LiteLLM (Gemini, OpenAI, OpenRouter) seamlessly when confidence thresholds require it.",
-    visual: "pipeline",
+      "Interactive split-pane workspace visually links every extracted field to the scan. Inspect coordinate polygons, zoom and pan, edit values inline, and confirm verified records with full provenance.",
+    visual: "studio",
   },
   {
     number: "04",
@@ -187,73 +187,163 @@ function GroundingVisual() {
   );
 }
 
-function PipelineVisual() {
+function StudioVisual() {
   return (
     <svg viewBox="0 0 200 160" className="w-full h-full text-foreground/80">
-      {/* Local GPU node */}
+      {/* Left Pane: Document Scan with Bounding Boxes */}
       <rect
-        x="25"
-        y="60"
-        width="55"
-        height="40"
-        rx="6"
+        x="16"
+        y="18"
+        width="76"
+        height="124"
+        rx="5"
         fill="currentColor"
-        opacity="0.08"
+        fillOpacity="0.04"
         stroke="currentColor"
-        strokeWidth="1.5"
+        strokeWidth="1.2"
       />
-      <text
-        x="36"
-        y="84"
-        fontSize="9"
-        fontFamily="monospace"
-        fontWeight="bold"
-        fill="currentColor"
-      >
-        GPU: 0
-      </text>
+      {/* Mini header lines on scan */}
+      <rect x="24" y="28" width="30" height="5" rx="1.5" fill="currentColor" opacity="0.35" />
+      <rect x="24" y="38" width="46" height="3" rx="1" fill="currentColor" opacity="0.2" />
+      <rect x="24" y="46" width="38" height="3" rx="1" fill="currentColor" opacity="0.15" />
+      <line x1="24" y1="56" x2="84" y2="56" stroke="currentColor" strokeWidth="0.8" opacity="0.2" />
+      <rect x="24" y="62" width="58" height="3" rx="1" fill="currentColor" opacity="0.15" />
+      <rect x="24" y="70" width="54" height="3" rx="1" fill="currentColor" opacity="0.15" />
 
-      {/* Cloud Node */}
+      {/* Target grounded bounding box on scan */}
       <rect
-        x="120"
-        y="60"
-        width="55"
-        height="40"
-        rx="6"
-        fill="currentColor"
-        opacity="0.08"
-        stroke="currentColor"
-        strokeWidth="1.5"
-      />
-      <text
-        x="131"
-        y="84"
-        fontSize="9"
-        fontFamily="monospace"
-        fontWeight="bold"
-        fill="currentColor"
+        x="22"
+        y="82"
+        width="64"
+        height="18"
+        rx="3"
+        fill="var(--accent)"
+        fillOpacity="0.12"
+        stroke="var(--accent)"
+        strokeWidth="1.4"
       >
-        CLOUD
-      </text>
-
-      {/* Connector with moving dot */}
-      <line
-        x1="80"
-        y1="80"
-        x2="120"
-        y2="80"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeDasharray="3 3"
-      />
-      <circle cx="100" cy="80" r="3" fill="var(--accent)">
         <animate
-          attributeName="cx"
-          values="80;120;80"
-          dur="2.5s"
+          attributeName="stroke-opacity"
+          values="0.5;1;0.5"
+          dur="2s"
           repeatCount="indefinite"
         />
-      </circle>
+      </rect>
+      <text
+        x="26"
+        y="94"
+        fontSize="7"
+        fontFamily="monospace"
+        fontWeight="bold"
+        fill="var(--accent)"
+      >
+        $1,420.50
+      </text>
+
+      {/* Floating Zoom / Page Navigation Pill on Document Viewer */}
+      <rect
+        x="28"
+        y="114"
+        width="52"
+        height="14"
+        rx="7"
+        fill="currentColor"
+        fillOpacity="0.1"
+        stroke="currentColor"
+        strokeWidth="0.8"
+      />
+      <circle cx="37" cy="121" r="2" fill="currentColor" opacity="0.4" />
+      <rect x="43" y="119.5" width="22" height="3" rx="1" fill="currentColor" opacity="0.5" />
+      <circle cx="71" cy="121" r="2" fill="currentColor" opacity="0.4" />
+
+      {/* Connecting Interactive Ray / Grounding Link */}
+      <path
+        d="M 86 91 C 98 91, 100 80, 108 80"
+        stroke="var(--accent)"
+        strokeWidth="1.2"
+        strokeDasharray="2.5 2"
+        fill="none"
+      />
+      <circle cx="108" cy="80" r="2" fill="var(--accent)" />
+
+      {/* Right Pane: Form & Verified Field Card */}
+      <rect
+        x="108"
+        y="18"
+        width="76"
+        height="124"
+        rx="5"
+        fill="currentColor"
+        fillOpacity="0.04"
+        stroke="currentColor"
+        strokeWidth="1.2"
+      />
+      {/* Field 1: Vendor */}
+      <rect
+        x="114"
+        y="26"
+        width="64"
+        height="24"
+        rx="3.5"
+        fill="currentColor"
+        fillOpacity="0.06"
+        stroke="currentColor"
+        strokeWidth="0.8"
+        strokeOpacity="0.2"
+      />
+      <text x="119" y="34" fontSize="6" fontFamily="monospace" fill="currentColor" opacity="0.5">
+        VENDOR
+      </text>
+      <text x="119" y="44" fontSize="7.5" fontWeight="bold" fill="currentColor">
+        Acme Supplies
+      </text>
+
+      {/* Field 2: Total Amount (Active Focused & Verified) */}
+      <rect
+        x="114"
+        y="58"
+        width="64"
+        height="36"
+        rx="3.5"
+        fill="var(--accent)"
+        fillOpacity="0.1"
+        stroke="var(--accent)"
+        strokeWidth="1.2"
+      />
+      <text x="119" y="68" fontSize="6" fontFamily="monospace" fill="var(--accent)" fontWeight="bold">
+        TOTAL AMOUNT
+      </text>
+      <circle cx="170" cy="66" r="3" fill="#10b981" />
+      <path
+        d="M 168.5 66 L 169.5 67.5 L 171.5 64.5"
+        stroke="#ffffff"
+        strokeWidth="0.8"
+        fill="none"
+        strokeLinecap="round"
+      />
+      <text x="119" y="82" fontSize="9" fontWeight="bold" fill="currentColor">
+        $1,420.50
+      </text>
+      <text x="119" y="90" fontSize="5.5" fontFamily="monospace" fill="currentColor" opacity="0.6">
+        [0..1000] Grounded
+      </text>
+
+      {/* Field 3: Status Action */}
+      <rect
+        x="114"
+        y="102"
+        width="64"
+        height="18"
+        rx="3.5"
+        fill="currentColor"
+        fillOpacity="0.08"
+        stroke="currentColor"
+        strokeWidth="0.8"
+        strokeOpacity="0.2"
+      />
+      <text x="124" y="114" fontSize="6.5" fontFamily="monospace" fontWeight="bold" fill="currentColor">
+        ✓ VERIFIED LEDGER
+      </text>
     </svg>
   );
 }
@@ -404,8 +494,8 @@ export function FeaturesSection() {
                     <VLMVisual />
                   ) : feature.visual === "grounding" ? (
                     <GroundingVisual />
-                  ) : feature.visual === "pipeline" ? (
-                    <PipelineVisual />
+                  ) : feature.visual === "studio" ? (
+                    <StudioVisual />
                   ) : (
                     <ReconcileVisual />
                   )}

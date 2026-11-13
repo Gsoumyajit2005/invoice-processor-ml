@@ -4,11 +4,11 @@ import { useEffect, useState, useRef } from "react";
 import { Cpu } from "lucide-react";
 
 const nodes = [
-  { name: "Local GPU Worker", role: "Qwen3.5-0.8B LoRA", status: "Operational", latency: "820ms" },
+  { name: "Modal Serverless Gateway", role: "FastAPI CPU Tier", status: "Operational", latency: "<200ms" },
+  { name: "Hugging Face ZeroGPU", role: "Qwen3.5-0.8B LoRA (48GB)", status: "Operational", latency: "820ms" },
   { name: "Indra OCR Engine", role: "Coordinate Grounding", status: "Operational", latency: "240ms" },
-  { name: "PostgreSQL Ledger", role: "ACID Persistence", status: "Connected", latency: "12ms" },
+  { name: "Supabase PostgreSQL", role: "ACID Ledger Persistence", status: "Connected", latency: "12ms" },
   { name: "Cloud Fallback Gateway", role: "LiteLLM Router", status: "Ready (BYO Key)", latency: "1.2s" },
-  { name: "Session Auth Vault", role: "HMAC Signed Tokens", status: "Secure", latency: "<1ms" },
 ];
 
 export function InfrastructureSection() {

@@ -5,63 +5,81 @@ import { Copy, Check, Terminal } from "lucide-react";
 
 const codeExamples = [
   {
-    label: "Python (FastAPI)",
+    label: "cURL",
+    code: `# Call the live serverless API (Modal CPU + Hugging Face ZeroGPU)
+curl -X POST "https://gsoumyajit2005--invoice-processor-fastapi-app.us-east.modal.run/api/v1/extract" \\
+  -H "Accept: application/json" \\
+  -F "file=@invoice-scan.pdf"`,
+  },
+  {
+    label: "Python",
     code: `import requests
 
-url = "http://localhost:8000/api/v1/extract"
-files = {"file": open("invoice-scan.pdf", "rb")}
-data = {"mode": "auto"}  # "local" GPU first, cloud escalation fallback
+# Live serverless endpoint (or http://localhost:8000 when self-hosting)
+API_URL = "https://gsoumyajit2005--invoice-processor-fastapi-app.us-east.modal.run/api/v1/extract"
 
-response = requests.post(url, files=files, data=data)
-result = response.json()
-extraction = result["extraction"]
+with open("invoice.pdf", "rb") as f:
+    response = requests.post(API_URL, files={"file": f}, data={"mode": "auto"})
+
+data = response.json()
+extraction = data["extraction"]
 
 print(f"Vendor: {extraction['vendor']}")
 print(f"Total: {extraction['total_amount']} {extraction['currency']}")
-print(f"Reconciled: {result['totals_reconcile']}")
-for item in extraction['line_items']:
+print(f"Math Reconciled: {data['totals_reconcile']}")
+for item in extraction["line_items"]:
     print(f" - {item['description']}: {item['total_price']}")`,
   },
   {
-    label: "cURL",
-    code: `# Process invoice with local Qwen3.5-0.8B LoRA + Indra OCR
-curl -X POST "http://localhost:8000/api/v1/extract" \\
-  -H "Accept: application/json" \\
-  -F "file=@invoice-eur-english.png" \\
-  -F "mode=local"`,
-  },
-  {
-    label: "TypeScript / Node",
-    code: `import { extractSingle } from "@/lib/api-client";
-
+    label: "TypeScript / JS",
+    code: `// Standard fetch with multipart FormData (browser or Node)
 const formData = new FormData();
-formData.append("file", fileBlob, "receipt.jpg");
+formData.append("file", fileBlob, "invoice.pdf");
 formData.append("mode", "auto");
 
-const response = await extractSingle(formData);
-console.log("Invoice ID:", response.invoice_id);
-console.log("Vendor:", response.extraction.vendor);
-console.log("Reconciled:", response.totals_reconcile);
-console.log("Tax BBox:", response.extraction.provenance?.tax_amount?.bbox);`,
+const response = await fetch(
+  "https://gsoumyajit2005--invoice-processor-fastapi-app.us-east.modal.run/api/v1/extract",
+  { method: "POST", body: formData }
+);
+const result = await response.json();
+
+console.log("Invoice ID:", result.invoice_id);
+console.log("Vendor:", result.extraction.vendor);
+console.log("Total Amount:", result.extraction.total_amount);
+console.log("Math Reconciled:", result.totals_reconcile);
+console.log("Bounding Box:", result.extraction.provenance?.total_amount?.bbox);`,
+  },
+  {
+    label: "ZeroGPU (Direct)",
+    code: `from gradio_client import Client, handle_file
+
+# Direct inference on Hugging Face ZeroGPU (NVIDIA 48GB GPU)
+client = Client("GSoumyajit2005/invoice-vlm-zerogpu")
+result = client.predict(
+    image=handle_file("invoice.png"),
+    ocr_text="...",
+    api_name="/extract_invoice"
+)
+print("Extracted VLM Structure:", result)`,
   },
 ];
 
 const developerHighlights = [
   {
-    title: "FastAPI REST Contract",
-    description: "Predictable JSON schemas and OpenAPI 3.1 documentation.",
+    title: "Modal Serverless Gateway",
+    description: "FastAPI REST service with pypdfium2 rasterization & Indra OCR.",
   },
   {
-    title: "Normalized Coordinates",
-    description: "Boxes standardized to [0..1000] for responsive overlays.",
+    title: "Hugging Face ZeroGPU VLM",
+    description: "Dynamic NVIDIA 48GB GPU allocation running fine-tuned Qwen3.5 LoRA.",
   },
   {
-    title: "Multi-Currency Safety",
-    description: "ISO 4217 validation prevents mixing incompatible currencies.",
+    title: "Verifiable [0..1000] Grounding",
+    description: "Exact polygon coordinates for every extracted field and line item.",
   },
   {
-    title: "PostgreSQL & Supabase",
-    description: "Production SQL schema with soft deletes and audit columns.",
+    title: "ACID Ledger & Math Checks",
+    description: "Automatic subtotal + tax = total arithmetic audit and multi-currency safety.",
   },
 ];
 

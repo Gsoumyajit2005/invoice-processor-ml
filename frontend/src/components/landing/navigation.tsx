@@ -10,7 +10,6 @@ const navLinks = [
   { name: "Workflow", href: "#how-it-works" },
   { name: "Architecture", href: "#architecture" },
   { name: "Benchmarks", href: "#benchmarks" },
-  { name: "Deployment", href: "#deployment" },
   { name: "API", href: "#developers" },
 ];
 

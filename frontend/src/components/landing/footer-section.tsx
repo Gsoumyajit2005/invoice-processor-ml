@@ -15,13 +15,13 @@ const footerLinks = {
     { name: "Indra OCR 1.1 Grounding", href: "#features" },
     { name: "Qwen3.5-0.8B LoRA", href: "#features" },
     { name: "Empirical Benchmarks", href: "#benchmarks" },
-    { name: "Deployment Topologies", href: "#deployment" },
+    { name: "LiteLLM Router Gateway", href: "#architecture" },
   ],
-  Governance: [
-    { name: "Air-Gapped Privacy", href: "#security" },
-    { name: "Zero Data Egress", href: "#security" },
-    { name: "HMAC Session Security", href: "#security" },
-    { name: "Audit Provenance", href: "#security" },
+  Pipeline: [
+    { name: "Modal Serverless", href: "#developers" },
+    { name: "Hugging Face ZeroGPU", href: "#developers" },
+    { name: "FastAPI REST API", href: "#developers" },
+    { name: "CORD & SROIE Ablation", href: "#benchmarks" },
   ],
 };
 
